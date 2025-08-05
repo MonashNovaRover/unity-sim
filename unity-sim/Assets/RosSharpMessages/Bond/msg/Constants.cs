@@ -15,11 +15,11 @@ namespace RosSharp.RosBridgeClient.MessageTypes.Bond
     {
         public const string RosMessageName = "bond/msg/Constants";
 
-        public const float DEAD_PUBLISH_PERIOD = 0.05;
-        public const float DEFAULT_CONNECT_TIMEOUT = 10.0;
-        public const float DEFAULT_HEARTBEAT_TIMEOUT = 4.0;
-        public const float DEFAULT_DISCONNECT_TIMEOUT = 2.0;
-        public const float DEFAULT_HEARTBEAT_PERIOD = 1.0;
+        public const float DEAD_PUBLISH_PERIOD = 0.05f;
+        public const float DEFAULT_CONNECT_TIMEOUT = 10.0f;
+        public const float DEFAULT_HEARTBEAT_TIMEOUT = 4.0f;
+        public const float DEFAULT_DISCONNECT_TIMEOUT = 2.0f;
+        public const float DEFAULT_HEARTBEAT_PERIOD = 1.0f;
         public const string DISABLE_HEARTBEAT_TIMEOUT_PARAM = "/bond_disable_heartbeat_timeout";
 
         public Constants()
