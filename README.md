@@ -139,5 +139,27 @@ chmod 777 ./rider-helper.sh
 
 In Unity, under Edit > Preferences > External Tools, choose the 'External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
 
+> [!WARNING]
+> Open Rider through Unity exactly ONCE to get the project loaded, and then never again. Always load it from the command line in the future.
 
+Once you have opened Rider once through Unity, close it.
+
+Then, open Rider through the CLI (from the same terminal that you opened unity from):
+
+```sh
+rider
+# OR ridermux
+```
+
+Go to the top right corner of the screen and select the cog to open settings. 
+
+Navigate to Build, Execution, Deployment > Toolset and Build > Toolset, then set the paths to the following:
+
+```
+Mono executable path: /usr/bin/mono
+.NET CLI executable path: /usr/bin/dotnet
+MSBuild version: /usr/lib/mono/msbuild/Current/bin/MSBuild.dll
+```
+
+This relies on running Rider through the FHS environment given to you by `nix-shell`, so you need to run it through the terminal that runs `nix-shell`, and not through Unity for this to work.
 
