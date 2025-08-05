@@ -3,11 +3,42 @@
 let
   version = "3.13.1"; # Match unityhub version
 
+  dotnetPkg =
+    (with pkgs.dotnetCorePackages; combinePackages [
+      sdk_8_0
+    ]);
+
+  fhsEnvName = "nova-unityhub-fhs-env";
+
+  fhsBashrcDefinition = pkgs.writeShellScriptBin "fhs-bashrc" ''
+    # Source parent .bashrc if it exists (optional)
+    if [ -f ~/.bashrc ]; then
+      source ~/.bashrc
+    fi
+
+    # Your custom setup here
+    alias hub='tmux new -A -d -s hub "unityhub --no-sandbox"'
+    alias unity='tmux new -A -d -s unity "~/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -projectpath ./unity-sim"'
+    alias ridermux='tmux new -A -d -s rider "rider"'
+
+    export DOTNET_ROOT=${dotnetPkg}
+
+    echo ""
+    echo "Entered Unity FHS environment."
+    echo ""
+    echo "Type 
+    echo "  - 'unity' to open the editor in tmux
+    echo "  - 'hub' to open unity hub in tmux"
+    echo "  - 'ridermux' to open Jetbrains rider in tmux"
+    echo ""
+  '';
+  fhsBashrc = fhsBashrcDefinition + "/bin/fhs-bashrc";
+
   # stolen from https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/un/unityhub/package.nix
-  fhsEnv = pkgs.buildFHSEnv {
-    pname = "nova-unityhub-fhs-env";
+  fhsEnv = pkgs.buildFHSEnv rec {
+    pname = fhsEnvName;
     inherit version;
-    runScript = "bash";
+    
 
     targetPkgs =
       pkgs:
@@ -29,6 +60,12 @@ let
       ++ [
         # ! Extra packages added for the shell.nix
         tmux
+
+        # For your IDE
+        dotnetPkg
+        mono
+      
+        powershell
       ];
 
     multiPkgs =
@@ -108,8 +145,45 @@ let
         corefonts
         dejavu_fonts
         liberation_ttf
+
+        msbuild
       ];
+
+    runScript = ''
+      bash --rcfile ${fhsBashrc} -i 
+    '';
   };
 
 in 
-  fhsEnv.env
+pkgs.mkShell {
+  buildInputs = [
+    pkgs.tmux
+    fhsEnv
+    pkgs.msbuild
+    pkgs.mono
+    dotnetPkg
+  ];
+
+  shellHook = ''
+    echo "${fhsEnv}/bin/${fhsEnvName}"
+    exec ${fhsEnv}/bin/${fhsEnvName}
+  '';
+}
+
+# alias hub='tmux new -A -s hub "unityhub --no-sandbox"'
+      # alias unity='tmux new -A -s unity "~/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -projectpath ./unity-sim"'
+#
+
+  #  -c '
+  #       echo ""
+  #       echo "Entered Unity FHS environment."
+  #       export DOTNET_ROOT=${dotnetPkg}
+  #       echo "  dotnet=$(which dotnet)"
+  #       echo "  mono=$(which mono)"
+  #       echo "  DOTNET_ROOT=$DOTNETROOT"
+  #       echo ""
+  #       echo "Type `unity` to open the editor in tmux."
+  #       echo ""
+        
+  #       exec $SHELL
+  #     '

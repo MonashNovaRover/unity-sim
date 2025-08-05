@@ -59,9 +59,21 @@ On the left side-bar, select `Installs`. Then, in the top left, select `Install 
 
 <img width="100%" height="719" alt="image" src="https://github.com/user-attachments/assets/add8c5ba-c681-4b64-9f40-df33c574e559" />
 
+Once complete, add this directory as a project. It wont be able to open. This is normal.
+
 ### 3. Open project
 
-TODO
+
+To open the project, in a terminal, navigate to this directory, then run:
+
+```sh
+nix-shell
+unity
+```
+
+And the editor should pop up.
+
+If the version of unity changes at all, the `unity` alias will break, and we will need to update `shell.nix` to use the correct unity version in the alias.
 
 
 ### How I created the project:
