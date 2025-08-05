@@ -108,3 +108,24 @@ Then, the editor loaded:
 <p align="center">
   <img width="800px" alt="image" src="https://github.com/user-attachments/assets/4018a747-41f8-48fb-b536-2986ed273f04" />
 </p>
+
+
+## Setting up your IDE
+
+Create a `rider-helper.sh` file:
+
+```sh
+#!/bin/sh
+exec rider "$@"
+```
+
+Then make it executable:
+
+```sh
+chmod 777 ./rider-helper.sh
+```
+
+In Unity, under Edit > Preferences > External Tools, choose the 'External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
+
+
+
