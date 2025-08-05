@@ -62,3 +62,49 @@ On the left side-bar, select `Installs`. Then, in the top left, select `Install 
 ### 3. Open project
 
 TODO
+
+
+### How I created the project:
+
+I make a shell.nix with a fhs to allow us to run dynamically linked executables of the unity editor.
+
+```sh
+# at the root of the repository
+nix-shell
+
+tmux new -s hub
+
+# in [hub]
+unityhub
+# ctrl + b, d
+```
+
+In a new terminal window:
+```sh
+tail -f ~/.config/unityhub/logs/info-log.json
+```
+
+Then create the project in unity hub. You should see a message in the logs like:
+```
+{"timestamp":"2025-08-05T08:44:47.682Z","level":"info","moduleName":"LaunchProcess","pid":16374,"message":"Spawning editor instance with command:  /home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Unity , and arguments:  [ '-createproject', '/home/nova/code/unity-sim/Simulator/JoeM', '-cloneFromTemplate', '/home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Data/Resources/PackageManager/ProjectTemplates/com.unity.template.3d-cross-platform-17.0.14.tgz', '-cloudOrganization', '1324567', '-cloudProject', 'AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA', '-cloudEnvironment', 'production', '-useHub', '-hubIPC', '-hubSessionId', 'AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA', '-accessToken', 'AAAAAAAAAAAAAAAAAAAA_AAAAAAAAAAAAAA_AAAAAAAAAAAA' ]"}
+```
+
+Copy the command it tried to run:
+```
+/home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Unity , and arguments:  [ '-createproject', '/home/nova/code/unity-sim/Simulator/JoeM', '-cloneFromTemplate', '/home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Data/Resources/PackageManager/ProjectTemplates/com.unity.template.3d-cross-platform-17.0.14.tgz', '-cloudOrganization', '1324567', '-cloudProject', 'AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA', '-cloudEnvironment', 'production', '-useHub', '-hubIPC', '-hubSessionId', 'AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA', '-accessToken', 'AAAAAAAAAAAAAAAAAAAA_AAAAAAAAAAAAAA_AAAAAAAAAAAA'
+```
+
+Then in the original shell, make a new tmux session, and run the command unityhub tried, formatting the arguments properly:
+```sh
+# in original shell
+tmux new -s editor
+
+# in [editor]
+/home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -createproject /home/nova/code/unity-sim/Simulator/JoeM -cloneFromTemplate /home/nova/Unity/Hub/Editor/6000.1.14f1/Editor/Data/Resources/PackageManager/ProjectTemplates/com.unity.template.3d-cross-platform-17.0.14.tgz -cloudOrganization 1324567 -cloudProject AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA -cloudEnvironment production -useHub -hubIPC -hubSessionId AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA -accessToken AAAAAAAAAAAAAAAAAAAA_AAAAAAAAAAAAAA_AAAAAAAAAAAA
+```
+
+Then, the editor loaded:
+
+<p align="center">
+  <img width="800px" alt="image" src="https://github.com/user-attachments/assets/4018a747-41f8-48fb-b536-2986ed273f04" />
+</p>
