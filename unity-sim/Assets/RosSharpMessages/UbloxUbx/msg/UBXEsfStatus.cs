@@ -15,7 +15,8 @@ namespace RosSharp.RosBridgeClient.MessageTypes.UbloxUbx
 {
     public class UBXEsfStatus : Message
     {
-        public const string RosMessageName = "ublox_ubx_msgs/msg/UBXEsfStatus";
+        // THIS CLASS IS BROKEN
+        /*public const string RosMessageName = "ublox_ubx_msgs/msg/UBXEsfStatus";
 
         //  this message contains a UBX-ESF-STATUS (0x10 0x10) record
         //  External sesnor fusion status
@@ -82,7 +83,7 @@ namespace RosSharp.RosBridgeClient.MessageTypes.UbloxUbx
             this.fusion_mode = fusion_mode;
             this.num_sens = num_sens;
             this.sensor_statuses = sensor_statuses;
-        }
+        }*/
     }
 }
 #endif
