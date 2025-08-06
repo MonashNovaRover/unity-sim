@@ -1,6 +1,7 @@
 using System;
 using RosSharp.RosBridgeClient;
 using UnityEngine;
+using WebSocketSharp;
 
 namespace RosUtils
 {
@@ -28,6 +29,8 @@ namespace RosUtils
 
         public void Publish(T message)
         {
+            if (_publicationId.IsNullOrEmpty())
+                _publicationId = RosManager.Instance.Socket.Advertise<T>(_topic); 
             if (RosManager.Instance.IsConnected)
                 RosManager.Instance.Socket?.Publish(_publicationId, message);
             else
