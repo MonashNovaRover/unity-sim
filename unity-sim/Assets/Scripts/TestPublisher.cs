@@ -1,4 +1,5 @@
 using RosSharp.RosBridgeClient;
+using RosUtils;
 using UnityEngine;
 using StringMsg = RosSharp.RosBridgeClient.MessageTypes.Std.String;
 
@@ -15,6 +16,6 @@ public class TestPublisher : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        _publisher.Publish(new("joe"));
+        _publisher.Publish(new StringMsg("joe"));
     }
 }
