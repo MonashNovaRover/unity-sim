@@ -65,7 +65,22 @@ public class Subscriber<T> where T : Message
     
     ~Subscriber()
     {
+        ReleaseUnmanagedResources();
+    }
+
+    private void ReleaseUnmanagedResources()
+    {
+        if (!RosManager.Instance)
+            return;
+        
         RosManager.Instance.OnConnected -= OnConnected;    
         RosManager.Instance.Socket?.Unadvertise(_topic);
     }
+
+    public void Dispose()
+    {
+        ReleaseUnmanagedResources();
+        GC.SuppressFinalize(this);
+    }
+    
 }
