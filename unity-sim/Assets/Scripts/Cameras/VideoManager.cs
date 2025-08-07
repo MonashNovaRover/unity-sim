@@ -18,16 +18,8 @@ namespace Cameras
     public class VideoManager : MonoBehaviour
     {
         public WebRTCManager client;
-        private RTCPeerConnection _peerConnection;
-        private RTCRtpTransceiver _pcTransceiver;
-        private MediaStream _videoStream;
-        // private RTCDataChannel _dataChannel;
-        public int width = 1280;
-        public int height = 720;
         /// Whether the WebRTC.Update coroutine has been started yet
         bool videoUpdateStarted = false;
-
-        private string lastSessionId;
 
         [System.Serializable]
         class ProducerMetaDTO
@@ -44,20 +36,20 @@ namespace Cameras
         
         class CamHandle
         {
-            public WebRTCCamera cam;
+            public readonly WebRTCCamera Cam;
             
             public ProducerDTO Producer => new ProducerDTO()
             {
                 meta = new ProducerMetaDTO()
                 {
-                    serial = cam.serial,
+                    serial = Cam.serial,
                 },
-                id = cam.PeerId
+                id = Cam.PeerId
             };
 
             public CamHandle(WebRTCCamera cam)
             {
-                this.cam = cam;
+                this.Cam = cam;
             }
         }
 
@@ -183,10 +175,9 @@ namespace Cameras
 
                     var sessionId = Guid.NewGuid().ToString();
                     _sessionIdToHandle[sessionId] = handle;
-                    handle.cam.StartSession(sessionId);
+                    handle.Cam.StartSession(sessionId);
                     
                     // TODO: Remove
-                    lastSessionId = sessionId;
                     break;
                 case "peer":
                     var peerDto = JsonUtility.FromJson<PeerDTO>(message);
@@ -202,14 +193,14 @@ namespace Cameras
                         switch (peerDto.sdp.type)
                         {
                             case "offer":
-                                StartCoroutine(handle.cam.OnRemoteSdpOfferReceived(new RTCSessionDescription()
+                                StartCoroutine(handle.Cam.OnRemoteSdpOfferReceived(new RTCSessionDescription()
                                 {
                                     sdp = peerDto.sdp.sdp,
                                     type = RTCSdpType.Offer
                                 }, peerDto.sessionId));
                                 break;
                             case "answer":
-                                StartCoroutine(handle.cam.OnRemoteSdpAnswerReceived(new RTCSessionDescription()
+                                StartCoroutine(handle.Cam.OnRemoteSdpAnswerReceived(new RTCSessionDescription()
                                 {
                                     sdp = peerDto.sdp.sdp,
                                     type = RTCSdpType.Answer
@@ -230,7 +221,7 @@ namespace Cameras
                             sdpMLineIndex = peerDto.ice.sdpMLineIndex 
                         });
 
-                        handle.cam.AddIceCandidate(ice, peerDto.sessionId);
+                        handle.Cam.AddIceCandidate(ice, peerDto.sessionId);
                         Debug.Log($"Received ICE Candidate: {ice.Candidate}");
                     }
                     break;
@@ -242,7 +233,7 @@ namespace Cameras
                         return;
                     }
                     
-                    handle.cam.EndSession(endSession.sessionId);
+                    handle.Cam.EndSession(endSession.sessionId);
                     break;
                 default:
                     Debug.LogError($"Video Manager -- Unknown command type \"{dtoWrapper.type}\"");
@@ -250,38 +241,34 @@ namespace Cameras
             }
         }
         
-        private IEnumerator CreateAndSendLocalSdpOffer(string sessionId)
-        {
-            // 1. Create local SDP offer
-            var createOfferOperation = _peerConnection.CreateOffer();
-            yield return createOfferOperation;
-
-            if (createOfferOperation.IsError)
-            {
-                Debug.LogError("Failed to create offer");
-                yield break;
-            }
-
-            var sdpOffer = createOfferOperation.Desc;
-
-            // 2. Set the offer as a local SDP 
-            var setLocalSdpOperation = _peerConnection.SetLocalDescription(ref sdpOffer);
-            yield return setLocalSdpOperation;
-
-            if (setLocalSdpOperation.IsError)
-            {
-                Debug.LogError("Failed to set local description");
-                yield break;
-            }
-
-            // 3. Send the SDP Offer to the other Peer
-            SendSdpToOtherPeer(sdpOffer, sessionId);
-            Debug.Log("Sent Sdp Offer");
-        }
-
-
-        
-
+        // private IEnumerator CreateAndSendLocalSdpOffer(string sessionId)
+        // {
+        //     // 1. Create local SDP offer
+        //     var createOfferOperation = _peerConnection.CreateOffer();
+        //     yield return createOfferOperation;
+        //
+        //     if (createOfferOperation.IsError)
+        //     {
+        //         Debug.LogError("Failed to create offer");
+        //         yield break;
+        //     }
+        //
+        //     var sdpOffer = createOfferOperation.Desc;
+        //
+        //     // 2. Set the offer as a local SDP 
+        //     var setLocalSdpOperation = _peerConnection.SetLocalDescription(ref sdpOffer);
+        //     yield return setLocalSdpOperation;
+        //
+        //     if (setLocalSdpOperation.IsError)
+        //     {
+        //         Debug.LogError("Failed to set local description");
+        //         yield break;
+        //     }
+        //
+        //     // 3. Send the SDP Offer to the other Peer
+        //     SendSdpToOtherPeer(sdpOffer, sessionId);
+        //     Debug.Log("Sent Sdp Offer");
+        // }
         
 
         // For if we ever want to receive video, rather than send:
@@ -311,72 +298,6 @@ namespace Cameras
         
         // Public methods to interact with the video manager:
         
-
-        public void SetActiveCamera(WebCamTexture activeWebCamTexture)
-        {
-            // Remove previous track
-            var senders = _peerConnection.GetSenders();
-            foreach (var sender in senders)
-            {
-                _peerConnection.RemoveTrack(sender);
-            }
-
-            var videoTrack = new VideoStreamTrack(activeWebCamTexture);
-            _peerConnection.AddTrack(videoTrack);
-            
-            Debug.Log("Sender video track was set");
-        }
-
-        private void AddTracks()
-        {
-            List<RTCRtpEncodingParameters> parameters = new List<RTCRtpEncodingParameters>();
-            RTCRtpEncodingParameters encoder = new RTCRtpEncodingParameters();
-
-            encoder = new RTCRtpEncodingParameters();
-            encoder.rid = "l";
-            encoder.active = true;
-            encoder.maxFramerate = 30;
-            encoder.maxBitrate = 300 * 1024;
-            encoder.minBitrate = 100 * 1024;
-            encoder.scaleResolutionDownBy = 0.5;
-            parameters.Add(encoder);
-
-            encoder = new RTCRtpEncodingParameters();
-            encoder.rid = "m";
-            encoder.active = true;
-            encoder.maxFramerate = 30;
-            encoder.maxBitrate = 250 * 1024;
-            encoder.minBitrate = 500 * 1024;
-            encoder.scaleResolutionDownBy = 0.8;
-            parameters.Add(encoder);
-
-            encoder = new RTCRtpEncodingParameters();
-            encoder.rid = "h";
-            encoder.active = true;
-            encoder.maxFramerate = 30;
-            encoder.maxBitrate = 400 * 1024;
-            encoder.minBitrate = 1400 * 1024;
-            encoder.scaleResolutionDownBy = 1.0;
-            parameters.Add(encoder);
-
-            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit();
-            init.direction = RTCRtpTransceiverDirection.SendOnly;
-            init.sendEncodings = parameters.ToArray();
-
-            var track = _videoStream.GetTracks().First();
-            var transceiver = _peerConnection.AddTransceiver(track, init);
-            _peerConnection.AddTrack(track, _videoStream);
-            // _dataChannel = _peerConnection.CreateDataChannel("dummy");
-
-            _pcTransceiver = transceiver;
-
-            if (!videoUpdateStarted)
-            {
-                StartCoroutine(WebRTC.Update());
-                videoUpdateStarted = true;
-            }
-        }
-
         public void EnsureVideoUpdateStarted()
         {
             if (videoUpdateStarted)
@@ -392,12 +313,16 @@ namespace Cameras
             
             _handles.Add(handle);
             _peerIdToHandle[cam.PeerId] = handle;
+            
+            Debug.Log($"Video Manager -- Registered WebRTCCamera {cam.serial} ({cam.PeerId})");
         }
 
         public void UnregisterCam(WebRTCCamera cam)
         {
-            _handles.RemoveAll(handle => handle.cam == cam);
+            _handles.RemoveAll(handle => handle.Cam == cam);
             _peerIdToHandle.Remove(cam.PeerId);
+            
+            Debug.Log($"Video Manager -- Unregistered WebRTCCamera {cam.serial} ({cam.PeerId})");
         }
     }
 }
