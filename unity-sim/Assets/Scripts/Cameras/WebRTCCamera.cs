@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Cameras;
 using Cameras.DTO;
 using Unity.WebRTC;
+using UnityEditor.TerrainTools;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 public class WebRTCCamera : MonoBehaviour
 {
@@ -16,6 +19,11 @@ public class WebRTCCamera : MonoBehaviour
     
     [Header("Configuration")]
     public string serial = "";
+
+    [Header("Render Texture")]
+    public RenderTextureDepth depth = RenderTextureDepth.Depth24;
+    public bool useCustomRenderTextureFormat = false;
+    public RenderTextureFormat renderTextureFormat = RenderTextureFormat.ARGBHalf;
     
     /// The 'peerId' for this camera
     public string PeerId => _peerId.Value;
@@ -40,18 +48,22 @@ public class WebRTCCamera : MonoBehaviour
     
     private MediaStream _videoStream;
     /// Map from sessionId to handle
-    private Dictionary<string, ConnectionHandle> _connections = new Dictionary<string, ConnectionHandle>();
+    private Dictionary<string, ConnectionHandle> _connections = new();
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (videoManager == null)
-            videoManager = VideoManager.Instance;
+        if (!videoManager)
+            videoManager = FindFirstObjectByType<VideoManager>();
+        
+        Debug.Log($"WebRTCCamera {serial} -- Attempting to register camera.");
+        videoManager?.RegisterCam(this);
     }
 
-    void OnEnable()
+    private void OnValidate()
     {
-        videoManager?.RegisterCam(this);
+        if (!videoManager)
+            videoManager = FindFirstObjectByType<VideoManager>();
     }
 
     void OnDestroy()
@@ -64,27 +76,29 @@ public class WebRTCCamera : MonoBehaviour
     /// </summary>
     public void StartSession(string sessionId)
     {
-        _videoStream ??= cam?.CaptureStream(width, height);
+        CaptureCameraStream();
+        
+        
         
         var config = new RTCConfiguration
         {
-            iceServers = new RTCIceServer[]
+            iceServers = new[]
             {
                 new RTCIceServer
                 {
-                    urls = new string[]
+                    urls = new[]
                     {
                         // Google Stun server
                         "stun:stun.l.google.com:19302",
                     },
                 },
-                new RTCIceServer()
+                new RTCIceServer
                 {
-                    urls = new  string[] {"stun:stun1.l.google.com:19302"},
+                    urls = new[] {"stun:stun1.l.google.com:19302"},
                 },
-                new RTCIceServer()
+                new RTCIceServer
                 {
-                    urls = new  string[] {"stun:stun.iptel.org"}
+                    urls = new[] {"stun:stun.iptel.org"}
                 }
             },
             bundlePolicy = RTCBundlePolicy.BundlePolicyBalanced,
@@ -104,7 +118,35 @@ public class WebRTCCamera : MonoBehaviour
         // But in a real production you'd have to repeat the exchange every time the OnNegotiationNeeded event is triggered
         handle.PeerConnection.OnNegotiationNeeded += () => OnNegotiationNeeded(sessionId);
         handle.PeerConnection.OnIceConnectionChange += OnIceConnectionChange;
-        handle.PeerConnection.OnIceGatheringStateChange += state => Debug.Log($"IceGatheringStateChange: {state}"); 
+        handle.PeerConnection.OnIceGatheringStateChange += state =>
+        {
+            Debug.Log($"WebRTCCamera {serial} -- OnIceGatheringStateChange: {state}");
+            
+        };
+        handle.PeerConnection.OnIceConnectionChange += state =>
+        {
+            if (state == RTCIceConnectionState.Connected)
+            {
+                Debug.Log($"WebRTCCamera {serial} -- Changing camera texture format (OnIceConnectionChange Connected)");
+                
+                // A connection was made! Lets try change the texture format to allow post process effects that emulate
+                // our shitty cameras.
+
+
+                if (cam.targetTexture)
+                {
+                    cam.targetTexture.graphicsFormat = GraphicsFormat.R16G16B16A16_SFloat;
+                    // var newRT = new RenderTexture(cam.targetTexture.width, cam.targetTexture.height, cam.targetTexture.depth, renderTextureFormat);
+                    // cam.targetTexture = newRT;
+                }
+                else 
+                    Debug.LogError($"WebRTCCamera {serial} -- RenderTexture is missing.");
+            }
+            else
+            {
+                Debug.Log($"WebRTCCamera {serial} -- OnIceConnectionChange: {state}");
+            }
+        };
 
         // Triggered when a new track is received
         // handle.PeerConnection.OnTrack += OnTrack;
@@ -339,5 +381,56 @@ public class WebRTCCamera : MonoBehaviour
         handle.Transceiver = transceiver;
 
         videoManager?.EnsureVideoUpdateStarted();
+    }
+    
+    /// Runs `cam?.CaptureStream(width, height, depth)`, but also changes the render texture format.
+    private MediaStream CaptureCameraStream()
+    {
+        if (useCustomRenderTextureFormat)
+        {
+            Debug.Log($"Supported Formats for {SystemInfo.graphicsDeviceType}: {WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType)}");
+            
+            return CaptureStream(cam, width, height, renderTextureFormat, depth);
+
+        }
+
+        return cam?.CaptureStream(width, height, depth);
+        
+    }
+    
+    /// Modified from Unity.WebRTC.CameraExtension to allow us to specify the render texture format
+    private static MediaStream CaptureStream(Camera cam, int width, int height, RenderTextureFormat format, RenderTextureDepth depth = RenderTextureDepth.Depth24)
+    {
+        var stream = new MediaStream();
+        var track = CaptureStreamTrack(cam, width, height, format, depth);
+        stream.AddTrack(track);
+        return stream;
+    }
+
+    /// Modified from Unity.WebRTC.CameraExtension to allow us to specify the render texture format
+    private static VideoStreamTrack CaptureStreamTrack(Camera cam, int width, int height, RenderTextureFormat format,
+        RenderTextureDepth depth = RenderTextureDepth.Depth24, CopyTexture textureCopy = null)
+    {
+        switch (depth)
+        {
+            case RenderTextureDepth.Depth16:
+            case RenderTextureDepth.Depth24:
+            case RenderTextureDepth.Depth32:
+                break;
+            default:
+                throw new InvalidEnumArgumentException(nameof(depth), (int)depth, typeof(RenderTextureDepth));
+        }
+
+        if (width <= 0 || height <= 0)
+        {
+            throw new ArgumentException("width and height are should be greater than zero.");
+        }
+
+        int depthValue = (int)depth;
+        // var format = WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
+        var rt = new UnityEngine.RenderTexture(width, height, depthValue, format);
+        rt.Create();
+        cam.targetTexture = rt;
+        return new VideoStreamTrack(rt, textureCopy);
     }
 }
