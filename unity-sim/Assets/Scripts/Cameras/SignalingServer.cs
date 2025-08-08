@@ -13,7 +13,7 @@ public class SignalingServer : MonoBehaviour
     {
         // Server = new WebSocketSharp.Server.WebSocketServer(uri);
         Server = new WebSocketServer(IPAddress.Any, 8443, false);  
-        Server.AddWebSocketService<SendToOthersService>("/");
+        Server.AddWebSocketService<SignalingServerService>("/");
         
         if (Server.IsSecure)
             Debug.Log("Signaling Server is secure");
