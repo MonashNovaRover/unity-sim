@@ -8,7 +8,8 @@ namespace Cameras.DTO
     public class DTOWrapper
     {
         public string type;
-        public string from = null;
-        public string to = null;
+        
+        public string unitysimSender = null;
+        public string unitysimDestination = null;
     }
 }
