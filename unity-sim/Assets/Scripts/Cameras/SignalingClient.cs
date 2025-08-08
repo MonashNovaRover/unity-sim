@@ -10,13 +10,28 @@ public delegate void WsMessageHandler(string message);
 
 
 [RequireComponent(typeof(SignalingServer))]
-public class WebRTCManager : MonoBehaviour
+public class SignalingClient : MonoBehaviour
 {
     public event WsMessageHandler MessageReceived;
     public void SendWebSocketMessage(string message)
     {
-        // Debug.Log($"WebRTCManager sending: {message}");
+        // Debug.Log($"SignalingServer sending: {message}");
         _ws.Send(message);
+    }
+    
+    public void SendWebSocketMessageTo(string message, string id)
+    {
+        // Debug.Log($"SignalingServer sending: {message}");
+        
+        // Include the destination's ID with the outgoing message
+        var trimmedMessage = message.TrimEnd();
+        var modifiedMessage = !trimmedMessage.EndsWith("}") ? trimmedMessage 
+            : trimmedMessage
+                  .Substring(0, trimmedMessage.Length - 1)
+              + ",\"unitysimDestination\":\"" + id + "\"}";
+        
+        _ws.Send(modifiedMessage);
+        
     }
 
     [SerializeField]
@@ -27,11 +42,11 @@ public class WebRTCManager : MonoBehaviour
     private readonly ConcurrentQueue<string> _receivedMessages = new ConcurrentQueue<string>();
     private readonly ConcurrentQueue<string> _receivedErrors = new ConcurrentQueue<string>();
 
-    [Header("References")]
-    public SignalingServer signalingServer;
+    // [Header("References")]
+    // public SignalingServer signalingServer;
     
-    public static WebRTCManager Instance => _instance;
-    private static WebRTCManager _instance;
+    public static SignalingClient Instance => _instance;
+    private static SignalingClient _instance;
 
     private RTCPeerConnection _localConnection;
     
@@ -48,7 +63,7 @@ public class WebRTCManager : MonoBehaviour
         _instance = this;
         
         // Create WebSocket instance and connect
-        Debug.Log("WebRTCManager Creating WebSocket");
+        Debug.Log("SignalingServer Creating WebSocket");
         var ip = string.IsNullOrEmpty(serverIp) ? "localhost:8443" : serverIp;
         var url = $"ws://{ip}";
         _ws = new WebSocket(url);
@@ -69,7 +84,7 @@ public class WebRTCManager : MonoBehaviour
 
         if (!_ws.IsAlive)
         {
-            Debug.LogError($"WebRTCManager has not been initialized");
+            Debug.LogError($"SignalingServer has not been initialized");
             _ws.Connect();
             
         }
@@ -82,7 +97,7 @@ public class WebRTCManager : MonoBehaviour
         // Process received messages on the main thread - Unity functions can only be called from the main thread
         while (_receivedMessages.TryDequeue(out var message))
         {
-            Debug.Log("WebRTCManager queued WS Message Received: " + message);
+            Debug.Log("SignalingServer queued WS Message Received: " + message);
             MessageReceived?.Invoke(message);
         }
         
@@ -108,7 +123,7 @@ public class WebRTCManager : MonoBehaviour
         try
         {
             _receivedMessages.Enqueue(e.Data);
-            // Debug.Log($"WebRTCManager received {e.Data}");
+            // Debug.Log($"SignalingServer received {e.Data}");
             // MessageReceived?.Invoke(e.Data);
         }
         catch (Exception ex)
@@ -124,7 +139,7 @@ public class WebRTCManager : MonoBehaviour
 
     private void OnOpen(object sender, EventArgs e)
     {
-        Debug.Log($"WebRTCManager declaring self as producer");
+        Debug.Log($"SignalingServer declaring self as producer");
         SendWebSocketMessage(JsonUtility.ToJson(new SetPeerStatusDTO()
         {
             roles = new []{"producer"}
@@ -134,6 +149,6 @@ public class WebRTCManager : MonoBehaviour
 
     private void OnClose(object sender, EventArgs e)
     {
-        Debug.Log($"WebRTCManager websocket closed");
+        Debug.Log($"SignalingServer websocket closed");
     }
 }

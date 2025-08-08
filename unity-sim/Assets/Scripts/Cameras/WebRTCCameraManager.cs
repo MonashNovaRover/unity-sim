@@ -15,9 +15,10 @@ using WebSocketSharp;
 
 namespace Cameras
 {
-    public class VideoManager : MonoBehaviour
+    public class WebRTCCameraManager : MonoBehaviour
     {
-        public WebRTCManager client;
+        public SignalingClient client;
+        
         /// Whether the WebRTC.Update coroutine has been started yet
         bool videoUpdateStarted = false;
 
@@ -53,38 +54,38 @@ namespace Cameras
             }
         }
 
-        private List<CamHandle> _handles = new List<CamHandle>() { };
-        private Dictionary<string, CamHandle> _peerIdToHandle = new Dictionary<string, CamHandle>();
-        private Dictionary<string, CamHandle> _sessionIdToHandle = new Dictionary<string, CamHandle>();
+        private List<CamHandle> _handles = new();
+        private Dictionary<string, CamHandle> _peerIdToHandle = new();
+        private Dictionary<string, CamHandle> _sessionIdToHandle = new();
+        private Dictionary<string, string> _sessionIdToSignalingSender = new();
 
         private Publisher<RosSharp.RosBridgeClient.MessageTypes.Camera.Cameras> _camerasPublisher;
         
-        public static VideoManager Instance
+        public static WebRTCCameraManager Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = FindFirstObjectByType<VideoManager>();
+                    _instance = FindFirstObjectByType<WebRTCCameraManager>();
                 return _instance;
             }
         }
-        private static VideoManager _instance = null;
+        private static WebRTCCameraManager _instance = null;
         
         protected void Awake()
         {
             _instance = this;
             _camerasPublisher =
                 new Publisher<RosSharp.RosBridgeClient.MessageTypes.Camera.Cameras>("/camera_directory/cameras");
+
+            PublishCamerasLoop();
             
             // FindObjectOfType is used for the demo purpose only. In a real production it's better to avoid it for performance reasons
-            client ??= WebRTCManager.Instance ?? FindFirstObjectByType<WebRTCManager>();
+            client ??= SignalingClient.Instance ?? FindFirstObjectByType<SignalingClient>();
 
             // Triggered when a new message is received from the other peer via WebSocket
             client.MessageReceived += OnWebSocketMessageReceived;
         }
-        
-
-        
 
         public void SendIceCandidateToOtherPeer(RTCIceCandidate iceCandidate, string sessionId)
         {
@@ -101,8 +102,10 @@ namespace Cameras
                 ice = iceDto
             };
             
+            var destination = _sessionIdToSignalingSender[sessionId];
+            
             var serializedDto = JsonConvert.SerializeObject(peerDto);
-            client.SendWebSocketMessage(serializedDto);
+            client.SendWebSocketMessageTo(serializedDto, destination);
         }
 
         public void SendSdpToOtherPeer(RTCSessionDescription sdp, string sessionId)
@@ -120,8 +123,9 @@ namespace Cameras
                 sessionId = sessionId 
             };
             
+            var destination = _sessionIdToSignalingSender[sessionId];
             
-            client.SendWebSocketMessage(JsonConvert.SerializeObject(peerDto));
+            client.SendWebSocketMessageTo(JsonConvert.SerializeObject(peerDto), destination);
         }
 
         private void PublishCameras()
@@ -134,6 +138,13 @@ namespace Cameras
                 return camera;
             }).ToArray();
             _camerasPublisher.Publish(cams);
+        }
+
+        IEnumerator PublishCamerasLoop()
+        {
+            yield return new WaitForSeconds(5.0f);   
+            PublishCameras();
+            StartCoroutine(PublishCamerasLoop());
         }
         
 
@@ -161,7 +172,7 @@ namespace Cameras
                         comma = true;
                     }
                     
-                    client.SendWebSocketMessage($"{{\"type\":\"list\",\"producers\":[{producers}]}}");
+                    client.SendWebSocketMessageTo($"{{\"type\":\"list\",\"producers\":[{producers}]}}", dtoWrapper.unitysimSender);
                     break;
                 case "startSession":
                     var startSession = JsonUtility.FromJson<StartSessionDTO>(message);
@@ -175,6 +186,7 @@ namespace Cameras
 
                     var sessionId = Guid.NewGuid().ToString();
                     _sessionIdToHandle[sessionId] = handle;
+                    _sessionIdToSignalingSender[sessionId] = dtoWrapper.unitysimSender;
                     handle.Cam.StartSession(sessionId);
                     
                     // TODO: Remove
