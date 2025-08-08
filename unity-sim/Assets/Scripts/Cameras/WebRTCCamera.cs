@@ -10,12 +10,13 @@ using Unity.WebRTC;
 using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Serialization;
 
 public class WebRTCCamera : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;
-    [SerializeField] private VideoManager videoManager;
+    [FormerlySerializedAs("videoManager")] [SerializeField] private WebRTCCameraManager webRtcCameraManager;
     
     [Header("Configuration")]
     public string serial = "";
@@ -31,6 +32,7 @@ public class WebRTCCamera : MonoBehaviour
     
     public int width = 1280;
     public int height = 720;
+    public int framerate = 30;
     
     // Private members    
 
@@ -53,22 +55,26 @@ public class WebRTCCamera : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (!videoManager)
-            videoManager = FindFirstObjectByType<VideoManager>();
+        if (!webRtcCameraManager)
+            webRtcCameraManager = FindFirstObjectByType<WebRTCCameraManager>();
         
         Debug.Log($"WebRTCCamera {serial} -- Attempting to register camera.");
-        videoManager?.RegisterCam(this);
+        webRtcCameraManager?.RegisterCam(this);
     }
 
     private void OnValidate()
     {
-        if (!videoManager)
-            videoManager = FindFirstObjectByType<VideoManager>();
+        if (!webRtcCameraManager)
+            webRtcCameraManager = FindFirstObjectByType<WebRTCCameraManager>();
+        
+        gameObject.name = $"WebRTCCamera ({serial})";
+        if (_videoStream == null) 
+            cam.enabled = false;
     }
 
     void OnDestroy()
     {
-        videoManager?.UnregisterCam(this);
+        webRtcCameraManager?.UnregisterCam(this);
     }
 
     /// <summary>
@@ -76,9 +82,12 @@ public class WebRTCCamera : MonoBehaviour
     /// </summary>
     public void StartSession(string sessionId)
     {
-        CaptureCameraStream();
-        
-        
+        // _videoStream = CaptureCameraStream();
+        if (cam)
+        {
+            _videoStream = cam?.CaptureStream(width, height);
+            cam.enabled = true;
+        }
         
         var config = new RTCConfiguration
         {
@@ -135,7 +144,7 @@ public class WebRTCCamera : MonoBehaviour
 
                 if (cam.targetTexture)
                 {
-                    cam.targetTexture.graphicsFormat = GraphicsFormat.R16G16B16A16_SFloat;
+                    // cam.targetTexture.graphicsFormat = GraphicsFormat.R16G16B16A16_SFloat;
                     // var newRT = new RenderTexture(cam.targetTexture.width, cam.targetTexture.height, cam.targetTexture.depth, renderTextureFormat);
                     // cam.targetTexture = newRT;
                 }
@@ -158,7 +167,7 @@ public class WebRTCCamera : MonoBehaviour
             sessionId = sessionId,
             peerId = PeerId
         };
-        videoManager?.client.SendWebSocketMessage(JsonUtility.ToJson(started));
+        webRtcCameraManager?.client.SendWebSocketMessage(JsonUtility.ToJson(started));
     }
 
     // Update is called once per frame
@@ -211,7 +220,7 @@ public class WebRTCCamera : MonoBehaviour
         }
 
         // 4. Send the answer to the other Peer
-        videoManager?.SendSdpToOtherPeer(sdpAnswer, sessionId);
+        webRtcCameraManager?.SendSdpToOtherPeer(sdpAnswer, sessionId);
     }
     
     public IEnumerator OnRemoteSdpAnswerReceived(RTCSessionDescription remoteSdpAnswer, string sessionId)
@@ -268,7 +277,7 @@ public class WebRTCCamera : MonoBehaviour
     {
         if (candidate.Candidate.Contains("127.0.0.1"))
             return; // Skip loopback candidates
-        videoManager?.SendIceCandidateToOtherPeer(candidate, sessionId);
+        webRtcCameraManager?.SendIceCandidateToOtherPeer(candidate, sessionId);
     }
     
     private void OnNegotiationNeeded(string sessionId)
@@ -332,7 +341,7 @@ public class WebRTCCamera : MonoBehaviour
             yield break;
         }
             
-        videoManager?.SendSdpToOtherPeer(desc, sessionId);
+        webRtcCameraManager?.SendSdpToOtherPeer(desc, sessionId);
     }
     
     // Video data setup
@@ -345,7 +354,7 @@ public class WebRTCCamera : MonoBehaviour
         encoder = new RTCRtpEncodingParameters();
         encoder.rid = "l";
         encoder.active = true;
-        encoder.maxFramerate = 30;
+        encoder.maxFramerate = (uint)framerate;
         encoder.maxBitrate = 300 * 1024;
         encoder.minBitrate = 100 * 1024;
         encoder.scaleResolutionDownBy = 0.5;
@@ -354,7 +363,7 @@ public class WebRTCCamera : MonoBehaviour
         encoder = new RTCRtpEncodingParameters();
         encoder.rid = "m";
         encoder.active = true;
-        encoder.maxFramerate = 30;
+        encoder.maxFramerate = (uint)framerate;
         encoder.maxBitrate = 250 * 1024;
         encoder.minBitrate = 500 * 1024;
         encoder.scaleResolutionDownBy = 0.8;
@@ -363,7 +372,7 @@ public class WebRTCCamera : MonoBehaviour
         encoder = new RTCRtpEncodingParameters();
         encoder.rid = "h";
         encoder.active = true;
-        encoder.maxFramerate = 30;
+        encoder.maxFramerate = (uint)framerate;
         encoder.maxBitrate = 400 * 1024;
         encoder.minBitrate = 1400 * 1024;
         encoder.scaleResolutionDownBy = 1.0;
@@ -373,6 +382,12 @@ public class WebRTCCamera : MonoBehaviour
         init.direction = RTCRtpTransceiverDirection.SendOnly;
         init.sendEncodings = parameters.ToArray();
 
+        if (_videoStream == null)
+        {
+            Debug.LogError($"WebRTCCamera ({serial}) -- No video stream available.");
+            return;
+        }
+        
         var track = _videoStream.GetTracks().First();
         var transceiver = handle.PeerConnection.AddTransceiver(track, init);
         handle.PeerConnection.AddTrack(track, _videoStream);
@@ -380,7 +395,7 @@ public class WebRTCCamera : MonoBehaviour
 
         handle.Transceiver = transceiver;
 
-        videoManager?.EnsureVideoUpdateStarted();
+        webRtcCameraManager?.EnsureVideoUpdateStarted();
     }
     
     /// Runs `cam?.CaptureStream(width, height, depth)`, but also changes the render texture format.
@@ -428,7 +443,7 @@ public class WebRTCCamera : MonoBehaviour
 
         int depthValue = (int)depth;
         // var format = WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
-        var rt = new UnityEngine.RenderTexture(width, height, depthValue, format);
+        var rt = new RenderTexture(width, height, depthValue, format);
         rt.Create();
         cam.targetTexture = rt;
         return new VideoStreamTrack(rt, textureCopy);

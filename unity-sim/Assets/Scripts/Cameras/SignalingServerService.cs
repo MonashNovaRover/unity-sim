@@ -9,9 +9,9 @@ using UnityEngine.Assertions.Must;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-public class SendToOthersService : WebSocketBehavior
+public class SignalingServerService : WebSocketBehavior
 {
-    public static SendToOthersService Instance { get; private set; }
+    public static SignalingServerService Instance { get; private set; }
     
     private static string _producerID = "";
     private static List<string> _listenerIDs = new List<string>();
@@ -41,8 +41,10 @@ public class SendToOthersService : WebSocketBehavior
 
     protected override void OnMessage(MessageEventArgs e)
     {
-        string name = ID == _producerID ? "Producer" : ID;
-        DTOWrapper wrapper = JsonUtility.FromJson<DTOWrapper>(e.Data) ?? new DTOWrapper();
+        var name = ID == _producerID ? "Producer" : ID;
+        var wrapper = JsonUtility.FromJson<DTOWrapper>(e.Data) ?? new DTOWrapper();
+        
+        
         
         Debug.Log($"Signaling Server ({name}) -- message: {e.Data}\ntype: {wrapper.type}");
         
@@ -68,9 +70,23 @@ public class SendToOthersService : WebSocketBehavior
             return;
         }
 
+        // Include the sender's ID with the outgoing message
+        var trimmedMessage = e.Data.TrimEnd();
+        var modifiedMessage = !trimmedMessage.EndsWith("}") ? trimmedMessage 
+            : !wrapper.unitysimSender.IsNullOrEmpty() ? trimmedMessage 
+            : trimmedMessage
+                  .Substring(0, trimmedMessage.Length - 1)
+              + ",\"unitysimSender\":\"" + ID + "\"}";
+        
+        if (!wrapper.unitysimDestination.IsNullOrEmpty())
+        {
+            Sessions.SendTo(modifiedMessage, wrapper.unitysimDestination);
+            return;
+        }
+        
         if (ID != _producerID)
         {
-            SendToProducer(e.Data);
+            SendToProducer(modifiedMessage);
             return;
         }
         
@@ -86,7 +102,7 @@ public class SendToOthersService : WebSocketBehavior
                 continue;
             }
             
-            Sessions.SendTo(e.Data, id);
+            Sessions.SendTo(modifiedMessage, id);
         }
     }
 }
