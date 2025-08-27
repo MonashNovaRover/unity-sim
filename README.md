@@ -92,12 +92,12 @@ Then make it executable:
 chmod 777 ./rider-helper.sh
 ```
 
-In Unity, under Edit > Preferences > External Tools, choose the 'External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
+In Unity, under Edit > Preferences > External Tools, choose the `External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
 
 > [!WARNING]
 > Open Rider through Unity exactly ONCE to get the project loaded, and then never again. Always load it from the command line in the future.
 
-Once you have opened Rider once through Unity, close it.
+Once you have opened Rider once through Unity (e.g. double-clicking a C# file), close it.
 
 Then, open Rider through the CLI (from the same terminal that you opened unity from):
 
