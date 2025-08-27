@@ -1,5 +1,5 @@
 # unity-sim
-A Unity based simulator for Banksia
+A Unity based simulator for Banksia.
 
 > Current unity version: `Unity 6.1 (6000.1.14f1)`
 
@@ -33,9 +33,9 @@ Add `pkgs.unityhub` and an appropriate IDE to your configuration.nix:
 I recommend using Jetbrains Rider for Unity development.
 
 > [!IMPORTANT]  
-> Make sure you update your nix channels (there was an important fix 5 hours before I wrote this)
+> Make sure you update your nix channels (there was an important fix 5 hours before I wrote this).
 > ```sh
-> sudo nix-channels --update
+> sudo nix-channel --update
 > ```
 
 Rebuild your system (this might take a while, I'm sorry).
@@ -43,6 +43,8 @@ Rebuild your system (this might take a while, I'm sorry).
 ```sh
 sudo nixos-rebuild switch
 ```
+
+Make sure to `reboot` your system afterwards (or Unity Hub won't open correctly when signing in).
 
 <img width="33%" alt="image" src="https://github.com/user-attachments/assets/53b0e7ae-d93b-4dea-8aea-5c25f7647bed" align="right" />
 
@@ -55,11 +57,11 @@ Run `unityhub`, and press the appropriate button to sign in or create an account
 
 Once in, you may be prompted to download the latest version of unity. Dismiss this, and manually select a version of Unity to download that matches the current project (See the top of the README for the current version). 
 
-On the left side-bar, select `Installs`. Then, in the top left, select `Install Editor`. Find the closest version >= to the version listed in the README, and press `Install`.
+On the left side-bar, select `Installs`. Then, in the top left, select `Install Editor`. Find the closest version >= to the version listed in the README, and press `Install`. Tick the options for `Documentation` and `Linux Build SUpport (IL2CPP)` (this will take a while).
 
 <img width="100%" height="719" alt="image" src="https://github.com/user-attachments/assets/add8c5ba-c681-4b64-9f40-df33c574e559" />
 
-Once complete, add this directory as a project. It wont be able to open. This is normal.
+Once complete, add this directory as a project. It won't be able to open. This is normal.
 
 ### 3. Open the project
 
@@ -67,7 +69,7 @@ Once complete, add this directory as a project. It wont be able to open. This is
 To open the project, in a terminal, navigate to this directory, then run:
 
 ```sh
-nix-shell
+nix-shell # This will take a while
 unity
 ```
 
@@ -90,12 +92,12 @@ Then make it executable:
 chmod 777 ./rider-helper.sh
 ```
 
-In Unity, under Edit > Preferences > External Tools, choose the 'External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
+In Unity, under Edit > Preferences > External Tools, choose the `External Script Editor`, browse to your `rider-helper.sh`, and select it. Now you should be able to run rider through Unity.
 
 > [!WARNING]
 > Open Rider through Unity exactly ONCE to get the project loaded, and then never again. Always load it from the command line in the future.
 
-Once you have opened Rider once through Unity, close it.
+Once you have opened Rider once through Unity (e.g. double-clicking a C# file), close it.
 
 Then, open Rider through the CLI (from the same terminal that you opened unity from):
 
