@@ -1,4 +1,14 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ 
+  pkgs ? import <nixpkgs> {
+    config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+      "corefonts"
+    ];
+    config.permittedInsecurePackages = [
+      "dotnet-sdk-6.0.428"
+      "dotnet-runtime-6.0.36"
+    ];
+  } 
+}:
 
 let
   version = "3.13.1"; # Match unityhub version
@@ -26,10 +36,10 @@ let
     echo ""
     echo "Entered Unity FHS environment."
     echo ""
-    echo "Type 
-    echo "  - 'unity' to open the editor in tmux
-    echo "  - 'hub' to open unity hub in tmux"
-    echo "  - 'ridermux' to open Jetbrains rider in tmux"
+    echo "Type:"
+    echo " - 'unity' to open the editor in tmux"
+    echo " - 'hub' to open unity hub in tmux"
+    echo " - 'ridermux' to open Jetbrains rider in tmux"
     echo ""
   '';
   fhsBashrc = fhsBashrcDefinition + "/bin/fhs-bashrc";
