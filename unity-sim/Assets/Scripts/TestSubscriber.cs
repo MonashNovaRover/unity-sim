@@ -12,15 +12,13 @@ public class TestSubscriber : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        subscriber.OnMessage += Callback;
         subscriber.Connect();
     }
 
     // Update is called once per frame
-    private void Update()
+    private void Callback(StringMsg msg)
     {
-        if (subscriber.Message != null)
-        {
-            Debug.Log("/joe: " + subscriber.Message.data);
-        }
+        Debug.Log("/joe: " + msg.data);
     }
 }
