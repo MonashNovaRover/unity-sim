@@ -1,23 +1,24 @@
 using RosSharp.RosBridgeClient;
 using UnityEngine;
 using StringMsg = RosSharp.RosBridgeClient.MessageTypes.Std.String;
+using RosUtils;
+using UnityEngine.Serialization;
 
 public class TestSubscriber : MonoBehaviour
 {
-    private Subscriber<StringMsg> _subscriber;
+    [SerializeField]
+    private Subscriber<StringMsg> subscriber = new("/joe");
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        _subscriber = new Subscriber<StringMsg>("/joe");
+        subscriber.OnMessage += Callback;
+        subscriber.Connect();
     }
 
     // Update is called once per frame
-    private void Update()
+    private void Callback(StringMsg msg)
     {
-        if (_subscriber.Message != null)
-        {
-            Debug.Log("/joe: " + _subscriber.Message.data);
-        }
+        Debug.Log("/joe: " + msg.data);
     }
 }

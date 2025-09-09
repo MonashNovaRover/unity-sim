@@ -184,6 +184,11 @@ public class RosManager : MonoBehaviour
         
         OnDisconnected?.Invoke();
     }
+
+    private void OnDestroy()
+    {
+        ReleaseUnmanagedResources();
+    }
     
     ~RosManager()
     {
@@ -219,4 +224,6 @@ public class RosManager : MonoBehaviour
             }
         }
     }
+    
+    
 }
