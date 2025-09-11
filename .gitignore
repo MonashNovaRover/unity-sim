@@ -101,7 +101,6 @@ InitTestScene*.unity*
 # Custom Nova ignores
 # These files are generated and frequently changed; they should not be tracked as it makes comparing incredibly inconvenient.
 **/workspace.xml
-**/*.unity
 **/*.prefab
 **/*.meta
 **/*.renderTexture
