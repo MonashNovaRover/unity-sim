@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.frj.unity-sensors": "https://github.com/Field-Robotics-Japan/UnitySensors.git?path=/Packages/UnitySensors",
     "com.siemens.ros-sharp": "https://github.com/siemens/ros-sharp.git?path=/com.siemens.ros-sharp",
     "com.unity.ai.navigation": "2.0.8",
     "com.unity.collab-proxy": "2.8.2",

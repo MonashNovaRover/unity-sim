@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c47f036001d1040be206ca55838d54, type: 3}
+  m_Name: PointUtilitiesSO
+  m_EditorClassIdentifier: 
+  _pointCloudXYZMaterial: {fileID: 2100000, guid: 8d8e5dc1218c28e829e15a3a75c28d31, type: 2}
+  _pointCloudXYZIMaterial: {fileID: 2100000, guid: d3ba7cb183f99dc6ebe4a9c60b510341, type: 2}
+  _pointCloudXYZRGBMaterial: {fileID: 2100000, guid: a92cec95da649aeaca99896a41d3c170, type: 2}
