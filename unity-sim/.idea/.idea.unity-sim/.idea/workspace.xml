@@ -5,10 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6a43a49-ca07-4af9-8220-9eb4a40fffb9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/URPPointCloudXYZ.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/URPPointCloudXYZI.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/URPPointCloudXYZRGB.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/LiDAR/LiDARPublisher.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/RosUtils/RosTime.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/RosUtils/RosTime.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Settings/LiDAR/Mid-360.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.unity-sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.unity-sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthBufferLidar.cginc" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthBufferLidar.cginc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthBufferLidar.shadergraph" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthBufferLidar.shadergraph" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthCamera.shadergraph" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/DepthCamera.shadergraph" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/Mobile_RPAsset.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/Mobile_RPAsset.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/Mobile_Renderer.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/Mobile_Renderer.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/PointUtilitiesSO 1.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/PointUtilitiesSO.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UnitySensors_PointCloudXYZ.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UnitySensors_PointCloudXYZI.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Settings/UnitySensors_PointCloudXYZRGB.mat" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,21 +39,60 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "BaileyChessum"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;BaileyChessum&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:MonashNovaRover/unity-sim.git",
-    "accountId": "72ba881f-6c64-4939-b9b7-79d717c07dc9"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:MonashNovaRover/unity-sim.git&quot;,
+    &quot;accountId&quot;: &quot;72ba881f-6c64-4939-b9b7-79d717c07dc9&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/ed/ce87c457/02000005.il" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/bf/056add9c/Action.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Samples/UnitySensors/3.0.0/Sample/Runtime/Shaders/URPPointCloudXYZ.shader" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/LiDAR/LiDARPublisher.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/TestSubscriber.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/LiDARSensor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Editor/DataType/LiDAR/ScanPatternGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/DataType/LiDAR/ScanPattern.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/DataType/Sensor/PointCloud/PointCloud.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Interfaces/Geometry/IPoseInterface.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Interfaces/Sensor/IPointCloudInterface.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Interfaces/Sensor/PointCloud/IPointInterface.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Interfaces/Std/ITimeInterface.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/DepthBufferLiDAR/DepthBufferLiDARSensor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/DepthBufferLiDAR/ITextureToPointsJob.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/LiDARSensor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/RaycastLiDAR/IRaycastHitsToPointsJob.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/LiDAR/RaycastLiDAR/RaycastLiDARSensor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Sensors/UnitySensor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Utils/Camera/Color2Depth.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Visualizers/Sensor/PointCloud/LiDARPointCloudVisualizer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Runtime/Scripts/Visualizers/Sensor/PointCloudVisualizer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Tests/Editor/LaserScanMsgPublisherTests.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.frj.unity-sensors@b0a870a9ad60/Tests/Editor/ScanPatternGeneratorTests.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Editor/Urdf/CustomInspectors/HingeJointLimitsManagerEditor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Editor/Urdf/CustomInspectors/UrdfJointEditor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS1/Moveit/msg/VisibilityConstraint.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS1/Sensor/msg/LaserScan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS1/Sensor/msg/MultiEchoLaserScan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS2/Moveit/msg/VisibilityConstraint.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS2/Sensor/msg/LaserScan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS2/Sensor/msg/MultiEchoLaserScan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Libraries/RosBridgeClient/Serializers/MicrosoftSerializer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/RosBridgeClient/MessageHandling/JoyAxisJointTransformWriter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/RosBridgeClient/MessageHandling/LaserScanReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/RosBridgeClient/RosCommunication/LaserScanPublisher.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Urdf/JointLimitsManagers/HingeJointLimitsManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@8bb8e5b01c1e/Runtime/Urdf/UrdfComponents/UrdfJoints/UrdfJointRevolute.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ai.navigation@eb5635ad590d/Editor/NavigationWindow.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.rendering.light-transport@9db08e501a4b/Runtime/UnifiedRayTracing/Compute/RadeonRays/kernels/build_hlbvh.compute" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.rendering.light-transport@9db08e501a4b/Runtime/UnifiedRayTracing/Compute/RadeonRays/kernels/trace_ray.hlsl" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.ugui@d02961a6a1a6/Tests/Runtime/UGUI/Canvas/CheckMeshColorsAndColors32Match.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -48,23 +103,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "do_not_show_solution_notification": "true",
-    "git-widget-placeholder": "feat/lidar",
-    "last_opened_file_path": "/usr/bin/mono",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "SolutionBuilderGeneralOptionsPage",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;do_not_show_solution_notification&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/lidar&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/usr/bin/mono&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.1.14f1/Editor/Unity" />
@@ -131,8 +186,18 @@
       <workItem from="1756273148740" duration="161000" />
       <workItem from="1756273330651" duration="61000" />
       <workItem from="1757383082008" duration="783000" />
-      <workItem from="1758602751727" duration="1276000" />
+      <workItem from="1758602751727" duration="4885000" />
+      <workItem from="1758689860697" duration="12757000" />
     </task>
+    <task id="LOCAL-00001" summary="wip: UnitySensors Livox Mid360 LiDAR">
+      <option name="closed" value="true" />
+      <created>1758606339816</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758606339816</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,6 +235,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="wip: UnitySensors Livox Mid360 LiDAR" />
+    <option name="LAST_COMMIT_MESSAGE" value="wip: UnitySensors Livox Mid360 LiDAR" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
