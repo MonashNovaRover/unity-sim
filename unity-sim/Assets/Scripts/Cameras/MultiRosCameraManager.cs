@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ public class CameraRosConfig
     public float framerate = 5f;
 }
 
-public class MultiRosCameraManager : Monobehaviour
+public class MultiRosCameraManager : MonoBehaviour
 {
     [Header("Camera Configurations")] public List<CameraRosConfig> cameraConfigs;
 
@@ -35,7 +36,7 @@ public class MultiRosCameraManager : Monobehaviour
 
             if (rosCam == null || gpuCap == null)
             {
-                Debug.LogWarning($"Camera '{config.camera.name}' missing required components.")
+                Debug.LogWarning($"Camera '{config.camera.name}' missing required components.");
                 lostConfigs--;
                 continue;
             }
@@ -48,7 +49,7 @@ public class MultiRosCameraManager : Monobehaviour
                 ?.SetValue(rosCam, config.frameId);
 
             gpuCap.width = config.width;
-            gpuCap.heigth = config.height;
+            gpuCap.height = config.height;
             gpuCap.framerate = config.framerate;
 
             Debug.Log(
