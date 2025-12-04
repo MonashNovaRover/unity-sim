@@ -7,11 +7,12 @@ using UnityEngine.Rendering;
 /// We should ideally move away from this, and towards a solution which allows gpu memory to somehow be passed between
 /// Unity and GStreamer.
 /// </summary>
+[RequireComponent(typeof(Camera))]
 public class GpuReadbackCameraCapture : MonoBehaviour
 {
     [Header("Camera & RenderTexture Settings")]
-    public Camera sourceCamera;
-    public RenderTexture renderTexture;
+    private Camera sourceCamera;
+    private RenderTexture renderTexture;
 
     [Header("Frame Capture Settings")]
     public int width = 1280;
@@ -32,15 +33,11 @@ public class GpuReadbackCameraCapture : MonoBehaviour
             renderTexture.Create();
         }
 
-        // Assign RenderTexture to Camera
-        if (sourceCamera != null)
-        {
-            sourceCamera.targetTexture = renderTexture;
-        }
-        else
-        {
-            Debug.LogError("Camera is unassigned");
-        }
+		renderTexture = new RenderTexture(width, height, (int)framerate);
+		renderTexture.Create();
+
+		sourceCamera = GetComponent<Camera>();
+		sourceCamera.targetTexture = renderTexture;
     }
 
     private void LateUpdate()
