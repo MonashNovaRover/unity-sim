@@ -4,6 +4,7 @@ using RosUtils;
 using UnityEngine;
 using Time = RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces.Time;
 
+[RequireComponent(typeof(GpuReadbackCameraCapture))]
 public class RosCamera : MonoBehaviour
 {
     [Header("ROS2")]
@@ -15,7 +16,6 @@ public class RosCamera : MonoBehaviour
 
     [Header("References")]
     /// The component used to get camera frames.
-    [SerializeField]
     private GpuReadbackCameraCapture cameraCapture;
 
     // Private member variables
@@ -52,6 +52,7 @@ public class RosCamera : MonoBehaviour
 
     private void Start()
     {
+        cameraCapture = GetComponent<GpuReadbackCameraCapture>();
         _pub = new Publisher<Image>(topic);
         
         if (!cameraCapture && !TryGetComponent(out cameraCapture))
