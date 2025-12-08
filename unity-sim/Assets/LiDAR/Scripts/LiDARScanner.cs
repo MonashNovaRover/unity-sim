@@ -1,12 +1,12 @@
 using System;
-using RosMessageTypes.Sensor;
-using RosMessageTypes.Std;
-using RosMessageTypes.BuiltinInterfaces;
-using Unity.Robotics.Core;
+using RosSharp.RosBridgeClient.MessageTypes.Sensor;
+using RosSharp.RosBridgeClient.MessageTypes.Std;
+using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Collections;
-using UnityEngine.Jobs;
+using RosUtils;
+using Time = RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces.Time;
 
 public class LiDARScanner
 {
@@ -21,7 +21,7 @@ public class LiDARScanner
     {
         _p = p;
             
-        _frameId = p.laser_sensor_link.name;
+        _frameId = p.LidarLink.name;
 
         float scanAngStartH = -p.FovH / 2;
         float scanAngEndH = p.FovH / 2;
@@ -60,9 +60,9 @@ public class LiDARScanner
         _raw_data = new byte[_raw_data_len];
     }
 
-    public PointCloud2Msg getScanMsg()
+    public PointCloud2 getScanMsg()
     {
-        Transform sensor_transform = _p.laser_sensor_link.transform;
+        Transform sensor_transform = _p.LidarLink.transform;
         Vector3 sensorPos = sensor_transform.position;
         Quaternion sensorRot = sensor_transform.rotation;
 
@@ -108,7 +108,7 @@ public class LiDARScanner
             }
             else
             {
-                x = y = z = float.MaxValue;
+                x = y = z = float.NaN;
                 intensity = 0.0f;
             }
 
@@ -123,26 +123,24 @@ public class LiDARScanner
         commands.Dispose();
         results.Dispose();
 
-        var timestamp = new TimeStamp(Clock.time);
-        return new PointCloud2Msg
+        var timeInSeconds = UnityEngine.Time.timeAsDouble;
+        var secs = (int)timeInSeconds;
+        var nsecs = (uint)((timeInSeconds - secs) * 1e9);
+        var stamp = new Time(secs, nsecs);
+
+		var header = new Header(stamp, _frameId);
+
+        return new PointCloud2
         {
-            header = new HeaderMsg
-            {
-                frame_id = _frameId,
-                stamp = new TimeMsg
-                {
-                    sec = timestamp.Seconds,
-                    nanosec = timestamp.NanoSeconds
-                }
-            },
+            header = header,
             height = 1,
             width = _numPoints,
-            fields = new PointFieldMsg[]
+            fields = new PointField[]
             {
-                new PointFieldMsg { name = "x", offset = 0, datatype = PointFieldMsg.FLOAT32, count = 1 },
-                new PointFieldMsg { name = "y", offset = 4, datatype = PointFieldMsg.FLOAT32, count = 1 },
-                new PointFieldMsg { name = "z", offset = 8, datatype = PointFieldMsg.FLOAT32, count = 1 },
-                new PointFieldMsg { name = "i", offset = 12, datatype = PointFieldMsg.FLOAT32, count = 1 }
+                new PointField { name = "x", offset = 0, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "y", offset = 4, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "z", offset = 8, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "i", offset = 12, datatype = PointField.FLOAT32, count = 1 }
             },
             is_bigendian = false,
             point_step = 16,
