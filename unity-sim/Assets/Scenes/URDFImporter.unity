@@ -13273,6 +13273,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   geometryType: 0
+--- !u!1 &988167290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 988167292}
+  - component: {fileID: 988167291}
+  m_Layer: 0
+  m_Name: LiDAR test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &988167291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988167290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b525dfd3805e408781c84d261ecc6d07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointsTopic: /point_cloud
+  poseTopic: /laser_scan_pose
+  _scannerParams:
+    LidarLink: {fileID: 988167290}
+    RangeMin: 0
+    RangeMax: 1000
+    FovH: 360
+    FovV: 45
+    AngularResH: 1
+    AngularResV: 1
+  _hz: 1
+--- !u!4 &988167292
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 988167290}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.43536, y: 0.30475, z: 0.43536}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &988547808
 GameObject:
   m_ObjectHideFlags: 0
@@ -28200,3 +28255,4 @@ SceneRoots:
   - {fileID: 83274854}
   - {fileID: 1474524635}
   - {fileID: 35837207}
+  - {fileID: 988167292}
