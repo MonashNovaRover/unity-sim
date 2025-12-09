@@ -78,6 +78,11 @@ public class LiDARPublisher : MonoBehaviour
         _lastPublishTime = Clock.NowTimeInSeconds;
     }
 
+	private void OnDestroy()
+    {
+        _pcPublisher.Dispose(); // ?
+    }
+
     void VisualizePointCloud(PointCloud2 pointCloudMsg)
     {
         int step = (int)pointCloudMsg.point_step;

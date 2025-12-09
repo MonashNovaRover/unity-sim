@@ -6,7 +6,6 @@ using UnityEngine;
 using Unity.Jobs;
 using Unity.Collections;
 using RosUtils;
-using Time = RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces.Time;
 
 public class LiDARScanner
 {
@@ -104,13 +103,13 @@ public class LiDARScanner
                 z = delta.z;
                 x = -delta.x;
                 y = delta.y;
-                intensity = 0.0f;
             }
             else
             {
                 x = y = z = float.NaN;
-                intensity = 0.0f;
             }
+
+			intensity = 0.0f;
 
             Buffer.BlockCopy(BitConverter.GetBytes(x), 0, _raw_data, baseOffset, 4);
             Buffer.BlockCopy(BitConverter.GetBytes(y), 0, _raw_data, baseOffset + 4, 4);
@@ -123,16 +122,9 @@ public class LiDARScanner
         commands.Dispose();
         results.Dispose();
 
-        var timeInSeconds = UnityEngine.Time.timeAsDouble;
-        var secs = (int)timeInSeconds;
-        var nsecs = (uint)((timeInSeconds - secs) * 1e9);
-        var stamp = new Time(secs, nsecs);
-
-		var header = new Header(stamp, _frameId);
-
         return new PointCloud2
         {
-            header = header,
+            header = TimeStamp.GetHeader(_frameId),
             height = 1,
             width = _numPoints,
             fields = new PointField[]
