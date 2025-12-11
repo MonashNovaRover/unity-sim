@@ -1737,11 +1737,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57f502c014194e2c811cc00e36173809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hz: 20
   _frameIds:
   - map
   - odom
-  _root: {fileID: 1474524632}
+  _root: {fileID: 121871507}
 --- !u!114 &121871511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1764,7 +1763,8 @@ MonoBehaviour:
     FovV: 180
     AngularResH: 1
     AngularResV: 1
-  _hz: 20
+  _transformPublisher: {fileID: 0}
+  _hz: 10
 --- !u!1 &127758798
 GameObject:
   m_ObjectHideFlags: 0
@@ -19508,7 +19508,7 @@ Transform:
   m_GameObject: {fileID: 1421656968}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.821, z: 1.852}
+  m_LocalPosition: {x: -0.28, y: 0.821, z: 1.852}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

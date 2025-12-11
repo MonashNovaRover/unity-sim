@@ -24,4 +24,9 @@ public static class TimeStamp
         
         return new Header(stamp, frameId);
     }
+
+	public static double ToSeconds(Time stamp)
+	{
+    	return stamp.sec + stamp.nanosec / 1e9;
+	}
 }

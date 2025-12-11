@@ -58,7 +58,7 @@ public class LiDARScanner
         _raw_data = new byte[_raw_data_len];
     }
 
-    public PointCloud2 getScanMsg()
+    public PointCloud2 GetScanMsg()
     {
         Transform sensor_transform = _p.LidarLink.transform;
         Vector3 sensorPos = sensor_transform.position;
