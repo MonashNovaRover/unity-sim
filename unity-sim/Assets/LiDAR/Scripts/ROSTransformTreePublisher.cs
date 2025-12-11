@@ -34,11 +34,9 @@ public class ROSTransformTreePublisher : MonoBehaviour
         }
         
         _tfPublisher = new Publisher<TFMessage>(TfTopic);
-        
         _transformRoot = new TransformTreeNode(_root);
         BuildFrameIdLookup();
         
-        // Pre-allocate cache (traverse once to size)
         _cachedTfs = new TransformStamped[GetTreeSize(_transformRoot) + _frameIds.Count + 10];
         _cachedTfCount = 0;
         

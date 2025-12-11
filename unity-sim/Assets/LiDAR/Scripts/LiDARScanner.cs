@@ -28,8 +28,8 @@ public class LiDARScanner
         float scanAngEndV = p.FovV / 2;
 
         _measurementsPerScanH = Mathf.FloorToInt((scanAngEndH - scanAngStartH) / p.AngularResH) + 1;
-        _measurementsPerScanV = Mathf.FloorToInt((scanAngEndV - scanAngStartV) / p.AngularResH) + 1;
-
+        _measurementsPerScanV = Mathf.FloorToInt((scanAngEndV - scanAngStartV) / p.AngularResV) + 1;
+        
         if (p.FovH == 360)
         {
             _measurementsPerScanH = _measurementsPerScanH -1;
@@ -45,8 +45,7 @@ public class LiDARScanner
         {
             _scanArrayH[i] = scanAngStartH + i * p.AngularResH;
         }
-
-        _measurementsPerScanV = Mathf.FloorToInt((scanAngEndV - scanAngStartV) / p.AngularResV) + 1;
+        
         _scanArrayV = new float[_measurementsPerScanV];
         for (int i = 0; i < _measurementsPerScanV; i++)
         {
@@ -100,9 +99,9 @@ public class LiDARScanner
             if (hit.collider != null)
             {
                 Vector3 delta = hit.point - sensorPos;
-                z = delta.z;
-                x = -delta.x;
-                y = delta.y;
+                x = delta.z;
+                y = -delta.x;
+                z = delta.y;
             }
             else
             {
