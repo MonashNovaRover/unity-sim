@@ -62,7 +62,6 @@ public class ROSTransformTreePublisher : MonoBehaviour
 
 	void LateUpdate()
     {
-        // Auto-detect changes via Transform.hasChanged
         if (_transformRoot.Transform.hasChanged)
             _dirtyNodes.Add(_transformRoot);
             
@@ -79,18 +78,14 @@ public class ROSTransformTreePublisher : MonoBehaviour
             MarkDirtyRecursive(child);
     }
 
-	void PublishMessage()
+	public void PublishMessage()
     {   
         var time = UnityEngine.Time.timeAsDouble;
         
-        // 1. Global frame chain (static, cache once)
         int tfIndex = BuildGlobalChain(time);
-        
-        // 2. Tree transforms (dirty-only rebuild)
         BuildTreeTransforms(time, ref tfIndex);
-        
-        // 3. Publish cached array
         Array.Resize(ref _cachedTfs, tfIndex);
+        
         var tfMessage = new TFMessage(_cachedTfs);
         _tfPublisher.Publish(tfMessage);
         
@@ -101,22 +96,20 @@ public class ROSTransformTreePublisher : MonoBehaviour
     {
         _cachedTfCount = 0;
         
-        // Root to first global frame
         if (_frameIds.Count > 0)
         {
             _cachedTfs[_cachedTfCount++] = new TransformStamped(
-                TimeStamp.GetHeader(time, _frameIds[^1]),  // Last frame as child frame
+                TimeStamp.GetHeader(time, _frameIds[^1]), 
                 _transformRoot.name,
                 TransformExtensions.ToFLU(_transformRoot.Transform));
         }
         
-        // Global frame chain (identity transforms)
         for (int i = 1; i < _frameIds.Count; i++)
         {
             _cachedTfs[_cachedTfCount++] = new TransformStamped(
                 TimeStamp.GetHeader(time, _frameIds[i-1]),
                 _frameIds[i],
-                new RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform());  // Identity
+                new RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform());  
         }
         
         return _cachedTfCount;

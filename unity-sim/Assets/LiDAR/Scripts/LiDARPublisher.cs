@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
+using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
 using PoseStamped = RosSharp.RosBridgeClient.MessageTypes.Geometry.PoseStamped;
 using RosUtils;
@@ -35,8 +36,8 @@ public class LiDARPublisher : MonoBehaviour
 	private Publisher<PoseStamped> _posePublisher;
 
     void Start()
-    {
-        CleanParameters();
+    {   
+		CleanParameters();
 
         _lidarScanner = new LiDARScanner(_scannerParams);
 
@@ -57,7 +58,7 @@ public class LiDARPublisher : MonoBehaviour
         if (Clock.NowTimeInSeconds - _lastPublishTime < _publishPeriod)
             return;
 
-        PointCloud2 pointCloudMsg = _lidarScanner.getScanMsg();
+        PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg();
         
         // Only useful for checking ONE scan
         if (_hz == 1)
@@ -68,23 +69,28 @@ public class LiDARPublisher : MonoBehaviour
 
 		var poseMsg = new PoseStamped
 		{
-    		header = TimeStamp.GetHeader(_scannerParams.LidarLink.name),
+    		header = new Header
+			{
+    			frame_id = _scannerParams.LidarLink.name,
+    			stamp = pointCloudMsg.header.stamp
+			},
     		pose = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Pose
     		{
         		position = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Point(pos.x, pos.y, pos.z),
         		orientation = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion(rot.x, rot.y, rot.z, rot.w)
     		}
 		};
-
+        
+        double publishTime = Clock.NowTimeInSeconds;
         _pcPublisher.Publish(pointCloudMsg);
-		_posePublisher.Publish(poseMsg);
-        _lastPublishTime = Clock.NowTimeInSeconds;
     }
 
 	private void OnDestroy()
     {
-        _pcPublisher.Dispose(); 
+        _pcPublisher.Dispose();
     }
+	
+	# region "debugging"
 
     void VisualizePointCloud(PointCloud2 pointCloudMsg)
     {
@@ -110,4 +116,6 @@ public class LiDARPublisher : MonoBehaviour
 
         Debug.Log($"Point cloud has {pointCloudMsg.width} points, step: {pointCloudMsg.point_step}, size: {pointCloudMsg.data.Length} bytes");
     }
+
+	# endregion
 }
