@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
+using PoseStamped = RosSharp.RosBridgeClient.MessageTypes.Geometry.PoseStamped;
 using RosUtils;
 
 [System.Serializable]
@@ -18,7 +19,6 @@ public class ScannerParams
     public float AngularResV = 1;
 }
 
-
 public class LiDARPublisher : MonoBehaviour
 {
     public string pointsTopic = "/point_cloud";
@@ -32,7 +32,7 @@ public class LiDARPublisher : MonoBehaviour
 
 	private LiDARScanner _lidarScanner;
 	private Publisher<PointCloud2> _pcPublisher;
-	//private Publisher<PoseMsg> _posePublisher;
+	private Publisher<PoseStamped> _posePublisher;
 
     void Start()
     {
@@ -41,7 +41,7 @@ public class LiDARPublisher : MonoBehaviour
         _lidarScanner = new LiDARScanner(_scannerParams);
 
 		_pcPublisher = new Publisher<PointCloud2>(pointsTopic);
-		//_posePublisher = new Publisher<PoseMsg>(poseTopic);
+		_posePublisher = new Publisher<PoseStamped>(poseTopic);
 
         _lastPublishTime = Clock.time + _publishPeriod;
     }
@@ -66,21 +66,24 @@ public class LiDARPublisher : MonoBehaviour
         var pos = _scannerParams.LidarLink.transform.position;
 		var rot = _scannerParams.LidarLink.transform.rotation;
 
-		//var poseMsg = new PoseMsg
-		//{
-		//	position = new PoseMsg(pos.x, pos.y, pos.z),
-		//	orientation = new QuaternionMsg(rot.x, rot.y, rot.z, rot.w)
-		//};
+		var poseMsg = new PoseStamped
+		{
+    		header = TimeStamp.GetHeader(_scannerParams.LidarLink.name),
+    		pose = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Pose
+    		{
+        		position = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Point(pos.x, pos.y, pos.z),
+        		orientation = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion(rot.x, rot.y, rot.z, rot.w)
+    		}
+		};
 
         _pcPublisher.Publish(pointCloudMsg);
-		//_posePublisher.Publish(poseMsg);
-
+		_posePublisher.Publish(poseMsg);
         _lastPublishTime = Clock.NowTimeInSeconds;
     }
 
 	private void OnDestroy()
     {
-        _pcPublisher.Dispose(); // ?
+        _pcPublisher.Dispose(); 
     }
 
     void VisualizePointCloud(PointCloud2 pointCloudMsg)
@@ -98,7 +101,7 @@ public class LiDARPublisher : MonoBehaviour
 
             if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z)) continue;
 
-            Vector3 localPoint = new Vector3(-x, y, z); // Adjust based on ROS-to-Unity transform
+            Vector3 localPoint = new Vector3(-x, y, z);
             Vector3 worldPoint = sensorPos + localPoint;
 
             Color color = Color.Lerp(Color.blue, Color.red, Vector3.Distance(worldPoint, sensorPos) / 5f);
