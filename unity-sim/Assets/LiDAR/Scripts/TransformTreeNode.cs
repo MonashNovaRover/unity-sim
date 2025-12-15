@@ -11,11 +11,15 @@ public class TransformTreeNode
     public readonly List<TransformTreeNode> Children;
     public UnityEngine.Transform Transform => SceneObject.transform;
     public string name => SceneObject.name;
-    public bool IsALeafNode => Children.Count == 0;
+    public bool IsALeafNode => Children == null || Children.Count == 0;
 
     public TransformStamped CachedStamp;
     public long LastStampTime;
     public bool IsDirty;
+    
+    public UnityEngine.Vector3 LastPosition;
+    public UnityEngine.Quaternion LastRotation;
+    public bool PoseInitialized;
     
     public TransformTreeNode(GameObject sceneObject)
     {
@@ -33,12 +37,6 @@ public class TransformTreeNode
         );
     }
 
-    // Overload for backward compatibility
-    public static TransformStamped ToTransformStamped(TransformTreeNode node, double time)
-    {
-        return ToTransformStamped(node, "world", time);
-    }
-
     static void PopulateChildNodes(TransformTreeNode tfNode)
     {
         var parentTransform = tfNode.Transform;
@@ -47,12 +45,33 @@ public class TransformTreeNode
             var childTransform = parentTransform.GetChild(childIndex);
             var childGO = childTransform.gameObject;
 
-            // Only URDF links (maintains tree structure)
             if (childGO.TryGetComponent(out UrdfLink _))
             {
                 var childNode = new TransformTreeNode(childGO);
                 tfNode.Children.Add(childNode);
             }
         }
+    }
+    
+    public bool HasMoved(float posEpsilonSqr, float rotEpsilon)
+    {
+        if (!PoseInitialized)
+        {
+            LastPosition = Transform.position;
+            LastRotation = Transform.rotation;
+            PoseInitialized = true;
+            return true;
+        }
+
+        var posDeltaSqr = (Transform.position - LastPosition).sqrMagnitude;
+        var rotAngle = UnityEngine.Quaternion.Angle(LastRotation, Transform.rotation);
+
+        return posDeltaSqr > posEpsilonSqr || rotAngle > rotEpsilon;
+    }
+
+    public void UpdateCachedPose()
+    {
+        LastPosition = Transform.position;
+        LastRotation = Transform.rotation;
     }
 }

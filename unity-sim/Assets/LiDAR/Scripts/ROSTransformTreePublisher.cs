@@ -7,6 +7,7 @@ using RosUtils;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosSharp.RosBridgeClient.MessageTypes.Tf2;
+using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 
 public class ROSTransformTreePublisher : MonoBehaviour
 {
@@ -96,20 +97,28 @@ public class ROSTransformTreePublisher : MonoBehaviour
     {
         _cachedTfCount = 0;
         
-        if (_frameIds.Count > 0)
+        if (_frameIds.Count > 0 )
         {
-            _cachedTfs[_cachedTfCount++] = new TransformStamped(
-                TimeStamp.GetHeader(time, _frameIds[^1]), 
-                _transformRoot.name,
-                TransformExtensions.ToFLU(_transformRoot.Transform));
+            _cachedTfs[_cachedTfCount++] = new TransformStamped
+			{
+				header = TimeStamp.GetHeader(time, _frameIds[^1]),
+				child_frame_id = _transformRoot.name,
+				transform = _transformRoot.Transform.ToRosSharpTransform()
+			};
         }
         
         for (int i = 1; i < _frameIds.Count; i++)
         {
-            _cachedTfs[_cachedTfCount++] = new TransformStamped(
-                TimeStamp.GetHeader(time, _frameIds[i-1]),
-                _frameIds[i],
-                new RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform());  
+            _cachedTfs[_cachedTfCount++] = new TransformStamped
+			{
+				header = TimeStamp.GetHeader(time, _frameIds[i - 1]),
+				child_frame_id = _frameIds[i],
+				transform = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform() // Identity transform
+                {
+                    translation = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Vector3(),
+                    rotation = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Quaternion()
+                }
+			};
         }
         
         return _cachedTfCount;
@@ -144,7 +153,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
     
     void Update()
     {
-        if (Clock.NowTimeInSeconds - _lastPublishTime < _publishPeriod)
+        if (Clock.time - _lastPublishTime < _publishPeriod)
             return;
         PublishMessage();
     }

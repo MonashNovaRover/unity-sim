@@ -81,13 +81,15 @@ public class LiDARPublisher : MonoBehaviour
     		}
 		};
         
-        double publishTime = Clock.NowTimeInSeconds;
         _pcPublisher.Publish(pointCloudMsg);
+
+		_lastPublishTime = Clock.time;
     }
 
 	private void OnDestroy()
     {
-        _pcPublisher.Dispose();
+        _pcPublisher?.Dispose();
+		_posePublisher?.Dispose();
     }
 	
 	# region "debugging"
@@ -107,7 +109,7 @@ public class LiDARPublisher : MonoBehaviour
 
             if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z)) continue;
 
-            Vector3 localPoint = new Vector3(-x, y, z);
+            Vector3 localPoint = new Vector3(-y, z, x);
             Vector3 worldPoint = sensorPos + localPoint;
 
             Color color = Color.Lerp(Color.blue, Color.red, Vector3.Distance(worldPoint, sensorPos) / 5f);
