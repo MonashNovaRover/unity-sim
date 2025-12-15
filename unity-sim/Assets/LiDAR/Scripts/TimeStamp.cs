@@ -11,7 +11,7 @@ public static class TimeStamp
         var secs = (int)timeInSeconds;
         var nsecs = (uint)((timeInSeconds - secs) * 1e9);
         var stamp = new Time(secs, nsecs);
-        
+
         return new Header(stamp, frameId);
     }
     
@@ -21,7 +21,7 @@ public static class TimeStamp
         var secs = (int)timeInSeconds;
         var nsecs = (uint)((timeInSeconds - secs) * 1e9);
         var stamp = new Time(secs, nsecs);
-        
+
         return new Header(stamp, frameId);
     }
 

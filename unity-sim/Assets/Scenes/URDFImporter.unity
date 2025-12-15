@@ -426,6 +426,7 @@ Transform:
   m_Children:
   - {fileID: 267220245}
   - {fileID: 1008565825}
+  - {fileID: 849730589}
   - {fileID: 1533168443}
   - {fileID: 2124559857}
   - {fileID: 2099178104}
@@ -909,7 +910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_roll
+  jointName: left_difflink_bl_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &66090822
@@ -1573,7 +1574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_z
+  jointName: bl_ball_link_y_left_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &119817369
@@ -1683,8 +1684,6 @@ GameObject:
   m_Component:
   - component: {fileID: 121871508}
   - component: {fileID: 121871509}
-  - component: {fileID: 121871511}
-  - component: {fileID: 121871510}
   m_Layer: 0
   m_Name: base_link
   m_TagString: Untagged
@@ -1709,7 +1708,7 @@ Transform:
   - {fileID: 98968973}
   - {fileID: 732481021}
   - {fileID: 1246528897}
-  - {fileID: 1421656969}
+  - {fileID: 1318508101}
   m_Father: {fileID: 1474524635}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &121871509
@@ -1725,46 +1724,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBaseLink: 1
---- !u!114 &121871510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 121871507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57f502c014194e2c811cc00e36173809, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _frameIds:
-  - map
-  - odom
-  _root: {fileID: 121871507}
---- !u!114 &121871511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 121871507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b525dfd3805e408781c84d261ecc6d07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pointsTopic: /point_cloud
-  poseTopic: /laser_scan_pose
-  _scannerParams:
-    LidarLink: {fileID: 1421656968}
-    RangeMin: 0
-    RangeMax: 1000
-    FovH: 360
-    FovV: 180
-    AngularResH: 1
-    AngularResV: 1
-  _transformPublisher: {fileID: 0}
-  _hz: 10
 --- !u!1 &127758798
 GameObject:
   m_ObjectHideFlags: 0
@@ -1817,7 +1776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_yaw
+  jointName: tr_ball_dummy_right_difflink_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &127758801
@@ -2100,7 +2059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_yaw
+  jointName: bl_ball_dummy_left_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &138183318
@@ -2250,7 +2209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_z
+  jointName: bl_ball_link_y_left_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &140495644
@@ -2532,7 +2491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_yaw
+  jointName: br_ball_dummy_right_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &176070289
@@ -2778,7 +2737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_to_mount
+  jointName: camera_holder_front_oak_link_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &200702702
@@ -3100,7 +3059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_optical_joint
+  jointName: oak_link_oak_link_optical_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &220486237
@@ -3399,7 +3358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_roll
+  jointName: right_difflink_br_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &233460114
@@ -3649,7 +3608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_x
+  jointName: right_difflink_br_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &242242007
@@ -4564,7 +4523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_x
+  jointName: diffbar_tr_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &292348530
@@ -4715,7 +4674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_pitch
+  jointName: bl_ball_bl_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &294669346
@@ -5384,7 +5343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_y
+  jointName: br_ball_link_x_br_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &360932841
@@ -6138,7 +6097,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_x
+  jointName: right_difflink_br_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &461263201
@@ -6563,6 +6522,79 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &518096239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 518096242}
+  - component: {fileID: 518096241}
+  - component: {fileID: 518096243}
+  m_Layer: 0
+  m_Name: ROS Publishers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &518096241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518096239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b525dfd3805e408781c84d261ecc6d07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointsTopic: /point_cloud
+  poseTopic: /laser_scan_pose
+  _scannerParams:
+    LidarLink: {fileID: 1318508100}
+    RangeMin: 0
+    RangeMax: 1000
+    FovH: 360
+    FovV: 180
+    AngularResH: 1
+    AngularResV: 1
+  _hz: 10
+--- !u!4 &518096242
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518096239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.07493, y: 1.00595, z: -0.80104}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &518096243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518096239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57f502c014194e2c811cc00e36173809, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hz: 10
+  _frameIds:
+  - map
+  - odom
+  _root: {fileID: 121871507}
 --- !u!1 &523335651
 GameObject:
   m_ObjectHideFlags: 0
@@ -6612,7 +6644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_pointcloud_joint
+  jointName: oak_link_optical_oak_link_gz_pointcloud_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &523335654
@@ -6745,7 +6777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_roll
+  jointName: left_difflink_bl_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &529029835
@@ -7270,7 +7302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: auto_mount_to_chassis
+  jointName: chassis_clam_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &580753381
@@ -7555,7 +7587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_z
+  jointName: br_ball_link_y_right_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &598602695
@@ -8042,7 +8074,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_pitch
+  jointName: bl_ball_bl_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &638195654
@@ -8555,6 +8587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _bind: {fileID: 1023165288}
+  _offset: {x: 0, y: 0, z: 0}
 --- !u!1 &687947451
 GameObject:
   m_ObjectHideFlags: 0
@@ -8868,7 +8901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: frw
+  jointName: fr_ankle_fr_wheel_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &723372600
@@ -9063,7 +9096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: gps_joint
+  jointName: base_link_gps_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &732481023
@@ -9331,7 +9364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_yaw
+  jointName: tl_ball_dummy_left_difflink_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &746155371
@@ -9795,7 +9828,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: mount_to_back_holder
+  jointName: mount_camera_holder_back_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &777892071
@@ -9988,7 +10021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_left_camera_optical_joint
+  jointName: oak_left_camera_frame_oak_left_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &782996060
@@ -10166,7 +10199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_rgb_camera_joint
+  jointName: bootie-base-frame_bootie_rgb_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &788120796
@@ -10298,7 +10331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_rgb_camera_joint
+  jointName: oak-base-frame_oak_rgb_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &792171153
@@ -10432,7 +10465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_z
+  jointName: tr_ball_link_y_right_difflink_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &792627820
@@ -10987,7 +11020,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_x
+  jointName: left_difflink_bl_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &835721034
@@ -11138,7 +11171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_y
+  jointName: bl_ball_link_x_bl_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &836742251
@@ -11284,6 +11317,114 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   geometryType: 3
+--- !u!1 &849730588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 849730589}
+  - component: {fileID: 849730592}
+  - component: {fileID: 849730591}
+  - component: {fileID: 849730590}
+  m_Layer: 0
+  m_Name: Cube (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &849730589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849730588}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.92, y: 0.47, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 35837207}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &849730590
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849730588}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &849730591
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849730588}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &849730592
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849730588}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &850343455
 GameObject:
   m_ObjectHideFlags: 8
@@ -11452,7 +11593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: chassis_to_diffbar
+  jointName: chassis_diffbar_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &853706347
@@ -11646,7 +11787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_optical_joint
+  jointName: bootie_link_bootie_link_optical_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &854107029
@@ -12010,7 +12151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_pointcloud_joint
+  jointName: bootie_link_optical_bootie_link_gz_pointcloud_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &874326436
@@ -12243,7 +12384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: clam_to_mount
+  jointName: clam_mount_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &889749645
@@ -12393,7 +12534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_z
+  jointName: br_ball_link_y_right_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &889869075
@@ -12788,7 +12929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_to_mount
+  jointName: camera_holder_back_bootie_link_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &915733704
@@ -13010,7 +13151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: flw
+  jointName: fl_ankle_fl_wheel_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &941506685
@@ -13159,7 +13300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_imu_joint
+  jointName: bootie_left_camera_frame_bootie_imu_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &950490488
@@ -13482,7 +13623,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_center_joint
+  jointName: bootie_link_bootie-base-frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &988547811
@@ -13615,7 +13756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_pitch
+  jointName: tl_ball_tl_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &992166462
@@ -14378,7 +14519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_yaw
+  jointName: br_ball_dummy_right_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1028359186
@@ -14572,7 +14713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_right_camera_joint
+  jointName: oak-base-frame_oak_right_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1038921860
@@ -14705,7 +14846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: mount_to_front_holder
+  jointName: mount_camera_holder_front_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1039931370
@@ -14946,7 +15087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: frp
+  jointName: right_leg_fr_ankle_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1060055914
@@ -15197,8 +15338,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1071617630}
   - component: {fileID: 1071617631}
+  - component: {fileID: 1071617632}
   m_Layer: 0
-  m_Name: unnamed
+  m_Name: unnammed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15233,6 +15375,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   geometryType: 3
+--- !u!114 &1071617632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1071617629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba5fd74d37a6cf4284698624eb8f6aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsBaseLink: 0
 --- !u!1 &1100430774
 GameObject:
   m_ObjectHideFlags: 0
@@ -15466,7 +15621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_left_camera_joint
+  jointName: oak-base-frame_oak_left_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1134812170
@@ -15833,7 +15988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_right_camera_optical_joint
+  jointName: oak_right_camera_frame_oak_right_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1176122434
@@ -16267,7 +16422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_left_camera_joint
+  jointName: bootie-base-frame_bootie_left_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1201871292
@@ -16399,7 +16554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: brw
+  jointName: br_ankle_br_wheel_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1204872273
@@ -16595,7 +16750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_roll
+  jointName: diffbar_tl_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1229666029
@@ -16791,7 +16946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: chassis_to_left_leg
+  jointName: chassis_left_leg_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1236263664
@@ -17090,7 +17245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: base_link_to_chassis
+  jointName: base_link_chassis_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1246528899
@@ -17918,7 +18073,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_imu_joint
+  jointName: oak_left_camera_frame_oak_imu_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1307295784
@@ -18106,6 +18261,150 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1318508100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1318508101}
+  - component: {fileID: 1318508105}
+  - component: {fileID: 1318508104}
+  - component: {fileID: 1318508102}
+  - component: {fileID: 1318508106}
+  m_Layer: 0
+  m_Name: livox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1318508101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318508100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.25, y: 0.434263, z: -0.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 121871508}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1318508102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318508100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 074632cab556f5b408839af8574308df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xAxis: 0
+  jointName: base_link_livox_joint
+  EffortLimit: 1000
+  VelocityLimit: 1000
+--- !u!171741748 &1318508104
+ArticulationBody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318508100}
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Mass: 1
+  m_ParentAnchorPosition: {x: 0, y: 0, z: 0}
+  m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_AnchorPosition: {x: 0, y: 0, z: 0}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_MatchAnchors: 1
+  m_ArticulationJointType: 0
+  m_LinearX: 2
+  m_LinearY: 2
+  m_LinearZ: 2
+  m_SwingY: 2
+  m_SwingZ: 2
+  m_Twist: 2
+  m_XDrive:
+    lowerLimit: 0
+    upperLimit: 0
+    stiffness: 0
+    damping: 0
+    forceLimit: 3.4028235e+38
+    target: 0
+    targetVelocity: 0
+    driveType: 0
+  m_YDrive:
+    lowerLimit: 0
+    upperLimit: 0
+    stiffness: 0
+    damping: 0
+    forceLimit: 3.4028235e+38
+    target: 0
+    targetVelocity: 0
+    driveType: 0
+  m_ZDrive:
+    lowerLimit: 0
+    upperLimit: 0
+    stiffness: 0
+    damping: 0
+    forceLimit: 3.4028235e+38
+    target: 0
+    targetVelocity: 0
+    driveType: 0
+  m_LinearDamping: 0.05
+  m_AngularDamping: 0.05
+  m_JointFriction: 0.05
+  m_CenterOfMass: {x: -0.1404138, y: 0.01660731, z: -0.00020406453}
+  m_InertiaTensor: {x: 0.1665164, y: 0.20399304, z: 0.3221055}
+  m_InertiaRotation: {x: -0.019686572, y: -0.7074186, z: -0.7063765, w: -0.014275027}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 0
+  m_ImplicitTensor: 0
+  m_Immovable: 0
+  m_UseGravity: 0
+  m_CollisionDetectionMode: 0
+--- !u!114 &1318508105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318508100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba5fd74d37a6cf4284698624eb8f6aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsBaseLink: 0
+--- !u!114 &1318508106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318508100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb1e7c45f7094edcb6b509ec0394a350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bind: {fileID: 1246528897}
+  _offset: {x: 0, y: 0, z: 2}
 --- !u!1 &1321547268
 GameObject:
   m_ObjectHideFlags: 0
@@ -18279,6 +18578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _bind: {fileID: 1744192218}
+  _offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1322729753
 GameObject:
   m_ObjectHideFlags: 0
@@ -18610,7 +18910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: blw
+  jointName: bl_ankle_bl_wheel_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1336073603
@@ -19144,7 +19444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_right_camera_optical_joint
+  jointName: bootie_right_camera_frame_bootie_right_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1389694895
@@ -19482,51 +19782,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4904464466750067913, guid: 2decd0cb6823dc8a58f271dba1c7744f, type: 3}
   m_PrefabInstance: {fileID: 1421028140}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1421656968
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1421656969}
-  - component: {fileID: 1421656970}
-  m_Layer: 0
-  m_Name: livox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1421656969
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1421656968}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.28, y: 0.821, z: 1.852}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 121871508}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1421656970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1421656968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fba5fd74d37a6cf4284698624eb8f6aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsBaseLink: 0
 --- !u!1 &1430955837
 GameObject:
   m_ObjectHideFlags: 0
@@ -19578,7 +19833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: blp
+  jointName: left_leg_bl_ankle_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1430955840
@@ -19836,7 +20091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_pitch
+  jointName: br_ball_br_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1449902610
@@ -20346,7 +20601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_y
+  jointName: tr_ball_link_x_tr_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1486913294
@@ -20720,7 +20975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: flp
+  jointName: left_leg_fl_ankle_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1514054917
@@ -21405,7 +21660,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_rgb_camera_optical_joint
+  jointName: oak_rgb_camera_frame_oak_rgb_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1538603954
@@ -21907,7 +22162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_x
+  jointName: left_difflink_bl_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1576525581
@@ -22104,7 +22359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_pitch
+  jointName: tr_ball_tr_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1586955253
@@ -22297,7 +22552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_model_origin_joint
+  jointName: oak-base-frame_oak_model_origin_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1597742007
@@ -22795,7 +23050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_z
+  jointName: tl_ball_link_y_left_difflink_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1643456610
@@ -23132,7 +23387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_yaw
+  jointName: bl_ball_dummy_left_diffend_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1670032270
@@ -23336,7 +23591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_right_camera_joint
+  jointName: bootie-base-frame_bootie_right_camera_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1693498342
@@ -23515,7 +23770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: oak_center_joint
+  jointName: oak_link_oak-base-frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1704003166
@@ -24013,7 +24268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_x
+  jointName: diffbar_tl_ball_link_x_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1750966405
@@ -24769,7 +25024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_rgb_camera_optical_joint
+  jointName: bootie_rgb_camera_frame_bootie_rgb_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1797402541
@@ -25045,7 +25300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bl_ball_y
+  jointName: bl_ball_link_x_bl_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1823455370
@@ -25485,7 +25740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tl_ball_y
+  jointName: tl_ball_link_x_tl_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1851390438
@@ -25680,7 +25935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_y
+  jointName: br_ball_link_x_br_ball_link_y_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1860755162
@@ -26035,7 +26290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: chassis_to_right_leg
+  jointName: chassis_right_leg_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1878603099
@@ -26604,7 +26859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_roll
+  jointName: right_difflink_br_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1911458301
@@ -26888,7 +27143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_model_origin_joint
+  jointName: bootie-base-frame_bootie_model_origin_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &1938903420
@@ -27021,7 +27276,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: br_ball_pitch
+  jointName: br_ball_br_ball_dummy_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1948354193
@@ -27531,7 +27786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: brp
+  jointName: right_leg_br_ankle_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &2022496346
@@ -27958,7 +28213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: tr_ball_roll
+  jointName: diffbar_tr_ball_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &2074099879
@@ -28107,7 +28362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: bootie_left_camera_optical_joint
+  jointName: bootie_left_camera_frame_bootie_left_camera_optical_frame_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &2079815714
@@ -28833,3 +29088,4 @@ SceneRoots:
   - {fileID: 83274854}
   - {fileID: 1474524635}
   - {fileID: 35837207}
+  - {fileID: 518096242}
