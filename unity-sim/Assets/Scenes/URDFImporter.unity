@@ -6663,6 +6663,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointsTopic: /point_cloud
   poseTopic: /laser_scan_pose
+  _configProfile: {fileID: 0}
   _scannerParams:
     LidarLink: {fileID: 1318508100}
     RangeMin: 0
@@ -6671,7 +6672,15 @@ MonoBehaviour:
     FovV: 180
     AngularResH: 1
     AngularResV: 1
-  _hz: 20
+    DetectionLayers:
+      serializedVersion: 2
+      m_Bits: 4294967295
+  _hz: 10
+  _useAdaptiveScanning: 1
+  _positionThreshold: 0.01
+  _rotationThreshold: 0.5
+  _enableVisualization: 0
+  _visualizationDuration: 1
 --- !u!4 &518096242
 Transform:
   m_ObjectHideFlags: 0

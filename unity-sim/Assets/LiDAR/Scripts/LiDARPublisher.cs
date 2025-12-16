@@ -21,6 +21,29 @@ public class ScannerParams
     
     [Tooltip("Layer mask to determine which objects the LiDAR can detect")]
     public LayerMask DetectionLayers = -1; // Default to all layers
+    
+    [Header("Realism Settings")]
+    [Tooltip("Standard deviation of Gaussian noise added to measurements (in meters)")]
+    public float NoiseStdDev = 0.01f;
+    
+    [Tooltip("Probability of random point dropout (0-1)")]
+    [Range(0f, 1f)]
+    public float DropoutProbability = 0.02f;
+    
+    [Tooltip("Number of rays per beam for divergence simulation (1 = no divergence)")]
+    [Range(1, 5)]
+    public int RaysPerBeam = 1;
+    
+    [Tooltip("Beam divergence angle in degrees")]
+    [Range(0f, 5f)]
+    public float BeamDivergence = 0.1f;
+    
+    [Tooltip("Use material properties to calculate intensity")]
+    public bool UseMaterialBasedIntensity = true;
+    
+    [Tooltip("Base reflectivity for materials without albedo information")]
+    [Range(0f, 1f)]
+    public float DefaultReflectivity = 0.5f;
 }
 
 [DefaultExecutionOrder(200)]
