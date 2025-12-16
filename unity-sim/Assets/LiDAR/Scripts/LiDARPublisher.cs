@@ -29,12 +29,24 @@ public class LiDARPublisher : MonoBehaviour
     public string pointsTopic = "/point_cloud";
     public string poseTopic = "/laser_scan_pose";
     
-	[SerializeField] private LiDARConfigProfile _configProfile;
+    [SerializeField] private LiDARConfigProfile _configProfile;
     [SerializeField] private ScannerParams _scannerParams;
 
     [SerializeField] private double _hz = 20f;
+    
+    [Header("Adaptive Scanning")]
+    [SerializeField] private bool _useAdaptiveScanning = true;
+    [Tooltip("Minimum position change (meters) to trigger a scan")]
+    [SerializeField] private float _positionThreshold = 0.01f;
+    [Tooltip("Minimum rotation change (degrees) to trigger a scan")]
+    [SerializeField] private float _rotationThreshold = 0.5f;
+    
     private double _lastPublishTime;
     private double _publishPeriod => 1.0f / _hz;
+    
+    private Vector3 _lastPosition;
+    private Quaternion _lastRotation;
+    private bool _hasInitialPose;
 
     [Header("Debug Visualization")]
     [SerializeField] private bool _enableVisualization = false;
@@ -46,12 +58,12 @@ public class LiDARPublisher : MonoBehaviour
 
     void Start()
     {   
-		// Apply profile if set
+        // Apply profile if set
         if (_configProfile != null)
         {
             _configProfile.ApplyToParams(ref _scannerParams);
         }
-		
+        
 		CleanParameters();
 
         _lidarScanner = new LiDARScanner(_scannerParams);
@@ -60,12 +72,58 @@ public class LiDARPublisher : MonoBehaviour
 		_posePublisher = new Publisher<PoseStamped>(poseTopic);
 
         _lastPublishTime = Clock.time + _publishPeriod;
+        
+        if (_scannerParams.LidarLink != null)
+        {
+            _lastPosition = _scannerParams.LidarLink.transform.position;
+            _lastRotation = _scannerParams.LidarLink.transform.rotation;
+            _hasInitialPose = true;
+        }
     }
 
     void CleanParameters()
     {
         _scannerParams.FovH = _scannerParams.FovH <= 360 ? _scannerParams.FovH : 360;
         _scannerParams.FovV = _scannerParams.FovV <= 360 ? _scannerParams.FovV : 360;
+    }
+
+    bool ShouldScan()
+    {
+        if (!_useAdaptiveScanning)
+            return true;
+            
+        if (_scannerParams.LidarLink == null)
+            return false;
+            
+        if (!_hasInitialPose)
+        {
+            _lastPosition = _scannerParams.LidarLink.transform.position;
+            _lastRotation = _scannerParams.LidarLink.transform.rotation;
+            _hasInitialPose = true;
+            return true;
+        }
+        
+        Transform sensorTransform = _scannerParams.LidarLink.transform;
+        
+        // Check position change
+        float positionDelta = Vector3.Distance(sensorTransform.position, _lastPosition);
+        if (positionDelta > _positionThreshold)
+        {
+            _lastPosition = sensorTransform.position;
+            _lastRotation = sensorTransform.rotation;
+            return true;
+        }
+        
+        // Check rotation change
+        float rotationDelta = Quaternion.Angle(sensorTransform.rotation, _lastRotation);
+        if (rotationDelta > _rotationThreshold)
+        {
+            _lastPosition = sensorTransform.position;
+            _lastRotation = sensorTransform.rotation;
+            return true;
+        }
+        
+        return false;
     }
 
     void LateUpdate()
@@ -81,11 +139,15 @@ public class LiDARPublisher : MonoBehaviour
             Debug.LogWarning("LidarLink is null, skipping LiDAR scan");
             return;
         }
+        
+        // Check if scan is needed based on movement
+        if (!ShouldScan())
+            return;
 
         PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg(stampTime);
 
-        // Debug visualization if enabled, only visualize at low rates
-        if (_enableVisualization && _hz <= 5) 
+        // Debug visualization if enabled
+        if (_enableVisualization && _hz <= 5) // Only visualize at low rates
             VisualizePointCloud(pointCloudMsg);
 
         var pos = _scannerParams.LidarLink.transform.position;
@@ -106,7 +168,7 @@ public class LiDARPublisher : MonoBehaviour
 		};
         
         _pcPublisher.Publish(pointCloudMsg);
-        _posePublisher.Publish(poseMsg); 
+        _posePublisher.Publish(poseMsg);
 
 		_lastPublishTime = stampTime;
     }
