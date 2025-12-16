@@ -18,6 +18,9 @@ public class ScannerParams
 
     public float AngularResH = 1;
     public float AngularResV = 1;
+    
+    [Tooltip("Layer mask to determine which objects the LiDAR can detect")]
+    public LayerMask DetectionLayers = -1; // Default to all layers
 }
 
 [DefaultExecutionOrder(200)]
@@ -32,10 +35,13 @@ public class LiDARPublisher : MonoBehaviour
     private double _lastPublishTime;
     private double _publishPeriod => 1.0f / _hz;
 
+    [Header("Debug Visualization")]
+    [SerializeField] private bool _enableVisualization = false;
+    [SerializeField] private float _visualizationDuration = 1f;
+
 	private LiDARScanner _lidarScanner;
 	private Publisher<PointCloud2> _pcPublisher;
 	private Publisher<PoseStamped> _posePublisher;
-	private int _messageCount;
 
     void Start()
     {   
@@ -62,10 +68,17 @@ public class LiDARPublisher : MonoBehaviour
         if (stampTime - _lastPublishTime < _publishPeriod)
             return;
 
+        // Validate LidarLink exists before scanning
+        if (_scannerParams.LidarLink == null)
+        {
+            Debug.LogWarning("LidarLink is null, skipping LiDAR scan");
+            return;
+        }
+
         PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg(stampTime);
 
-        // Only useful for checking ONE scan
-        if (_hz == 1)
+        // Debug visualization if enabled, only visualize at low rates
+        if (_enableVisualization && _hz <= 5) 
             VisualizePointCloud(pointCloudMsg);
 
         var pos = _scannerParams.LidarLink.transform.position;
@@ -86,6 +99,7 @@ public class LiDARPublisher : MonoBehaviour
 		};
         
         _pcPublisher.Publish(pointCloudMsg);
+        _posePublisher.Publish(poseMsg); 
 
 		_lastPublishTime = stampTime;
     }
@@ -96,7 +110,7 @@ public class LiDARPublisher : MonoBehaviour
 		_posePublisher?.Dispose();
     }
 	
-	# region "debugging"
+	#region debugging
 
     void VisualizePointCloud(PointCloud2 pointCloudMsg)
     {
@@ -110,18 +124,21 @@ public class LiDARPublisher : MonoBehaviour
             float x = BitConverter.ToSingle(pointCloudMsg.data, baseOffset);
             float y = BitConverter.ToSingle(pointCloudMsg.data, baseOffset + 4);
             float z = BitConverter.ToSingle(pointCloudMsg.data, baseOffset + 8);
+            float intensity = BitConverter.ToSingle(pointCloudMsg.data, baseOffset + 12);
 
             if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z)) continue;
 
+            // Convert back to Unity coordinates for visualization
             Vector3 localPoint = new Vector3(-y, z, x);
             Vector3 worldPoint = sensorPos + localPoint;
 
-            Color color = Color.Lerp(Color.blue, Color.red, Vector3.Distance(worldPoint, sensorPos) / 5f);
-            Debug.DrawRay(worldPoint, Vector3.up * 0.05f, color, 9999f);
+            // Use intensity as hue (0=blue, 1=red)
+            Color color = Color.Lerp(Color.blue, Color.red, intensity);
+            Debug.DrawRay(worldPoint, Vector3.up * 0.05f, color, _visualizationDuration);
         }
 
         Debug.Log($"Point cloud has {pointCloudMsg.width} points, step: {pointCloudMsg.point_step}, size: {pointCloudMsg.data.Length} bytes");
     }
 
-	# endregion
+	#endregion
 }

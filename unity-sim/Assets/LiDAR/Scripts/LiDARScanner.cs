@@ -30,14 +30,16 @@ public class LiDARScanner
         _measurementsPerScanH = Mathf.FloorToInt((scanAngEndH - scanAngStartH) / p.AngularResH) + 1;
         _measurementsPerScanV = Mathf.FloorToInt((scanAngEndV - scanAngStartV) / p.AngularResV) + 1;
         
+        // For 360° FOV, the first and last points would be at the same position (0° and 360°)
+        // Subtract 1 to avoid counting the same point twice
         if (p.FovH == 360)
         {
-            _measurementsPerScanH = _measurementsPerScanH -1;
+            _measurementsPerScanH = _measurementsPerScanH - 1;
         }
 
         if (p.FovV == 360)
         {
-            _measurementsPerScanV = _measurementsPerScanV -1;
+            _measurementsPerScanV = _measurementsPerScanV - 1;
         }
         
         _scanArrayH = new float[_measurementsPerScanH];
@@ -60,6 +62,13 @@ public class LiDARScanner
 
     public PointCloud2 GetScanMsg(double stampTime)
     {
+        // Validate that the LiDAR link and transform still exist
+        if (_p.LidarLink == null || _p.LidarLink.transform == null)
+        {
+            Debug.LogError("LidarLink or its transform is null in LiDARScanner");
+            return CreateEmptyPointCloud(stampTime);
+        }
+
         Transform sensor_transform = _p.LidarLink.transform;
         Vector3 sensorPos = sensor_transform.position;
         Quaternion sensorRot = sensor_transform.rotation;
@@ -81,7 +90,8 @@ public class LiDARScanner
                 
                 Vector3 directionVector = sensorRot * localDirVec;
                 Vector3 origin = _p.RangeMin * directionVector + sensorPos;
-                commands[idx++] = new RaycastCommand(origin, directionVector, new QueryParameters(Physics.DefaultRaycastLayers, false), _p.RangeMax);
+                commands[idx++] = new RaycastCommand(origin, directionVector, 
+                    new QueryParameters(_p.DetectionLayers, false), _p.RangeMax);
             }
         }
 
@@ -99,16 +109,25 @@ public class LiDARScanner
             if (hit.collider != null)
             {
                 Vector3 delta = hit.point - sensorPos;
-                x = delta.z;
-                y = -delta.x;
-                z = delta.y;
+                
+                // Coordinate conversion: Unity (Left-handed Y-up) -> ROS (Right-handed Z-up FLU convention)
+                // Unity coordinates: X=right, Y=up, Z=forward
+                // ROS FLU coordinates: X=forward, Y=left, Z=up
+                x = delta.z;   // Forward (Unity Z -> ROS X)
+                y = -delta.x;  // Left (Unity -X -> ROS Y)
+                z = delta.y;   // Up (Unity Y -> ROS Z)
+                
+                // Calculate intensity based on normalized distance (0.0 = close, 1.0 = far)
+                // This creates a color gradient from blue (close) to red (far) when visualized
+                float distance = hit.distance;
+                intensity = Mathf.Clamp01(distance / _p.RangeMax);
             }
             else
             {
+                // No hit - set coordinates to NaN to indicate invalid point
                 x = y = z = float.NaN;
+                intensity = 0.0f;
             }
-
-			intensity = 0.0f;
 
             Buffer.BlockCopy(BitConverter.GetBytes(x), 0, _raw_data, baseOffset, 4);
             Buffer.BlockCopy(BitConverter.GetBytes(y), 0, _raw_data, baseOffset + 4, 4);
@@ -131,12 +150,34 @@ public class LiDARScanner
                 new PointField { name = "x", offset = 0, datatype = PointField.FLOAT32, count = 1 },
                 new PointField { name = "y", offset = 4, datatype = PointField.FLOAT32, count = 1 },
                 new PointField { name = "z", offset = 8, datatype = PointField.FLOAT32, count = 1 },
-                new PointField { name = "i", offset = 12, datatype = PointField.FLOAT32, count = 1 }
+                new PointField { name = "intensity", offset = 12, datatype = PointField.FLOAT32, count = 1 }
             },
             is_bigendian = false,
             point_step = 16,
             row_step = _raw_data_len,
             data = _raw_data,
+            is_dense = false
+        };
+    }
+
+    private PointCloud2 CreateEmptyPointCloud(double stampTime)
+    {
+        return new PointCloud2
+        {
+            header = TimeStamp.GetHeader(stampTime, _frameId),
+            height = 1,
+            width = 0,
+            fields = new PointField[]
+            {
+                new PointField { name = "x", offset = 0, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "y", offset = 4, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "z", offset = 8, datatype = PointField.FLOAT32, count = 1 },
+                new PointField { name = "intensity", offset = 12, datatype = PointField.FLOAT32, count = 1 }
+            },
+            is_bigendian = false,
+            point_step = 16,
+            row_step = 0,
+            data = new byte[0],
             is_dense = false
         };
     }
