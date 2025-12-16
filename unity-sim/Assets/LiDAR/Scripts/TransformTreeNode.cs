@@ -30,11 +30,12 @@ public class TransformTreeNode
 
     public static TransformStamped ToTransformStamped(TransformTreeNode node, string parentFrameId, double time)
     {
-        return new TransformStamped(
-            TimeStamp.GetHeader(time, parentFrameId),  
-            node.name,                                
-            TransformExtensions.ToFLU(node.Transform)                 
-        );
+        var ts = new TransformStamped(
+        TimeStamp.GetHeader(time, parentFrameId),
+        node.name,
+        TransformExtensions.ToFLU(node.Transform));
+
+    	return ts;
     }
 
     static void PopulateChildNodes(TransformTreeNode tfNode)

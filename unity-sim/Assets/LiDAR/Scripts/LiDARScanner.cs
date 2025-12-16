@@ -58,7 +58,7 @@ public class LiDARScanner
         _raw_data = new byte[_raw_data_len];
     }
 
-    public PointCloud2 GetScanMsg()
+    public PointCloud2 GetScanMsg(double stampTime)
     {
         Transform sensor_transform = _p.LidarLink.transform;
         Vector3 sensorPos = sensor_transform.position;
@@ -123,7 +123,7 @@ public class LiDARScanner
 
         return new PointCloud2
         {
-            header = TimeStamp.GetHeader(_frameId),
+            header = TimeStamp.GetHeader(stampTime, _frameId),
             height = 1,
             width = _numPoints,
             fields = new PointField[]

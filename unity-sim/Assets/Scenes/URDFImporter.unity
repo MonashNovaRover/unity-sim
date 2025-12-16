@@ -6562,7 +6562,7 @@ MonoBehaviour:
     FovV: 180
     AngularResH: 1
     AngularResV: 1
-  _hz: 10
+  _hz: 20
 --- !u!4 &518096242
 Transform:
   m_ObjectHideFlags: 0
@@ -6590,7 +6590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57f502c014194e2c811cc00e36173809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hz: 10
+  _hz: 60
   _frameIds:
   - map
   - odom

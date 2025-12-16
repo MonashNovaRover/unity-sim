@@ -9,6 +9,7 @@ using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosSharp.RosBridgeClient.MessageTypes.Tf2;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 
+[DefaultExecutionOrder(-200)]
 public class ROSTransformTreePublisher : MonoBehaviour
 {
     const string TfTopic = "/tf";
@@ -79,39 +80,34 @@ public class ROSTransformTreePublisher : MonoBehaviour
             MarkDirtyRecursive(child);
     }
 
-	public void PublishMessage()
-    {   
-        var time = UnityEngine.Time.timeAsDouble;
-        
-        int tfIndex = BuildGlobalChain(time);
-        BuildTreeTransforms(time, ref tfIndex);
+	public void PublishMessage(double stampTime)
+    {  
+        int tfIndex = BuildGlobalChain(stampTime);
+        BuildTreeTransforms(stampTime, ref tfIndex);
         Array.Resize(ref _cachedTfs, tfIndex);
-        
-        var tfMessage = new TFMessage(_cachedTfs);
-        _tfPublisher.Publish(tfMessage);
-        
-        _lastPublishTime = Clock.FrameStartTimeInSeconds;
+       
+        _tfPublisher.Publish(new TFMessage(_cachedTfs));
     }
 
 	int BuildGlobalChain(double time)
     {
         _cachedTfCount = 0;
-        
-        if (_frameIds.Count > 0 )
+        if (_frameIds.Count == 0) return _cachedTfCount;
+
+        var h0 = TimeStamp.GetHeader(time, _frameIds[^1]);
+        _cachedTfs[_cachedTfCount++] = new TransformStamped
         {
-            _cachedTfs[_cachedTfCount++] = new TransformStamped
-			{
-				header = TimeStamp.GetHeader(time, _frameIds[^1]),
-				child_frame_id = _transformRoot.name,
-				transform = _transformRoot.Transform.ToRosSharpTransform()
-			};
-        }
+            header = h0,
+            child_frame_id = _transformRoot.name,
+            transform = _transformRoot.Transform.ToRosSharpTransform()
+        };
         
         for (int i = 1; i < _frameIds.Count; i++)
         {
+            var h = TimeStamp.GetHeader(time, _frameIds[i - 1]);
             _cachedTfs[_cachedTfCount++] = new TransformStamped
 			{
-				header = TimeStamp.GetHeader(time, _frameIds[i - 1]),
+				header = h,
 				child_frame_id = _frameIds[i],
 				transform = new RosSharp.RosBridgeClient.MessageTypes.Geometry.Transform() // Identity transform
                 {
@@ -153,9 +149,13 @@ public class ROSTransformTreePublisher : MonoBehaviour
     
     void Update()
     {
-        if (Clock.time - _lastPublishTime < _publishPeriod)
+		double stampTime = Clock.FrameStartTimeInSeconds;
+
+        if (stampTime - _lastPublishTime < _publishPeriod)
             return;
-        PublishMessage();
+
+        PublishMessage(stampTime);
+		_lastPublishTime = stampTime;
     }
 
 	private void OnDestroy()

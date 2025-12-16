@@ -6,7 +6,7 @@ using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
 using PoseStamped = RosSharp.RosBridgeClient.MessageTypes.Geometry.PoseStamped;
 using RosUtils;
 
-[System.Serializable]
+[System.Serializable] 
 public class ScannerParams
 {
     public GameObject LidarLink;
@@ -20,6 +20,7 @@ public class ScannerParams
     public float AngularResV = 1;
 }
 
+[DefaultExecutionOrder(200)]
 public class LiDARPublisher : MonoBehaviour
 {
     public string pointsTopic = "/point_cloud";
@@ -34,6 +35,7 @@ public class LiDARPublisher : MonoBehaviour
 	private LiDARScanner _lidarScanner;
 	private Publisher<PointCloud2> _pcPublisher;
 	private Publisher<PoseStamped> _posePublisher;
+	private int _messageCount;
 
     void Start()
     {   
@@ -53,13 +55,15 @@ public class LiDARPublisher : MonoBehaviour
         _scannerParams.FovV = _scannerParams.FovV <= 360 ? _scannerParams.FovV : 360;
     }
 
-    void Update()
+    void LateUpdate()
     {
-        if (Clock.NowTimeInSeconds - _lastPublishTime < _publishPeriod)
+	    double stampTime = Clock.FrameStartTimeInSeconds;
+		
+        if (stampTime - _lastPublishTime < _publishPeriod)
             return;
 
-        PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg();
-        
+        PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg(stampTime);
+
         // Only useful for checking ONE scan
         if (_hz == 1)
             VisualizePointCloud(pointCloudMsg);
@@ -83,7 +87,7 @@ public class LiDARPublisher : MonoBehaviour
         
         _pcPublisher.Publish(pointCloudMsg);
 
-		_lastPublishTime = Clock.time;
+		_lastPublishTime = stampTime;
     }
 
 	private void OnDestroy()
