@@ -19,6 +19,12 @@ MonoBehaviour:
   FovV: 70
   AngularResH: 0.28
   AngularResV: 0.28
+  NoiseStdDev: 0.02
+  DropoutProbability: 0.005
+  RaysPerBeam: 1
+  BeamDivergence: 0.28
+  UseMaterialBasedIntensity: 1
+  DefaultReflectivity: 0.5
   DetectionLayers:
     serializedVersion: 2
     m_Bits: 4294967295

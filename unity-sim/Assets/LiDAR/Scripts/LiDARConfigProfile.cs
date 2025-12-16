@@ -35,6 +35,30 @@ public class LiDARConfigProfile : ScriptableObject
     [Range(0.08f, 5f)]
     public float AngularResV = 2f;
     
+    [Header("Realism Settings")]
+    [Tooltip("Measurement noise standard deviation in meters")]
+    [Range(0f, 0.1f)]
+    public float NoiseStdDev = 0.02f;
+    
+    [Tooltip("Probability of random point dropout (0-1)")]
+    [Range(0f, 0.1f)]
+    public float DropoutProbability = 0.01f;
+    
+    [Tooltip("Number of rays per beam for divergence simulation")]
+    [Range(1, 5)]
+    public int RaysPerBeam = 1;
+    
+    [Tooltip("Beam divergence angle in degrees")]
+    [Range(0f, 2f)]
+    public float BeamDivergence = 0.3f;
+    
+    [Tooltip("Use material properties to calculate intensity")]
+    public bool UseMaterialBasedIntensity = true;
+    
+    [Tooltip("Default reflectivity for materials")]
+    [Range(0f, 1f)]
+    public float DefaultReflectivity = 0.5f;
+    
     [Header("Layer Filtering")]
     [Tooltip("Which layers the LiDAR can detect")]
     public LayerMask DetectionLayers = -1;
@@ -53,6 +77,12 @@ public class LiDARConfigProfile : ScriptableObject
         scannerParams.FovV = FovV;
         scannerParams.AngularResH = AngularResH;
         scannerParams.AngularResV = AngularResV;
+        scannerParams.NoiseStdDev = NoiseStdDev;
+        scannerParams.DropoutProbability = DropoutProbability;
+        scannerParams.RaysPerBeam = RaysPerBeam;
+        scannerParams.BeamDivergence = BeamDivergence;
+        scannerParams.UseMaterialBasedIntensity = UseMaterialBasedIntensity;
+        scannerParams.DefaultReflectivity = DefaultReflectivity;
         scannerParams.DetectionLayers = DetectionLayers;
     }
 }
