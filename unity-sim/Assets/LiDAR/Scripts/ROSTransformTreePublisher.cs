@@ -24,7 +24,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
     private double _publishPeriod => 1.0 / _hz;
 
 	private TransformStamped[] _cachedTfs;
-    private int _cachedTfCount;
+    private int _maxTfCount;
     private HashSet<TransformTreeNode> _dirtyNodes = new();
     private Dictionary<string, int> _frameIdToIndex = new();
 
@@ -39,8 +39,10 @@ public class ROSTransformTreePublisher : MonoBehaviour
         _transformRoot = new TransformTreeNode(_root);
         BuildFrameIdLookup();
         
-        _cachedTfs = new TransformStamped[GetTreeSize(_transformRoot) + _frameIds.Count + 10];
-        _cachedTfCount = 0;
+        // Calculate the maximum number of transforms we'll ever need
+        // Tree size + frame IDs + small buffer for safety
+        _maxTfCount = GetTreeSize(_transformRoot) + _frameIds.Count + 10;
+        _cachedTfs = new TransformStamped[_maxTfCount];
         
         _lastPublishTime = Clock.time + _publishPeriod;
     }
@@ -84,18 +86,22 @@ public class ROSTransformTreePublisher : MonoBehaviour
     {  
         int tfIndex = BuildGlobalChain(stampTime);
         BuildTreeTransforms(stampTime, ref tfIndex);
-        Array.Resize(ref _cachedTfs, tfIndex);
        
-        _tfPublisher.Publish(new TFMessage(_cachedTfs));
+        // Create a span/slice of the array up to the actual count used
+        // Only copy the transforms we actually populated
+        TransformStamped[] messageTfs = new TransformStamped[tfIndex];
+        Array.Copy(_cachedTfs, messageTfs, tfIndex);
+        
+        _tfPublisher.Publish(new TFMessage(messageTfs));
     }
 
 	int BuildGlobalChain(double time)
     {
-        _cachedTfCount = 0;
-        if (_frameIds.Count == 0) return _cachedTfCount;
+        int tfCount = 0;
+        if (_frameIds.Count == 0) return tfCount;
 
         var h0 = TimeStamp.GetHeader(time, _frameIds[^1]);
-        _cachedTfs[_cachedTfCount++] = new TransformStamped
+        _cachedTfs[tfCount++] = new TransformStamped
         {
             header = h0,
             child_frame_id = _transformRoot.name,
@@ -105,7 +111,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
         for (int i = 1; i < _frameIds.Count; i++)
         {
             var h = TimeStamp.GetHeader(time, _frameIds[i - 1]);
-            _cachedTfs[_cachedTfCount++] = new TransformStamped
+            _cachedTfs[tfCount++] = new TransformStamped
 			{
 				header = h,
 				child_frame_id = _frameIds[i],
@@ -117,7 +123,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
 			};
         }
         
-        return _cachedTfCount;
+        return tfCount;
     }
 
 	void BuildTreeTransforms(double time, ref int tfIndex)
