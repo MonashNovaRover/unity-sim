@@ -29,6 +29,7 @@ public class LiDARPublisher : MonoBehaviour
     public string pointsTopic = "/point_cloud";
     public string poseTopic = "/laser_scan_pose";
     
+	[SerializeField] private LiDARConfigProfile _configProfile;
     [SerializeField] private ScannerParams _scannerParams;
 
     [SerializeField] private double _hz = 20f;
@@ -45,6 +46,12 @@ public class LiDARPublisher : MonoBehaviour
 
     void Start()
     {   
+		// Apply profile if set
+        if (_configProfile != null)
+        {
+            _configProfile.ApplyToParams(ref _scannerParams);
+        }
+		
 		CleanParameters();
 
         _lidarScanner = new LiDARScanner(_scannerParams);
