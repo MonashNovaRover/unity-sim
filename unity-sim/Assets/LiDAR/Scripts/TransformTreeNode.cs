@@ -8,12 +8,6 @@ using RosUtils;
 /// <summary>
 /// Represents a node in the robot's transform tree hierarchy.
 /// Each node corresponds to a robot link (from URDF) and tracks its transform state.
-/// 
-/// Features:
-/// - Hierarchical tree structure matching Unity/URDF hierarchy
-/// - Transform caching for optimization (avoid republishing unchanged transforms)
-/// - Dirty-flagging system to track which transforms need updating
-/// - Conversion utilities for Unity ↔ ROS coordinate systems
 /// </summary>
 public class TransformTreeNode
 {
@@ -56,7 +50,7 @@ public class TransformTreeNode
         var ts = new TransformStamped(
             TimeStamp.GetHeader(time, parentFrameId),
             node.name,
-            TransformExtensions.ToFLU(node.Transform) // Convert Unity → ROS FLU coordinates
+            TransformExtensions.ToFLU(node.Transform)
         );
 
     	return ts;
@@ -77,7 +71,6 @@ public class TransformTreeNode
             var childTransform = parentTransform.GetChild(childIndex);
             var childGO = childTransform.gameObject;
 
-            // Only include GameObjects with UrdfLink component (robot links)
             if (childGO.TryGetComponent(out UrdfLink _))
             {
                 var childNode = new TransformTreeNode(childGO);
@@ -86,11 +79,7 @@ public class TransformTreeNode
         }
     }
     
-    /// <summary>
-    /// Checks if the transform has moved beyond specified thresholds.
-    /// Useful for detecting significant movement to trigger updates.
-    /// Currently unused but available for optimization.
-    /// </summary>
+    // Checks if the transform has moved beyond specified thresholds. (unused)
     public bool HasMoved(float posEpsilonSqr, float rotEpsilon)
     {
         if (!PoseInitialized)

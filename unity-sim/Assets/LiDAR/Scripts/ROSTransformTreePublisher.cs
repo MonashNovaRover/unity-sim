@@ -40,12 +40,8 @@ public class ROSTransformTreePublisher : MonoBehaviour
     private TransformTreeNode _transformRoot;
     private Publisher<TFMessage> _tfPublisher;
     private double _publishPeriod => 1.0 / _hz;
-
-    // Pre-allocated array for transform messages (avoids GC allocations)
 	private TransformStamped[] _cachedTfs;
     private int _maxTfCount;
-    
-    // Optimization: track which transforms changed to avoid republishing static transforms
     private HashSet<TransformTreeNode> _dirtyNodes = new();
     private Dictionary<string, int> _frameIdToIndex = new();
 
@@ -55,7 +51,6 @@ public class ROSTransformTreePublisher : MonoBehaviour
     /// </summary>
 	void Start()
     {
-        // Use this GameObject as root if none specified
         if (_root == null) {
             Debug.LogWarning($"No root specified, using {name}");
             _root = gameObject;
@@ -68,19 +63,13 @@ public class ROSTransformTreePublisher : MonoBehaviour
         _transformRoot = new TransformTreeNode(_root);
         BuildFrameIdLookup();
         
-        // Calculate maximum number of transforms we'll ever need:
-        // - Tree size (all robot links)
-        // - Frame IDs (global frames like map, odom)
-        // - Small buffer for safety
         _maxTfCount = GetTreeSize(_transformRoot) + _frameIds.Count + 10;
         _cachedTfs = new TransformStamped[_maxTfCount];
         
         _lastPublishTime = Clock.time + _publishPeriod;
     }
 
-    /// <summary>
-    /// Creates a lookup dictionary for quick frame ID access.
-    /// </summary>
+    // Creates a lookup dictionary for quick frame ID access.
 	void BuildFrameIdLookup()
     {
         _frameIdToIndex.Clear();
@@ -88,10 +77,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
             _frameIdToIndex[_frameIds[i]] = i;
     }
     
-    /// <summary>
-    /// Recursively counts all nodes in the transform tree.
-    /// Used to pre-allocate the correct array size.
-    /// </summary>
+    // Recursively counts all nodes in the transform tree.
     static int GetTreeSize(TransformTreeNode node)
     {
         int size = 1;
@@ -100,44 +86,35 @@ public class ROSTransformTreePublisher : MonoBehaviour
         return size;
     }
 
-    /// <summary>
-    /// Marks a specific node as dirty, requiring republication.
-    /// Used by external systems to notify of transform changes.
-    /// </summary>
 	public void MarkDirty(TransformTreeNode node) => _dirtyNodes.Add(node);
 
-    /// <summary>
-    /// Checks for transform changes and marks dirty nodes.
-    /// Unity's hasChanged flag is used to detect modifications.
-    /// </summary>
+    // Checks for transform changes and marks dirty nodes.
 	void LateUpdate()
     {
-        // Check if root transform changed
         if (_transformRoot.Transform.hasChanged)
+        {
             _dirtyNodes.Add(_transformRoot);
+            _transformRoot.Transform.hasChanged = false;
+        }
         
-        // Propagate dirty flags down the tree
         foreach (var node in _dirtyNodes)
             MarkDirtyRecursive(node);
         _dirtyNodes.Clear();
     }
 	
-    /// <summary>
-    /// Recursively marks nodes as dirty when their transform changed.
-    /// Child transforms need republishing when parent moves.
-    /// </summary>
+    // Recursively marks nodes as dirty when their transform changed.
 	static void MarkDirtyRecursive(TransformTreeNode node)
     {
         if (node.Transform.hasChanged)
+        {
             node.IsDirty = true;
+            node.Transform.hasChanged = false;
+        }
         foreach (var child in node.Children)
             MarkDirtyRecursive(child);
     }
 
-    /// <summary>
-    /// Builds and publishes the complete TF message.
-    /// Includes both global frame chain and robot transform tree.
-    /// </summary>
+    // Builds and publishes the complete TF message.
 	public void PublishMessage(double stampTime)
     {  
         // Build global frame chain (map -> odom -> base_link)
@@ -153,11 +130,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
         _tfPublisher.Publish(new TFMessage(messageTfs));
     }
 
-    /// <summary>
-    /// Builds the global reference frame chain.
-    /// Example: map -> odom -> base_link
-    /// Global frames typically use identity transforms (no relative motion).
-    /// </summary>
+    // Builds the global reference frame chain.
 	int BuildGlobalChain(double time)
     {
         int tfCount = 0;
@@ -192,34 +165,19 @@ public class ROSTransformTreePublisher : MonoBehaviour
         return tfCount;
     }
 
-    /// <summary>
-    /// Builds transforms for the entire robot tree.
-    /// Delegates to recursive population function.
-    /// </summary>
+    // Builds transforms for the entire robot tree.
 	void BuildTreeTransforms(double time, ref int tfIndex)
     {
         FastPopulateTF(_cachedTfs, ref tfIndex, _transformRoot, time);
     }
 
-    /// <summary>
-    /// Recursively populates the transform array with robot link transforms.
-    /// Uses caching optimization: only republishes transforms that changed (dirty flag).
-    /// This significantly reduces network traffic for static robot parts.
-    /// </summary>
+    // Recursively populates the transform array with robot link transforms.
 	static void FastPopulateTF(TransformStamped[] tfArray, ref int index, 
                               TransformTreeNode tfNode, double time)
     {
         foreach (var childTf in tfNode.Children)
         {
-            // Optimization: reuse cached transform if nothing changed
-            if (!childTf.IsDirty && childTf.CachedStamp != null && 
-                childTf.LastStampTime == time)
-            {
-                tfArray[index++] = childTf.CachedStamp;
-                continue;
-            }
-            
-            // Transform changed - create new message and cache it
+            // Create fresh transform message
             tfArray[index++] = TransformTreeNode.ToTransformStamped(childTf, tfNode.name, time);
             childTf.CachedStamp = tfArray[index-1];  
             childTf.LastStampTime = (long)time;

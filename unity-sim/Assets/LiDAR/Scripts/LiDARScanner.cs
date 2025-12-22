@@ -36,7 +36,6 @@ public class LiDARScanner
             
         _frameId = p.LidarLink.name;
 
-        // Calculate scan angle ranges
         float scanAngStartH = -p.FovH / 2;
         float scanAngEndH = p.FovH / 2;
         float scanAngStartV = -p.FovV / 2;
@@ -46,8 +45,6 @@ public class LiDARScanner
         _measurementsPerScanH = Mathf.FloorToInt((scanAngEndH - scanAngStartH) / p.AngularResH) + 1;
         _measurementsPerScanV = Mathf.FloorToInt((scanAngEndV - scanAngStartV) / p.AngularResV) + 1;
         
-        // For 360° FOV, the first and last points would be at the same position (0° and 360°)
-        // Subtract 1 to avoid counting the same point twice
         if (p.FovH == 360)
         {
             _measurementsPerScanH = _measurementsPerScanH - 1;
@@ -99,7 +96,7 @@ public class LiDARScanner
         _divergenceOffsets[0] = Vector3.zero; // Center ray (main beam)
         
         // Create a circular pattern of offset angles around the main beam
-        // Distribution simulates how laser energy spreads in a cone
+        // Distribution simulates how laser spreads in a cone
         float divergenceRad = _p.BeamDivergence * Mathf.Deg2Rad;
         for (int i = 1; i < _p.RaysPerBeam; i++)
         {
@@ -122,7 +119,6 @@ public class LiDARScanner
     /// </summary>
     public PointCloud2 GetScanMsg(double stampTime)
     {
-        // Validate that the LiDAR link and transform still exist
         if (_p.LidarLink == null || _p.LidarLink.transform == null)
         {
             Debug.LogError("LidarLink or its transform is null in LiDARScanner");
@@ -157,9 +153,6 @@ public class LiDARScanner
                 );
                 
                 // BEAM DIVERGENCE SIMULATION
-                // Real LiDAR beams aren't infinitely thin - they spread out over distance
-                // Cast multiple rays in a circular pattern and take the closest hit
-                // This simulates how the laser beam footprint increases with range
                 for (int r = 0; r < _p.RaysPerBeam; r++)
                 {
                     Vector3 divergedDir = localDirVec;
@@ -172,18 +165,13 @@ public class LiDARScanner
                             tangent = Vector3.Cross(localDirVec, Vector3.right).normalized;
                         Vector3 bitangent = Vector3.Cross(localDirVec, tangent).normalized;
                         
-                        // Apply pre-calculated divergence offset
                         divergedDir += tangent * _divergenceOffsets[r].x + bitangent * _divergenceOffsets[r].y;
                         divergedDir.Normalize();
                     }
                     
-                    // Transform direction from sensor local space to world space
                     Vector3 directionVector = sensorRot * divergedDir;
-                    
-                    // Start raycast at RangeMin to avoid detecting the sensor itself
                     Vector3 origin = _p.RangeMin * directionVector + sensorPos;
                     
-                    // Create raycast command with layer filtering
                     commands[idx++] = new RaycastCommand(origin, directionVector, 
                         new QueryParameters(_p.DetectionLayers, false), _p.RangeMax);
                 }
@@ -193,7 +181,7 @@ public class LiDARScanner
         // Execute all raycasts in parallel using Unity's Job System
         NativeArray<RaycastHit> results = new(totalCommands, Allocator.TempJob);
         JobHandle raycastJob = RaycastCommand.ScheduleBatch(commands, results, 128);
-        raycastJob.Complete(); // Wait for completion
+        raycastJob.Complete(); 
 
         // Process raycast results and build point cloud data
         int raw_data_indx = 0;
@@ -202,7 +190,6 @@ public class LiDARScanner
             int baseOffset = raw_data_indx * 16; // 16 bytes per point (4 floats)
             
             // When using beam divergence, find the closest valid hit among all diverged rays
-            // This simulates how LiDAR returns the strongest/closest reflection
             RaycastHit bestHit = default;
             float closestDistance = float.MaxValue;
             bool hasValidHit = false;
@@ -223,10 +210,6 @@ public class LiDARScanner
             float x, y, z, intensity;
             
             // DROPOUT SIMULATION
-            // Real LiDAR occasionally misses returns due to:
-            // - Surface absorption (dark/black materials)
-            // - Extreme angles
-            // - Environmental conditions (rain, fog, dust)
             bool isDropout = UnityEngine.Random.value < _p.DropoutProbability;
             
             if (hasValidHit && !isDropout)
@@ -235,11 +218,6 @@ public class LiDARScanner
                 float distance = bestHit.distance;
                 
                 // GAUSSIAN NOISE SIMULATION
-                // Real LiDAR measurements have noise due to:
-                // - Timing precision limits
-                // - Signal processing
-                // - Environmental factors
-                // Uses Box-Muller transform to generate normally distributed noise
                 if (_p.NoiseStdDev > 0f)
                 {
                     // Box-Muller transform: converts uniform random to Gaussian
@@ -253,13 +231,10 @@ public class LiDARScanner
                 }
                 
                 // COORDINATE SYSTEM CONVERSION
-                // Unity uses left-handed Y-up: X=right, Y=up, Z=forward
-                // ROS uses right-handed Z-up FLU: X=forward, Y=left, Z=up
-                x = delta.z;   // Forward (Unity Z -> ROS X)
-                y = -delta.x;  // Left (Unity -X -> ROS Y)
-                z = delta.y;   // Up (Unity Y -> ROS Z)
+                x = delta.z;
+                y = -delta.x;
+                z = delta.y;  
                 
-                // Calculate intensity based on physical properties
                 intensity = CalculateIntensity(bestHit, distance);
             }
             else
