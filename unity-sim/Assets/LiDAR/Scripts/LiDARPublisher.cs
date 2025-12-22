@@ -111,7 +111,6 @@ public class LiDARPublisher : MonoBehaviour
     private double _lastPublishTime;
     private double _publishPeriod => 1.0f / _hz;
     
-    // For adaptive scanning - tracks last known pose
     private Vector3 _lastPosition;
     private Quaternion _lastRotation;
     private bool _hasInitialPose;
@@ -134,24 +133,19 @@ public class LiDARPublisher : MonoBehaviour
     /// </summary>
     void Start()
     {   
-        // Apply profile settings if a profile is assigned
         if (_configProfile != null)
         {
             _configProfile.ApplyToParams(ref _scannerParams);
             Debug.Log($"Applied LiDAR profile: {_configProfile.ProfileName}");
         }
         
-        // Validate and clamp FOV values
 		CleanParameters();
 
-        // Initialize scanner with configuration
         _lidarScanner = new LiDARScanner(_scannerParams);
 
-        // Create ROS publishers
 		_pcPublisher = new Publisher<PointCloud2>(pointsTopic);
 		_posePublisher = new Publisher<PoseStamped>(poseTopic);
 
-        // Initialize timing
         _lastPublishTime = Clock.time + _publishPeriod;
         
         // Initialize adaptive scanning baseline
@@ -163,10 +157,6 @@ public class LiDARPublisher : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Validates and clamps FOV parameters to valid ranges.
-    /// FOV cannot exceed 360 degrees in any direction.
-    /// </summary>
     void CleanParameters()
     {
         _scannerParams.FovH = _scannerParams.FovH <= 360 ? _scannerParams.FovH : 360;
@@ -197,7 +187,6 @@ public class LiDARPublisher : MonoBehaviour
         
         Transform sensorTransform = _scannerParams.LidarLink.transform;
         
-        // Check if position has changed beyond threshold
         float positionDelta = Vector3.Distance(sensorTransform.position, _lastPosition);
         if (positionDelta > _positionThreshold)
         {
@@ -206,7 +195,6 @@ public class LiDARPublisher : MonoBehaviour
             return true;
         }
         
-        // Check if rotation has changed beyond threshold
         float rotationDelta = Quaternion.Angle(sensorTransform.rotation, _lastRotation);
         if (rotationDelta > _rotationThreshold)
         {
@@ -229,7 +217,6 @@ public class LiDARPublisher : MonoBehaviour
         if (stampTime - _lastPublishTime < _publishPeriod)
             return;
 
-        // Validate LidarLink exists before scanning
         if (_scannerParams.LidarLink == null)
         {
             Debug.LogWarning("LidarLink is null, skipping LiDAR scan");
@@ -242,11 +229,9 @@ public class LiDARPublisher : MonoBehaviour
 
         PointCloud2 pointCloudMsg = _lidarScanner.GetScanMsg(stampTime);
 
-        // Debug visualization (only at low rates to avoid performance issues)
         if (_enableVisualization && _hz <= 5)
             VisualizePointCloud(pointCloudMsg);
 
-        // Get current sensor pose for pose message
         var pos = _scannerParams.LidarLink.transform.position;
 		var rot = _scannerParams.LidarLink.transform.rotation;
 
@@ -272,9 +257,6 @@ public class LiDARPublisher : MonoBehaviour
 		_lastPublishTime = stampTime;
     }
 
-    /// <summary>
-    /// Clean up ROS publishers when component is destroyed.
-    /// </summary>
 	private void OnDestroy()
     {
         _pcPublisher?.Dispose();
@@ -303,14 +285,13 @@ public class LiDARPublisher : MonoBehaviour
             float z = BitConverter.ToSingle(pointCloudMsg.data, baseOffset + 8);
             float intensity = BitConverter.ToSingle(pointCloudMsg.data, baseOffset + 12);
 
-            // Skip invalid points (NaN indicates no hit)
             if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z)) continue;
 
             // Convert back from ROS coordinates to Unity coordinates for visualization
             Vector3 localPoint = new Vector3(-y, z, x);
             Vector3 worldPoint = sensorPos + localPoint;
 
-            // Color by intensity: blue (low) to red (high)
+            // Color by intensity
             Color color = Color.Lerp(Color.blue, Color.red, intensity);
             Debug.DrawRay(worldPoint, Vector3.up * 0.05f, color, _visualizationDuration);
         }
