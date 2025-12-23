@@ -1,11 +1,8 @@
 using System;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
-using RosSharp.RosBridgeClient.MessageTypes.Std;
-using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Collections;
-using RosUtils;
 
 /// <summary>
 /// Core LiDAR scanning engine that performs raycasting and generates ROS PointCloud2 messages.
@@ -259,7 +256,7 @@ public class LiDARScanner
         // Build ROS PointCloud2 message
         return new PointCloud2
         {
-            header = TimeStamp.GetHeader(stampTime, _frameId),
+            header = TimeStamp.GetHeader(_frameId, stampTime),
             height = 1,
             width = _numPoints,
             fields = new PointField[]
@@ -359,7 +356,7 @@ public class LiDARScanner
     {
         return new PointCloud2
         {
-            header = TimeStamp.GetHeader(stampTime, _frameId),
+            header = TimeStamp.GetHeader(_frameId, stampTime),
             height = 1,
             width = 0,
             fields = new PointField[]

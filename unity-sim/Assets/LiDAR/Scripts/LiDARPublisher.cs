@@ -1,8 +1,7 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Sensor;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
-using RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces;
 using PoseStamped = RosSharp.RosBridgeClient.MessageTypes.Geometry.PoseStamped;
 using RosUtils;
 
