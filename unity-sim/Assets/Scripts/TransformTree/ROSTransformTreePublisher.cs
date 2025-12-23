@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 using RosUtils;
 using RosSharp.RosBridgeClient.MessageTypes.Geometry;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using RosSharp.RosBridgeClient.MessageTypes.Tf2;
-using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 
 /// <summary>
 /// Publishes the Unity transform hierarchy as ROS TF (Transform) messages.
@@ -137,7 +134,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
         if (_frameIds.Count == 0) return tfCount;
 
         // Connect root to last global frame (e.g., odom -> base_link)
-        var h0 = TimeStamp.GetHeader(time, _frameIds[^1]);
+        var h0 = TimeStamp.GetHeader(_frameIds[^1], time);
         _cachedTfs[tfCount++] = new TransformStamped
         {
             header = h0,
@@ -149,7 +146,7 @@ public class ROSTransformTreePublisher : MonoBehaviour
         // Example: map -> odom (identity transform, no relative motion)
         for (int i = 1; i < _frameIds.Count; i++)
         {
-            var h = TimeStamp.GetHeader(time, _frameIds[i - 1]);
+            var h = TimeStamp.GetHeader(_frameIds[i - 1], time);
             _cachedTfs[tfCount++] = new TransformStamped
 			{
 				header = h,

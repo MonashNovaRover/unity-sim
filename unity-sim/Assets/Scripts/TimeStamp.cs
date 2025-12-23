@@ -1,5 +1,3 @@
-using System;
-using UnityEngine;
 using RosSharp.RosBridgeClient.MessageTypes.Std;
 using Time = RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces.Time;
 
@@ -14,34 +12,20 @@ using Time = RosSharp.RosBridgeClient.MessageTypes.BuiltinInterfaces.Time;
 /// This allows for high-precision timing needed for sensor fusion and synchronization.
 /// </summary>
 public static class TimeStamp
-{
-    /// <summary>
-    /// Creates a ROS Header with current frame time and specified frame ID.
-    /// Uses the current frame's start time for consistent timing across all publishers in the frame.
-    /// </summary>
-    public static Header GetHeader(string frameId)
-    {
-        var timeInSeconds = Clock.FrameStartTimeInSeconds;
-        var secs = (int)timeInSeconds;
-        var nsecs = (uint)((timeInSeconds - secs) * 1e9);
-        var stamp = new Time(secs, nsecs);
-
-        return new Header(stamp, frameId);
-    }
-    
+{   
     /// <summary>
     /// Creates a ROS Header with a specific timestamp and frame ID.
     /// Use this when you need to specify an exact time (e.g., for recorded data playback).
     /// </summary>
-    public static Header GetHeader(double time, string frameId)
-    {
-        var timeInSeconds = time;
-        var secs = (int)timeInSeconds;
-        var nsecs = (uint)((timeInSeconds - secs) * 1e9);
-        var stamp = new Time(secs, nsecs);
+    public static Header GetHeader(string frameId, double time = -1.0) => new Header(GetTime(time), frameId);
 
-        return new Header(stamp, frameId);
-    }
+	public static Time GetTime(double time = -1.0)
+	{
+		var timeInSeconds = time == -1.0 ? Clock.FrameStartTimeInSeconds : time;
+		var secs = (int)timeInSeconds;
+        var nsecs = (uint)((timeInSeconds - secs) * 1e9);
+        return new Time(secs, nsecs);
+	}
 
     /// <summary>
     /// Converts a ROS Time structure back to floating-point seconds.
