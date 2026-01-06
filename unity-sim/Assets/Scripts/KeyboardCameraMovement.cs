@@ -1,6 +1,10 @@
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+/// <summary>
+/// Keyboard camera movement for easier debugging at
+/// runtime.
+/// </summary>
+public class KeyboardCameraMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 5f;
