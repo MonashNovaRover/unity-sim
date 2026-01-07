@@ -17,8 +17,6 @@ public class Rover : MonoBehaviour
 
 	public float pivotForce = 10000f;
 	public float wheelForce = 10000f;
-	public float wheelSpeedMultiplier = 50f;
-
 	private ArticulationBody flp, blp, frp, brp;
     private ArticulationBody blw, flw, brw, frw;
 
@@ -40,6 +38,30 @@ public class Rover : MonoBehaviour
         flp = transform.Find("base_link/chassis/left_leg/fl_ankle").GetComponent<ArticulationBody>();
         brp = transform.Find("base_link/chassis/right_leg/br_ankle").GetComponent<ArticulationBody>();
         frp = transform.Find("base_link/chassis/right_leg/fr_ankle").GetComponent<ArticulationBody>();
+        
+        //Set initial speed / position
+        ArticulationBody[] wheels = {flw, blw, frw, brw};
+        ArticulationBody[] pivots = {flp, blp, frp, brp};
+ 
+        //Wheels
+        for (int i = 0; i < 4; i++)
+        {
+	        ArticulationDrive jointState = wheels[i].xDrive;
+	        jointState.forceLimit = wheelForce;
+	        jointState.targetVelocity = 0;
+	        jointState.driveType = ArticulationDriveType.Velocity;
+	        wheels[i].xDrive = jointState;
+        }
+
+        //Pivots
+        for (int i = 0; i < 4; i++)
+        {
+	        ArticulationDrive jointState = pivots[i].xDrive;
+	        jointState.forceLimit = pivotForce;
+	        jointState.target = 0;
+	        jointState.driveType = ArticulationDriveType.Target;
+	        pivots[i].xDrive = jointState;
+        }
     }
 
     // Update is called once per frame
@@ -55,7 +77,7 @@ public class Rover : MonoBehaviour
 			{
 				ArticulationDrive jointState = wheels[i].xDrive;
             	jointState.forceLimit = wheelForce;
-            	jointState.targetVelocity = wheelSpeedMultiplier * (float)lastCommandMessage.velocity[i];
+            	jointState.targetVelocity = 180 / 3.14159f * (float)lastCommandMessage.velocity[i];
             	jointState.driveType = ArticulationDriveType.Velocity;
             	wheels[i].xDrive = jointState;
     		}
