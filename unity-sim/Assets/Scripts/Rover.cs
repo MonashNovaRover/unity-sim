@@ -45,13 +45,6 @@ public class Rover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-	    string[] publishedJointNames = {
-		    "chassis_to_diffbar", "tl_ball_x", "tl_ball_y", "tl_ball_z", "bl_ball_x",
-		    "bl_ball_y", "bl_ball_z", "tr_ball_x", "tr_ball_y", "tr_ball_z", "br_ball_x",
-		    "br_ball_y", "br_ball_z", "chassis_to_left_leg", "blp", "blw", "flp", "flw",
-		    "chassis_to_right_leg", "brp", "brw", "frp", "frw"
-	    };
-	    
 		if (lastCommandMessage is not null)
 		{
 			ArticulationBody[] wheels = {flw, blw, frw, brw};
@@ -77,40 +70,22 @@ public class Rover : MonoBehaviour
             	pivots[i].xDrive = jointState;
     		}
 		}
-
-		//Copy and then publish joint states from last command message
-		var jointCount = publishedJointNames.Length;
-		JointStateMsg jointStates = new();
-		jointStates.header = new HeaderMsg(TimePublisher.GetCurrentTime(), "");
-		jointStates.name = publishedJointNames;
-		jointStates.effort = new double[jointCount];
-		jointStates.position =  new double[jointCount];
-		jointStates.velocity = new double[jointCount];
-
-		if (lastCommandMessage is not null)
-		{
-			for (var i = 0; i < publishedJointNames.Length; i++)
-			{
-				var jointName = publishedJointNames[i];
-				if (lastCommandMessage.name.Contains(jointName))
-				{
-					var index = Array.IndexOf(lastCommandMessage.name, jointName);
-					if (i < jointStates.effort.Length && index < lastCommandMessage.effort.Length)
-						jointStates.effort[i] = lastCommandMessage.effort[index];
-					if (i < jointStates.position.Length && index < lastCommandMessage.position.Length)
-						jointStates.position[i] = lastCommandMessage.position[index];
-					if (i < jointStates.velocity.Length && index < lastCommandMessage.velocity.Length)
-						jointStates.velocity[i] = lastCommandMessage.velocity[index];
-				}
-			}
-		}
-
-		ros.Publish("/joint_states", jointStates);
 		
 		//Publish to ROS2 Control
 		if (lastCommandMessage is not null)
 		{
-			ros.Publish("/topic_based_joint_states", lastCommandMessage);
+			var count = lastCommandMessage.name.Length;
+			JointStateMsg stateMessage = new();
+			stateMessage.header =  new HeaderMsg(TimePublisher.GetCurrentTime(), "");
+			stateMessage.name = lastCommandMessage.name;
+			stateMessage.position = new double[count];
+			stateMessage.velocity = new double[count];
+			stateMessage.effort = new double[count];
+			
+			Array.Copy(lastCommandMessage.position, 0, stateMessage.position, 4, 4);
+			Array.Copy(lastCommandMessage.velocity, 0, stateMessage.velocity, 0, 8);
+			
+			ros.Publish("/topic_based_joint_states", stateMessage);
 		}
     }
     private void JointCommandCallback(JointStateMsg msg)
