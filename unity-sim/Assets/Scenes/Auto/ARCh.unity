@@ -1912,6 +1912,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1621543598}
     m_Modifications:
     - target: {fileID: 2224187045829796718, guid: caf455cab29d65c4491e901049b60dee, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2224187045829796718, guid: caf455cab29d65c4491e901049b60dee, type: 3}
       propertyPath: _frequency
       value: 5
       objectReference: {fileID: 0}
@@ -2006,6 +2010,10 @@ PrefabInstance:
     - target: {fileID: 6818158337698568988, guid: caf455cab29d65c4491e901049b60dee, type: 3}
       propertyPath: _serializer._header._frame_id
       value: bootie_link_optical
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928715047789551323, guid: caf455cab29d65c4491e901049b60dee, type: 3}
+      propertyPath: _frequency
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6928715047789551323, guid: caf455cab29d65c4491e901049b60dee, type: 3}
       propertyPath: _useAdaptiveQuality
@@ -22614,6 +22622,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1058507833}
     m_Modifications:
+    - target: {fileID: 2224187045829796718, guid: caf455cab29d65c4491e901049b60dee, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2224187045829796718, guid: caf455cab29d65c4491e901049b60dee, type: 3}
       propertyPath: _frequency
       value: 5
