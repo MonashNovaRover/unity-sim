@@ -67,11 +67,12 @@ public class Rover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+	    ArticulationBody[] wheels = {flw, blw, frw, brw};
+	    ArticulationBody[] pivots = {flp, blp, frp, brp};
+	    
+	    // ROS2 Control Command
 		if (lastCommandMessage is not null)
 		{
-			ArticulationBody[] wheels = {flw, blw, frw, brw};
-			ArticulationBody[] pivots = {flp, blp, frp, brp};
-			
 			//Wheels
 			for (int i = 0; i < 4; i++)
 			{
@@ -92,23 +93,36 @@ public class Rover : MonoBehaviour
             	pivots[i].xDrive = jointState;
     		}
 		}
+
+		string[] wheelNames = { "flw", "blw", "frw", "brw" };
+		string[] pivotNames = { "flp", "blp", "frp", "brp" };
 		
-		//Publish to ROS2 Control
-		if (lastCommandMessage is not null)
+		//ROS2 Control States
+		var count = wheelNames.Length + pivotNames.Length;
+		JointStateMsg stateMessage = new();
+		stateMessage.header =  new HeaderMsg(TimePublisher.GetCurrentTime(), "");
+		stateMessage.name = new string[count];
+		stateMessage.position = new double[count];
+		stateMessage.velocity = new double[count];
+		stateMessage.effort = new double[count];
+
+		//Wheels
+		for (int i = 0; i < wheelNames.Length; i++)
 		{
-			var count = lastCommandMessage.name.Length;
-			JointStateMsg stateMessage = new();
-			stateMessage.header =  new HeaderMsg(TimePublisher.GetCurrentTime(), "");
-			stateMessage.name = lastCommandMessage.name;
-			stateMessage.position = new double[count];
-			stateMessage.velocity = new double[count];
-			stateMessage.effort = new double[count];
-			
-			Array.Copy(lastCommandMessage.position, 0, stateMessage.position, 4, 4);
-			Array.Copy(lastCommandMessage.velocity, 0, stateMessage.velocity, 0, 8);
-			
-			ros.Publish("/topic_based_joint_states", stateMessage);
+			stateMessage.name[i] = wheelNames[i];
+			stateMessage.position[i] = wheels[i].jointPosition[0];
+			stateMessage.velocity[i] = wheels[i].jointVelocity[0];
 		}
+		
+		//Pivots
+		for (int i = 0; i < pivotNames.Length; i++)
+		{
+			stateMessage.name[wheelNames.Length + i] = pivotNames[i];
+			stateMessage.position[wheelNames.Length + i] = pivots[i].jointPosition[0];
+			stateMessage.velocity[wheelNames.Length + i] = pivots[i].jointVelocity[0];
+		}
+		
+		ros.Publish("/topic_based_joint_states", stateMessage);
     }
     private void JointCommandCallback(JointStateMsg msg)
     {
