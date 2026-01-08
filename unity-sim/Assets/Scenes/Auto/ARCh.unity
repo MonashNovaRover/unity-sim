@@ -3715,7 +3715,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pivotForce: 10000
   wheelForce: 10000
-  wheelSpeedMultiplier: 50
 --- !u!1 &268261807
 GameObject:
   m_ObjectHideFlags: 0
