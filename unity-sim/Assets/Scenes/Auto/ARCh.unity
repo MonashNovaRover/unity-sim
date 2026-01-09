@@ -977,6 +977,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Banksia
       objectReference: {fileID: 0}
+    - target: {fileID: 4130204548216252310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4130204548216252310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_XDrive.driveType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4666470809630551310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.001
@@ -1016,6 +1024,14 @@ PrefabInstance:
     - target: {fileID: 4666470809630551310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7573489501528746067, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7573489501528746067, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_XDrive.driveType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
