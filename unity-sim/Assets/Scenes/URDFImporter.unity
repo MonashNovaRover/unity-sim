@@ -6754,6 +6754,7 @@ GameObject:
   - component: {fileID: 518096242}
   - component: {fileID: 518096241}
   - component: {fileID: 518096243}
+  - component: {fileID: 518096244}
   m_Layer: 0
   m_Name: ROS Publishers
   m_TagString: Untagged
@@ -6821,7 +6822,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518096239}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57f502c014194e2c811cc00e36173809, type: 3}
   m_Name: 
@@ -6831,6 +6832,25 @@ MonoBehaviour:
   - map
   - odom
   _root: {fileID: 121871507}
+--- !u!114 &518096244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518096239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4080124073ce4c72bc11da5f8314421c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jointStateTopic: /joint_states
+  _publishHz: 50
+  _joints:
+  - jointName: bl_ankle_bl_wheel_joint
+    jointType: 0
+    transform: {fileID: 1336073601}
+    axis: {x: 0, y: 0, z: 0}
 --- !u!1 &523335651
 GameObject:
   m_ObjectHideFlags: 0
