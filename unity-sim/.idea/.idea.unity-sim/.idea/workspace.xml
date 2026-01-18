@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="a6a43a49-ca07-4af9-8220-9eb4a40fffb9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.unity-sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.unity-sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TestSubscriber.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TestSubscriber.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Samples/UnitySensorsROS/3.0.0/Sample/Prefabs/Camera/DepthCamera_ros.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Samples/UnitySensorsROS/3.0.0/Sample/Prefabs/Camera/DepthCamera_ros.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Auto/ARCh.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Auto/ARCh.unity" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +19,16 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/TestSubscriber.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.siemens.ros-sharp@4f1eb4010a3e/Runtime/Libraries/RosBridgeClient/MessageTypes/ROS2/Sensor/msg/JointState.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.ros-tcp-connector@bdad6c87bd9e/Runtime/Messages/HandwrittenMessages/msg/HeaderMsg.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.ros-tcp-connector@bdad6c87bd9e/Runtime/Messages/HandwrittenMessages/msg/TimeMsg.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.ros-tcp-connector@bdad6c87bd9e/Runtime/Messages/Rosgraph/msg/ClockMsg.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.ros-tcp-connector@bdad6c87bd9e/Runtime/Messages/Sensor/msg/JointStateMsg.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.urdf-importer@4ed58f8d00fe/Runtime/Controller/Controller.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.urdf-importer@4ed58f8d00fe/Runtime/UrdfComponents/UrdfCollisions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.urdf-importer@4ed58f8d00fe/Runtime/UrdfComponents/UrdfJoints/UrdfJoint.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.urdf-importer@4ed58f8d00fe/Runtime/UrdfComponents/UrdfJoints/UrdfJointContinuous.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.robotics.urdf-importer@4ed58f8d00fe/Runtime/UrdfComponents/UrdfRobot.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -29,11 +40,15 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Device#class com.jetbrains.rider.plugins.unity.run.devices.UnityEditorDeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider#Unity Attach To: Attach to": "Unity Editor",
+    "DeviceKind#com.jetbrains.rider.plugins.unity.run.devices.UnityDevicesProvider": "Unity Editor",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Unity Attach To.Attach to.executor": "Debug",
     "do_not_show_solution_notification": "true",
-    "git-widget-placeholder": "feat/ros-utils-improvements",
+    "git-widget-placeholder": "feat/joel-auto",
     "last_opened_file_path": "/usr/bin/mono",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -44,16 +59,14 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+  <component name="RunManager" selected="Unity Attach To.Attach to">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$USER_HOME$/Unity/Hub/Editor/6000.1.14f1/Editor/Unity" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="ENV_FILE_PATHS" value="" />
       <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2" />
     </configuration>
@@ -62,10 +75,8 @@
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath $PROJECT_DIR$ -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="PASS_PARENT_ENVS" value="1" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="ENV_FILE_PATHS" value="" />
       <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2" />
     </configuration>
@@ -97,7 +108,7 @@
       <option name="useMixedMode" value="false" />
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Device" type="UnityDevicePlayer" factoryName="UnityAttachToDevicePlayer">
+    <configuration name="Attach to" type="UnityDevicePlayer" factoryName="UnityAttachToDevicePlayer">
       <method v="2" />
     </configuration>
   </component>
@@ -112,6 +123,9 @@
       <workItem from="1756273148740" duration="161000" />
       <workItem from="1756273330651" duration="61000" />
       <workItem from="1757383082008" duration="783000" />
+      <workItem from="1766574473325" duration="1037000" />
+      <workItem from="1766576497498" duration="39000" />
+      <workItem from="1766576585980" duration="726000" />
     </task>
     <servers />
   </component>
