@@ -626,6 +626,12 @@
         <color rgba="0.917647 0.917647 0.917647 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="1.5708 -1.51279 -3.14159" xyz="-2.77556e-15 -0.05775 3.33067e-16"/>
+      <geometry>
+        <mesh filename="file://Assets/RoverDescription/banksia/meshes/left_difflink.stl"/>
+      </geometry>
+    </collision>
   </link>
   <link name="bl_ball_link_x">
     <inertial>
@@ -715,6 +721,12 @@
         <color rgba="0.917647 0.917647 0.917647 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="1.5708 1.51279 3.14159" xyz="6.21725e-15 -0.05775 -2.44249e-15"/>
+      <geometry>
+        <mesh filename="file://Assets/RoverDescription/banksia/meshes/right_difflink.stl"/>
+      </geometry>
+    </collision>
   </link>
   <link name="br_ball_link_x">
     <inertial>
