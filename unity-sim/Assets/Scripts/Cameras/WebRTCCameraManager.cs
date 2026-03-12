@@ -9,7 +9,6 @@ using Cameras.DTO;
 using Newtonsoft.Json;
 using RosSharp.RosBridgeClient.MessageTypes.UniqueIdentifier;
 using RosUtils;
-using UnityEditorInternal;
 using UnityEngine.Serialization;
 using WebSocketSharp;
 
