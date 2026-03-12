@@ -254,7 +254,7 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 3.99, z: 2.43}
+  FollowOffset: {x: 0, y: 1, z: -2}
 --- !u!114 &42631691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 6618939589424532578}
+    TrackingTarget: {fileID: 192365504}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -306,13 +306,18 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42631688}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000002840099, y: 0.871823, z: -0.48982102, w: 0.00000005055038}
-  m_LocalPosition: {x: 13.626, y: 5.495, z: 13.780001}
+  m_LocalRotation: {x: -0.049616344, y: 0.9502835, z: -0.22433138, w: -0.21017832}
+  m_LocalPosition: {x: 14.602437, y: 1.7542629, z: 12.645453}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 32.41, y: 0, z: -180}
+--- !u!4 &192365504 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5726515613010186602, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+  m_PrefabInstance: {fileID: 480857745}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &193763945
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1503,6 +1508,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4130204548216252310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_XDrive.forceLimit
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4130204548216252310, guid: 16450d4d82c89896190a76fc35425524, type: 3}
       propertyPath: m_ParentAnchorPosition.x
       value: 0.32285044
       objectReference: {fileID: 0}
@@ -2267,6 +2276,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7573489501528746067, guid: 16450d4d82c89896190a76fc35425524, type: 3}
+      propertyPath: m_XDrive.forceLimit
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7573489501528746067, guid: 16450d4d82c89896190a76fc35425524, type: 3}
       propertyPath: m_ParentAnchorPosition.x
       value: -0.32285044
       objectReference: {fileID: 0}
@@ -2958,8 +2971,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 847729473}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000002840099, y: 0.871823, z: -0.48982102, w: 0.00000005055038}
-  m_LocalPosition: {x: 13.626, y: 5.495, z: 13.780001}
+  m_LocalRotation: {x: -0.04961633, y: 0.9502835, z: -0.22433133, w: -0.21017829}
+  m_LocalPosition: {x: 14.602437, y: 1.7542629, z: 12.645453}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
