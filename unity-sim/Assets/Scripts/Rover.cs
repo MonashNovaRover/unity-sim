@@ -136,7 +136,7 @@ public class Rover : MonoBehaviour
 	    jointState.target = Mathf.Rad2Deg * target;
 	    articulationBodies[legNames[1]].xDrive = jointState;
 	    
-	    Debug.Log("Diffbar error (degrees): " + deltaAngle * Mathf.Rad2Deg);
+	    //Debug.Log("Diffbar error (degrees): " + deltaAngle * Mathf.Rad2Deg);
 	    
 	    ArticulationDrive diffbar = articulationBodies[legNames[2]].xDrive;
 	    diffbar.target = -1.3f * Mathf.Rad2Deg * target;

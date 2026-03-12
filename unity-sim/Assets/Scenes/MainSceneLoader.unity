@@ -155,6 +155,7 @@ MonoBehaviour:
     obj: ARCh2024
   - name: default
     obj: ARCh2025
+  defaultScene: ARC2025
 --- !u!4 &258167866
 Transform:
   m_ObjectHideFlags: 0
