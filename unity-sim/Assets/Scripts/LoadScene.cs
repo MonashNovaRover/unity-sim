@@ -17,8 +17,8 @@ public class LoadScene : MonoBehaviour
     public static string GetArg(string name, string defaultValue)
     {
         string argString = name + '=';
-        string[] args = System.Environment.GetCommandLineArgs();
-        //string[] args = { "robot=auto_mount", "scene=ARC2025" };
+        //string[] args = System.Environment.GetCommandLineArgs();
+        string[] args = { "robot=default", "scene=ARC2025" };
 
         foreach (string arg in args)
         {

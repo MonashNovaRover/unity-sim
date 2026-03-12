@@ -27,24 +27,21 @@ public class Rover : MonoBehaviour
 	
     string[] wheelNames = { "flw", "blw", "frw", "brw" };
     string[] pivotNames = { "flp", "blp", "frp", "brp" };
+    string[] legNames = { "chassis_to_left_leg", "chassis_to_right_leg", "chassis_to_diffbar" };
 
     private JointStateMsg lastCommandMessage;
-    private Dictionary<string, ArticulationBody> articulationBodies;
+    private Dictionary<string, ArticulationBody> articulationBodies = new();
 	
-	private Dictionary<string, ArticulationBody> GetArticulationBodies(string[] jointNames)
+	void GetArticulationBodies(string[] jointNames)
 	{
-		var result = new Dictionary<string, ArticulationBody>();
-		
 		UrdfJoint[] urdfJoints = GetComponentsInChildren<UrdfJoint>();
 		foreach (UrdfJoint urdfJoint in urdfJoints)
 		{
 			if (jointNames.Contains(urdfJoint.jointName))
 			{
-				result.Add(urdfJoint.jointName, urdfJoint.GetComponent<ArticulationBody>());
+				articulationBodies.Add(urdfJoint.jointName, urdfJoint.GetComponent<ArticulationBody>());
 			}
 		}
-
-		return result;
 	}
 	
     void Start()
@@ -53,12 +50,12 @@ public class Rover : MonoBehaviour
 	    ros.RegisterPublisher<JointStateMsg>("/topic_based_joint_states");
 	    ros.Subscribe<JointStateMsg>("/topic_based_joint_commands", JointCommandCallback);
 	    
-	    string[] jointNames = wheelNames.Concat(pivotNames).ToArray();
-	    articulationBodies = GetArticulationBodies(jointNames);
+	    GetArticulationBodies(wheelNames);
+	    GetArticulationBodies(pivotNames);
+	    GetArticulationBodies(legNames);
     }
 
-    // Update is called once per frame
-    void Update()
+    void DoDriveUpdate()
     {
 	    // Check ROS2 Control Command
 		if (lastCommandMessage is not null)
@@ -117,6 +114,38 @@ public class Rover : MonoBehaviour
 		}
 		
 		ros.Publish("/topic_based_joint_states", stateMessage);
+    }
+
+    void DoDiffBarPhysics()
+    {
+	    float leftLegAngle  = articulationBodies[legNames[0]].jointPosition[0];
+	    float rightLegAngle = articulationBodies[legNames[1]].jointPosition[0];
+	    
+	    float deltaAngle = rightLegAngle - leftLegAngle;
+		float halfDeltaAngle = 0.5f * deltaAngle;
+		
+	    float target = leftLegAngle + halfDeltaAngle;
+	    
+	    //Left
+	    ArticulationDrive jointState = articulationBodies[legNames[0]].xDrive;
+	    jointState.target = Mathf.Rad2Deg * target;
+	    articulationBodies[legNames[0]].xDrive = jointState;
+	    
+		//Right	    
+	    jointState = articulationBodies[legNames[1]].xDrive;
+	    jointState.target = Mathf.Rad2Deg * target;
+	    articulationBodies[legNames[1]].xDrive = jointState;
+	    
+	    Debug.Log("Diffbar error (degrees): " + deltaAngle * Mathf.Rad2Deg);
+	    
+	    ArticulationDrive diffbar = articulationBodies[legNames[2]].xDrive;
+	    diffbar.target = -1.3f * Mathf.Rad2Deg * target;
+	    articulationBodies[legNames[2]].xDrive = diffbar;
+    }
+    void Update()
+    {
+	    DoDriveUpdate();
+	    DoDiffBarPhysics();
     }
     private void JointCommandCallback(JointStateMsg msg)
     {
