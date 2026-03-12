@@ -148,17 +148,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb87806033d8d15f683023faf1113180, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  robotPrefabs:
-  - name: default
-    obj: {fileID: 7756474261416578322, guid: 2ab31393fe37b0eaa8a910c97e2ee813, type: 3}
-  - name: auto_mount
-    obj: {fileID: 999776963993456001, guid: 16450d4d82c89896190a76fc35425524, type: 3}
   scenes:
   - name: ARC2025
     obj: ARCh2025
   - name: ARC2024
     obj: ARCh2024
-  simPrefab: {fileID: 3929488554831423306, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+  - name: default
+    obj: ARCh2025
 --- !u!4 &258167866
 Transform:
   m_ObjectHideFlags: 0
