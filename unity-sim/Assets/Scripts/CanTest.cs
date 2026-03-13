@@ -1,20 +1,43 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using RosSharp.RosBridgeClient.MessageGeneration;
 using UnityEngine;
 using SocketCANSharp;
 using SocketCANSharp.Network;
+using Unity.Robotics.UrdfImporter;
 using Unity.VisualScripting;
 
 public class CanTest : MonoBehaviour
 {
+    public float pivotForce = 35f;
+    public float wheelForce = 10000f;
+    
     private ConcurrentQueue<CanFrame> receivedFrames = new();
     private Thread canThread;
 
     public GameObject led;
     private Light ledLight;
+    
+    string[] pivotNames = { "flp", "blp", "frp", "brp" };
+    string[] wheelNames = { "flw", "blw", "frw", "brw" };
+
+    private Dictionary<string, ArticulationBody> articulationBodies = new();
+
+
+    void GetArticulationBodies(string[] jointNames)
+    {
+        UrdfJoint[] urdfJoints = GetComponentsInChildren<UrdfJoint>();
+        foreach (UrdfJoint urdfJoint in urdfJoints)
+        {
+            if (jointNames.Contains(urdfJoint.jointName))
+            {
+                articulationBodies.Add(urdfJoint.jointName, urdfJoint.GetComponent<ArticulationBody>());
+            }
+        }
+    }
     
     void CANThread()
     {
@@ -33,7 +56,7 @@ public class CanTest : MonoBehaviour
     {
         string[] table =
         {
-            "unknown blcmd", "fld", "bld", "brd", "frd",
+            "unknown blcmd", "flw", "blw", "brw", "frw",
             "flp", "blp", "brp", "frp"
         };
         return (number < table.Length) ? table[number] : "unknown blcmd";
@@ -57,6 +80,8 @@ public class CanTest : MonoBehaviour
         canThread.Start();
         
         ledLight = led.GetComponent<Light>();
+        GetArticulationBodies(pivotNames);
+        GetArticulationBodies(wheelNames);
     }
 
     void HandleBLCMDCommand(CanFrame frame)
@@ -67,19 +92,47 @@ public class CanTest : MonoBehaviour
         var blcmdName = BLCMDNumberToName(blcmdNumber);
         var blcmdCommandName = BLCMDCommandToName(blcmdCommand);
 
-        var rawData0 = BitConverter.ToInt16(frame.Data.AsSpan(0, 2));
-        float data0 = (float)rawData0 / Int16.MaxValue;
-
-        //Debug.Log("CANID: " + frame.CanId.ToString("X") + " data: " + frame.Data.ToHexString());
+        var rawDataInt16 = BitConverter.ToInt16( new byte[] {frame.Data[1], frame.Data[0]} );
 
         switch (blcmdCommand)
         {
-            case 0x3:
-                Debug.Log(blcmdName + ": Drive at speed " + data0);
-                break;
-            case 0x4:
-                Debug.Log(blcmdName + ": Drive to position" + data0);
-                break;
+            case 0x3: //Drive at speed
+            {
+                var speedRadiansPerSecond = 30.0f * (float)rawDataInt16 / Int16.MaxValue;
+                
+                //Debug.Log(blcmdName + ": Drive at speed " + speedRadiansPerSecond);
+
+                if (blcmdName == "flw" || blcmdName == "blw")
+                {
+                    speedRadiansPerSecond *= -1.0f;
+                }
+
+                ArticulationDrive jointState = articulationBodies[blcmdName].xDrive;
+                jointState.stiffness = 0.0f;
+                jointState.damping = 10000f;
+                jointState.forceLimit = wheelForce;
+                jointState.targetVelocity = Mathf.Rad2Deg * speedRadiansPerSecond;
+                jointState.driveType = ArticulationDriveType.Velocity;
+                articulationBodies[blcmdName].xDrive = jointState;
+            } break;
+            case 0x4: //Drive to position
+            {
+                var angleRadians = Mathf.PI * (rawDataInt16 - 0x397D) / UInt16.MaxValue;
+
+                if (blcmdName == "flp" || blcmdName == "brp")
+                {
+                    angleRadians *= -1.0f;
+                }
+
+                //Debug.Log(blcmdName + ": Drive to position " + rawData0);
+                //Debug.Log(blcmdName + ": Drive to angle " + angleRadians);
+
+                ArticulationDrive jointState = articulationBodies[blcmdName].xDrive;
+                jointState.forceLimit = pivotForce;
+                jointState.target = Mathf.Rad2Deg * angleRadians;
+                jointState.driveType = ArticulationDriveType.Target;
+                articulationBodies[blcmdName].xDrive = jointState;
+            } break;
         }
     }
     
@@ -137,8 +190,8 @@ public class CanTest : MonoBehaviour
         }
 
         ledLight.color = color;
-        Debug.Log("color is " + color.ToString());
-        Debug.Log("LED is" + ledLight.color.ToString());
+        //Debug.Log("color is " + color.ToString());
+        //Debug.Log("LED is" + ledLight.color.ToString());
     }
     
     void Update()
