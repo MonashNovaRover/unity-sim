@@ -30,7 +30,10 @@ public class LoadScene : MonoBehaviour
         {
             if (arg.StartsWith(argString))
             {
-                return arg.Substring(argString.Length);
+                string result = arg.Substring(argString.Length);
+                Console.WriteLine("Value for '" + name + "' is '" + result + "'");
+
+                return result;
             }
         }
 #endif
