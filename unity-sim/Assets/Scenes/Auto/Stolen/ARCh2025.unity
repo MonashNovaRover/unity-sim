@@ -1508,6 +1508,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.data[0].name
+      value: arm
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.data[1].name
+      value: default
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.data[2].name
+      value: default
+      objectReference: {fileID: 0}
     - target: {fileID: 3929488554831423306, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_Name
       value: Sim
