@@ -170,7 +170,6 @@ public class StrafeDriveController : DriveControllerBase
 
 public class Drive : MonoBehaviour
 {
-    public float positionForce = 35f;
     public float wheelForce = 10000.0f;
     
     private Dictionary<string, ArticulationBody> articulationBodies = new();
@@ -198,7 +197,7 @@ public class Drive : MonoBehaviour
         currentController = pivotDriveController;
     }
 
-    Joy GetCurrentJoy()
+    Joy GetCurrentJoyAndHandleButtons()
     {
         // Read values
         Joy result = new();
@@ -215,6 +214,7 @@ public class Drive : MonoBehaviour
             result.axes[4] = gamepad.leftTrigger.ReadValue();
             result.axes[5] = gamepad.rightTrigger.ReadValue();
 
+            // Do button presses
             if (gamepad.buttonSouth.wasPressedThisFrame)
             {
                 currentController = pivotDriveController;
@@ -247,7 +247,8 @@ public class Drive : MonoBehaviour
     void ApplyPivotCommand(string name, float angleRadians)
     {
         ArticulationDrive jointState = articulationBodies[name].xDrive;
-        jointState.forceLimit = positionForce;
+        jointState.forceLimit = 10.0f;
+        jointState.damping = 2500.0f;
         jointState.target = Mathf.Rad2Deg * angleRadians;
         jointState.driveType = ArticulationDriveType.Target;
         articulationBodies[name].xDrive = jointState;
@@ -279,7 +280,7 @@ public class Drive : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Joy joy = GetCurrentJoy();
+        Joy joy = GetCurrentJoyAndHandleButtons();
         Twist twist = GetTwist(joy);
         Commands command = currentController.TwistToCommands(twist);
         ApplyCommands(command);
