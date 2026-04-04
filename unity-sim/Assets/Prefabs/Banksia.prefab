@@ -11430,6 +11430,7 @@ GameObject:
   - component: {fileID: 395516865211813464}
   - component: {fileID: 4118754903329806576}
   - component: {fileID: 2326772481567071354}
+  - component: {fileID: 3243326477353821460}
   m_Layer: 0
   m_Name: Banksia
   m_TagString: robot
@@ -11520,6 +11521,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pivotForce: 10000
+  wheelForce: 10000
+--- !u!114 &3243326477353821460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376997336501032911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1155183653fb7e68e969d34f6001379a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wheelBase: 0.9575288
+  steeringTrack: 0.81564003
+  inputCurveFactor: 2
+  driveMaxVelocity: 5
+  positionForce: 35
   wheelForce: 10000
 --- !u!1 &8440616271722325494
 GameObject:
