@@ -11,12 +11,6 @@ public struct Twist
     public Vector3 angular;
 }
 
-public struct Joy
-{
-    public float[] axes;
-    public int[] buttons;
-}
-
 public struct Commands
 {
     public float flw, frw, blw, brw;
@@ -37,8 +31,8 @@ public abstract class DriveControllerBase
     {
         halfSteeringTrack = 0.5f * steeringTrack;
         halfWheelBase = 0.5f * wheelBase;
-        zeroRadius = (float) Math.Sqrt(halfWheelBase*halfWheelBase + halfSteeringTrack*halfSteeringTrack);
-        innerRadius = (float) (Math.Pow(halfSteeringTrack, 2) + Math.Pow(halfWheelBase, 2)) /
+        zeroRadius = Mathf.Sqrt(halfWheelBase*halfWheelBase + halfSteeringTrack*halfSteeringTrack);
+        innerRadius = (Mathf.Pow(halfSteeringTrack, 2) + Mathf.Pow(halfWheelBase, 2)) /
                       (2 * halfSteeringTrack);
     }
     
@@ -46,7 +40,7 @@ public abstract class DriveControllerBase
     {
         return (angular_input == 0)
             ? INFINITY
-            : (float)(inputCurveFactor * ((1.0 / angular_input) - Math.Sign(angular_input)));
+            : (inputCurveFactor * ((1.0f / angular_input) - Mathf.Sign(angular_input)));
     }
     
     protected float GetAngularFromRadiusAndSpeed(float radius, float speed, bool turning_left, float zero_radius, float inner_radius)
@@ -70,12 +64,12 @@ public abstract class DriveControllerBase
             return 0.0f;  // straight line, no pivot angle
         }
         radius -= (left_pivot ? 1 : -1) * half_steering_track;
-        return (float) (((turning_left ? 1 : -1) * 0.5f * Math.PI) - Math.Atan(radius / half_wheel_base));
+        return (((turning_left ? 1 : -1) * 0.5f * Mathf.PI) - Mathf.Atan(radius / half_wheel_base));
     }
 
     protected float Hypot(float a, float b)
     {
-        return (float)Math.Sqrt(a * a + b * b);
+        return Mathf.Sqrt(a * a + b * b);
     }
     
     protected float GetSpeedRatio( float radius, bool left_pivot, float half_steering_track, float half_wheel_base, float zero_radius, float inner_radius)
@@ -85,9 +79,9 @@ public abstract class DriveControllerBase
             // straight line or turning on the spot, left and right wheels should be the same speed
             return 1.0f;
         }
-        double wheel_turn_radius =
+        float wheel_turn_radius =
             Hypot(radius - ((left_pivot ? 1 : -1) * half_steering_track), half_wheel_base);
-        return (float) Math.Abs(wheel_turn_radius / (Math.Abs(radius) < inner_radius ? zero_radius : radius));
+        return Mathf.Abs(wheel_turn_radius / (Mathf.Abs(radius) < inner_radius ? zero_radius : radius));
     }
 
     public abstract Commands TwistToCommands(Twist twist_msg);
@@ -168,15 +162,134 @@ public class StrafeDriveController : DriveControllerBase
     }
 }
 
-public class Drive : MonoBehaviour
+public class Teleop
 {
-    public float wheelForce = 10000.0f;
+    // Params, a la teleop_drive_joy.yaml
+    const float speedLimitMin = 0.05f;
+    const float speedLimitMax = 1.0f;
+    const float initialSpeed = 0.1f;
+    const float speedChangeFineVal = 0.025f;
+    const float speedChangeCoarseVal = 0.1f;
+    const float handbrakeSpeedMultiplier = 0.6f;
+    const float triggerPressedThreshold = 0.1f;
     
-    private Dictionary<string, ArticulationBody> articulationBodies = new();
-
+    bool locked = true;
+    float speed = initialSpeed;
+    
     private PivotDriveController pivotDriveController;
     private StrafeDriveController strafeDriveController;
     private DriveControllerBase currentController;
+
+    public Teleop()
+    {
+        pivotDriveController = new();
+        strafeDriveController = new();
+
+        currentController = pivotDriveController;
+    }
+    private void ChangeSpeed(float delta)
+    {
+        if (!locked)
+        {
+            speed = Mathf.Clamp(speed + delta, speedLimitMin, speedLimitMax);
+            Debug.Log("Speed: " + speed.ToString("F3"));
+        }
+    }
+    public Commands ProcessGamepadAndGetCommands()
+    {
+        var gamepad = Gamepad.current;
+        if (gamepad is null)
+        {
+            Debug.Log("No gamepad found");
+            return new();
+        }
+        
+        // Do button presses
+        if (gamepad.startButton.wasPressedThisFrame)
+        {
+            locked = false;
+            Debug.Log("Gamepad unlocked");
+        }
+
+        if (gamepad.selectButton.wasPressedThisFrame)
+        {
+            locked = true;
+            Debug.Log("Gamepad locked");
+        }
+        
+        if (gamepad.buttonSouth.wasPressedThisFrame)
+        {
+            currentController = pivotDriveController;
+            Debug.Log("Switched to pivot drive controller");
+        }
+        
+        if (gamepad.buttonWest.wasPressedThisFrame)
+        {
+            currentController = strafeDriveController;
+            Debug.Log("Switched to strafe drive controller");
+        }
+        
+        if (gamepad.buttonEast.wasPressedThisFrame)
+        {
+            Debug.Log("ACKERMANN NOT SUPPORTED");
+        }
+
+        if (gamepad.buttonNorth.wasPressedThisFrame)
+        {
+            Debug.Log("TANK MODE NOT SUPPORTED");
+        }
+
+        if (gamepad.dpad.left.isPressed)
+        {
+            ChangeSpeed(-speedChangeFineVal);
+        }
+        
+        if (gamepad.dpad.right.wasPressedThisFrame)
+        {
+            ChangeSpeed(speedChangeFineVal);
+        }
+
+        if (gamepad.dpad.up.wasPressedThisFrame)
+        {
+            ChangeSpeed(speedChangeCoarseVal);
+        }
+
+        if (gamepad.dpad.down.wasPressedThisFrame)
+        {
+            ChangeSpeed(-speedChangeCoarseVal);
+        }
+
+        if (!locked)
+        {
+            Twist twist = new();
+            twist.linear.x = gamepad.leftStick.ReadValue().y;
+            twist.linear.y = gamepad.leftStick.ReadValue().x;
+            twist.angular.z = gamepad.rightStick.ReadValue().x;
+
+            twist.linear.x *= speed;
+            twist.linear.y *= speed;
+
+            // Handbrake
+            if (Mathf.Abs(gamepad.rightTrigger.value) > triggerPressedThreshold)
+            {
+                twist.linear.x *= handbrakeSpeedMultiplier;
+                twist.linear.y *= handbrakeSpeedMultiplier;
+            }
+
+            Commands result = currentController.TwistToCommands(twist);
+            return result;
+        }
+
+        return new();
+    }
+}
+
+public class Drive : MonoBehaviour
+{
+    public float wheelForce = 10000.0f;
+    private Teleop teleop = new();
+    
+    private Dictionary<string, ArticulationBody> articulationBodies = new();
 
     void GetArticulationBodiesOfChildren()
     {
@@ -191,57 +304,6 @@ public class Drive : MonoBehaviour
     void Start()
     {
         GetArticulationBodiesOfChildren();
-        pivotDriveController = new();
-        strafeDriveController = new();
-
-        currentController = pivotDriveController;
-    }
-
-    Joy GetCurrentJoyAndHandleButtons()
-    {
-        // Read values
-        Joy result = new();
-        result.axes = new float[6];
-        result.buttons = new int[21];
-        
-        var gamepad = Gamepad.current;
-        if (gamepad is not null)
-        {
-            result.axes[0] = gamepad.leftStick.ReadValue().x;
-            result.axes[1] = gamepad.leftStick.ReadValue().y;
-            result.axes[2] = gamepad.rightStick.ReadValue().x;
-            result.axes[3] = gamepad.rightStick.ReadValue().y;
-            result.axes[4] = gamepad.leftTrigger.ReadValue();
-            result.axes[5] = gamepad.rightTrigger.ReadValue();
-
-            // Do button presses
-            if (gamepad.buttonSouth.wasPressedThisFrame)
-            {
-                currentController = pivotDriveController;
-                Debug.Log("Switched to pivot drive controller");
-            }
-            else if (gamepad.buttonWest.wasPressedThisFrame)
-            {
-                currentController = strafeDriveController;
-                Debug.Log("Switched to strafe drive controller");
-            }
-        }
-
-        return result;
-    }
-
-    Twist GetTwist(Joy joy)
-    {
-        float linear_x = joy.axes[1];
-        float linear_y = joy.axes[0];
-        float angular_z = joy.axes[2];
-
-        Twist result = new();
-        result.linear.x = linear_x;
-        result.linear.y = linear_y;
-        result.angular.z = angular_z;
-
-        return result;
     }
 
     void ApplyPivotCommand(string name, float angleRadians)
@@ -280,10 +342,7 @@ public class Drive : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Joy joy = GetCurrentJoyAndHandleButtons();
-        Twist twist = GetTwist(joy);
-        Commands command = currentController.TwistToCommands(twist);
+        Commands command = teleop.ProcessGamepadAndGetCommands();
         ApplyCommands(command);
-        //Debug.Log(command.blw);
     }
 }
