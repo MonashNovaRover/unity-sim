@@ -20,8 +20,7 @@ public class LoadScene : MonoBehaviour
     public static string GetArg(string name, string defaultValue)
     {
         //For now, always return the default value when in the editor
-#if UNITY_EDITOR
-#else
+#if !UNITY_EDITOR
         string argString = name + '=';
 
         string[] args = System.Environment.GetCommandLineArgs();

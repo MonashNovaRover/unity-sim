@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Robotics.UrdfImporter;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public struct Twist
 {
@@ -306,12 +307,20 @@ public class Drive : MonoBehaviour
         GetArticulationBodiesOfChildren();
     }
 
-    void ApplyPivotCommand(string name, float angleRadians)
+    void ApplyPivotCommand(string name, float targetAngleRadians, float dt)
     {
         ArticulationDrive jointState = articulationBodies[name].xDrive;
-        jointState.forceLimit = 10.0f;
+
+        float targetAngleDegrees = Mathf.Rad2Deg * targetAngleRadians;
+        float currentAngleDegrees = jointState.target;
+        
+        jointState.forceLimit = 35.0f;
         jointState.damping = 2500.0f;
-        jointState.target = Mathf.Rad2Deg * angleRadians;
+        
+        //Prevent target position changing too fast
+        float maxDegreesPerSecond = 200.0f;
+        jointState.target += Mathf.Clamp(targetAngleDegrees - currentAngleDegrees, -maxDegreesPerSecond * dt, maxDegreesPerSecond * dt);
+        
         jointState.driveType = ArticulationDriveType.Target;
         articulationBodies[name].xDrive = jointState;
     }
@@ -327,12 +336,12 @@ public class Drive : MonoBehaviour
       articulationBodies[name].xDrive = jointState;
     }
 
-    void ApplyCommands(Commands command)
+    void ApplyCommands(Commands command, float dt)
     {
-        ApplyPivotCommand("flp", command.flp);
-        ApplyPivotCommand("blp", command.blp);
-        ApplyPivotCommand("frp", command.frp);
-        ApplyPivotCommand("brp", command.brp);
+        ApplyPivotCommand("flp", command.flp, dt);
+        ApplyPivotCommand("blp", command.blp, dt);
+        ApplyPivotCommand("frp", command.frp, dt);
+        ApplyPivotCommand("brp", command.brp, dt);
         
         ApplyDriveCommand("flw", command.flw);
         ApplyDriveCommand("blw", command.blw);
@@ -343,6 +352,17 @@ public class Drive : MonoBehaviour
     void Update()
     {
         Commands command = teleop.ProcessGamepadAndGetCommands();
-        ApplyCommands(command);
+        ApplyCommands(command, Time.deltaTime);
+        
+        // Reload scene if user pressed start and stop at the same time
+        var gamepad = Gamepad.current;
+        if (gamepad is not null)
+        {
+            // Do button presses
+            if (gamepad.startButton.isPressed && gamepad.selectButton.isPressed)
+            {
+                SceneManager.LoadScene("MainSceneLoader");
+            }
+        }
     }
 }
