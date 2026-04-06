@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 876646131378122265}
-  - component: {fileID: 8230152109468367942}
   - component: {fileID: 956404179842824571}
   m_Layer: 0
   m_Name: Sim
@@ -35,19 +34,6 @@ Transform:
   - {fileID: 6260256515266186288}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8230152109468367942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3929488554831423306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 279f98570ca45d6568c18dae2306a010, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  topicName: /clock
 --- !u!114 &956404179842824571
 MonoBehaviour:
   m_ObjectHideFlags: 0

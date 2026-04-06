@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
+#if !UNITY_WEBGL
 using Unity.Robotics.UrdfImporter;
+#endif
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -292,6 +294,7 @@ public class Drive : MonoBehaviour
     
     private Dictionary<string, ArticulationBody> articulationBodies = new();
 
+#if !UNITY_WEBGL
     void GetArticulationBodiesOfChildren()
     {
         UrdfJoint[] urdfJoints = GetComponentsInChildren<UrdfJoint>();
@@ -300,11 +303,14 @@ public class Drive : MonoBehaviour
             articulationBodies.Add(urdfJoint.jointName, urdfJoint.GetComponent<ArticulationBody>());
         }
     }
+#endif
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+#if !UNITY_WEBGL
         GetArticulationBodiesOfChildren();
+#endif
     }
 
     void ApplyPivotCommand(string name, float targetAngleRadians, float dt)
