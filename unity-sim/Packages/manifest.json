@@ -4,7 +4,7 @@
     "com.frj.unity-sensors-ros": "https://github.com/Field-Robotics-Japan/UnitySensors.git?path=/Packages/UnitySensorsROS",
     "com.siemens.ros-sharp": "https://github.com/MonashNovaRover/ros-sharp.git?path=/com.siemens.ros-sharp",
     "com.unity.ai.navigation": "2.0.8",
-    "com.unity.cinemachine": "2.10.4",
+    "com.unity.cinemachine": "3.1.6",
     "com.unity.collab-proxy": "2.8.2",
     "com.unity.ext.nunit": "2.0.5",
     "com.unity.ide.rider": "3.0.36",

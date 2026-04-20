@@ -5,93 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Menu/Menu.unity
-    guid: f74260b9867fa524a9677fe64004f4f9
+    path: Assets/Scenes/MainSceneLoader.unity
+    guid: c2d540770cc95e999a33a47753b7c247
   - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Bandwidth/Bandwidth.unity
-    guid: 7b937b0c9fd657748b097f42c131679c
+    path: Assets/Scenes/Auto/Stolen/ARCh2025.unity
+    guid: 50cb0be244651257fa5ae971d6d66c97
   - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/ChangeCodecs/ChangeCodecs.unity
-    guid: e9c13f6cf7516b24495a3ed0779dcc70
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/DataChannel/DataChannel.unity
-    guid: 7bdf6556dbdb70946924a04ec1fac2df
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Audio/Audio.unity
-    guid: 5367027ce2f25f54c87033bdf6604607
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/MediaStream/MediaStream.unity
-    guid: 6a553b4932fd56b45ab503ea0f990e2d
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/E2ELatency/E2ELatency.unity
-    guid: d85785bc886b68348b04331dab320a33
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Metadata/Metadata.unity
-    guid: d6984f39ed7ce3e48b39f3eaf1ea1941
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Encryption/Encryption.unity
-    guid: f2cdbab4e4b588a4791756972d9ef355
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/MultiplePeerConnections/MultiplePeerConnections.unity
-    guid: ad11cc7c597c0e94d8cf4db5a3ebde11
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/MultiAudioReceive/MultiAudioReceive.unity
-    guid: f2c574ba8fa6e413d80d51085132df4f
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/MultiVideoReceive/MultiVideoReceive.unity
-    guid: 2849cfdf020a0464bac96e5c43bd6726
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/MungeSDP/MungeSDP.unity
-    guid: b4115d77431845442867699b94fc0232
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/PeerConnection/PeerConnection.unity
-    guid: b6162a25306134a9ea9c9c7556e5f136
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/VideoReceive/VideoReceive.unity
-    guid: 0ff78d93b95d29044b16be8c4cce1c6b
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/TrickleIce/TrickleIce.unity
-    guid: c30f333934a8e80499b6d8bd89593ae8
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Stats/Stats.unity
-    guid: 3f6769738bc91f848b8242f87cc02275
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/Simulcast/Simulcast.unity
-    guid: d72d29a8c7f14f144b83412f921e3e4f
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Multiplay/Multiplay.unity
-    guid: e807d14debe77b243882e9e5949c104d
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/WebBrowserInput/WebBrowserInput.unity
-    guid: 046cb2f7ca8d1d84094628415dddd155
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Receiver/Receiver.unity
-    guid: d6a3fc68a1f7c05429fd88cc859bfaa1
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/ReplaceTrack/ReplaceTrack.unity
-    guid: 9607119e15db6cb40a49916fb3a70f9f
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Menu/Menu.unity
-    guid: 82d61196887cef6e2ab8e6efac36bd9e
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Gyro/Gyro.unity
-    guid: 0f1047eac14e2484cb08ee09c4ba53b0
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Broadcast/Broadcast.unity
-    guid: f47df8540d2ee994196abbd7365855f2
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/ARFoundation/ARFoundation.unity
-    guid: b4bf2204f409346859b79249938241f3
-  - enabled: 1
-    path: Assets/Samples/Unity Render Streaming/3.1.0-exp.9/Example/Bidirectional/Bidirectional.unity
-    guid: da10b86dde5e88a4abd624d6644a9b11
-  - enabled: 1
-    path: Assets/Samples/WebRTC/3.0.0-pre.8/Example/PerfectNegotiation/PerfectNegotiation.unity
-    guid: 230a6bb1d81354b0988a940b657c5674
+    path: Assets/Scenes/Auto/Stolen/ARCh2024.unity
+    guid: 04ef68bf64aa44740ac054f55953d47b
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: d49f47fa6fd5f21cab87ba0d939f2dd6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
