@@ -1509,6 +1509,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.data[3].obj
+      value: 
+      objectReference: {fileID: 8376997336501032911, guid: 0717647fee356ac4196c76347fdebdfb, type: 3}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.data[0].name
       value: arm
       objectReference: {fileID: 0}
@@ -1518,6 +1526,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.data[2].name
+      value: banksia
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: robotPrefabs.Array.data[3].name
       value: default
       objectReference: {fileID: 0}
     - target: {fileID: 3929488554831423306, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
