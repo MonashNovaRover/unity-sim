@@ -47,9 +47,9 @@ public class Rover : MonoBehaviour
 	
     void Start()
     {
-	    ros = ROSConnection.GetOrCreateInstance();
-	    ros.RegisterPublisher<JointStateMsg>("/topic_based_joint_states");
-	    ros.Subscribe<JointStateMsg>("/topic_based_joint_commands", JointCommandCallback);
+	    // ros = ROSConnection.GetOrCreateInstance();
+	    // ros.RegisterPublisher<JointStateMsg>("/topic_based_joint_states");
+	    // ros.Subscribe<JointStateMsg>("/topic_based_joint_commands", JointCommandCallback);
 	    
 	    GetArticulationBodies(wheelNames);
 	    GetArticulationBodies(pivotNames);
@@ -90,7 +90,7 @@ public class Rover : MonoBehaviour
 		// Publish ROS2 Control States
 		var count = wheelNames.Length + pivotNames.Length;
 		JointStateMsg stateMessage = new();
-		stateMessage.header =  new HeaderMsg(TimePublisher.GetCurrentTime(), "");
+		// stateMessage.header =  new HeaderMsg(TimePublisher.GetCurrentTime(), "");
 		stateMessage.name = new string[count];
 		stateMessage.position = new double[count];
 		stateMessage.velocity = new double[count];
@@ -114,7 +114,7 @@ public class Rover : MonoBehaviour
 			stateMessage.velocity[wheelNames.Length + i] = articulationBodies[pivot].jointVelocity[0];
 		}
 		
-		ros.Publish("/topic_based_joint_states", stateMessage);
+		// ros.Publish("/topic_based_joint_states", stateMessage);
     }
 
     /*
