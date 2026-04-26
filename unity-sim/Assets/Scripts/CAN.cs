@@ -61,14 +61,17 @@ public class CanTest : MonoBehaviour
     
     void CANThread()
     {
-        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true).First(iface => iface.Name.Equals("can0"));
-        RawCanSocket can0Socket = new();
-        can0Socket.Bind(can0);
-
-        while (true)
+        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
+        if (can0 is not null)
         {
-            can0Socket.Read(out CanFrame frame);
-            receivedFrames.Enqueue(frame);
+            RawCanSocket can0Socket = new();
+            can0Socket.Bind(can0);
+
+            while (true)
+            {
+                can0Socket.Read(out CanFrame frame);
+                receivedFrames.Enqueue(frame);
+            }
         }
     }
 

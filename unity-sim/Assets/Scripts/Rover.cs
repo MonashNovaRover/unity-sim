@@ -50,9 +50,14 @@ public class Rover : MonoBehaviour
 		GetArticulationBodies(legNames);
 		
 		//Find GNSS coordinate origin in the scene
-		GNSSSensor gnss = transform.Find("base_link/chassis/GNSS_ros").GetComponent<GNSSSensor>();
-		GeoCoordinateSystem coord = transform.Find("/GeoCoordinateSystem").GetComponent<GeoCoordinateSystem>();
-		typeof(GNSSSensor).GetField("_coordinateSystem", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(gnss, coord);
+		GNSSSensor gnss = transform.Find("base_link/chassis/GNSS_ros")?.GetComponent<GNSSSensor>();
+		GeoCoordinateSystem coord = transform.Find("/GeoCoordinateSystem")?.GetComponent<GeoCoordinateSystem>();
+
+		if (gnss is not null && coord is not null)
+		{
+			typeof(GNSSSensor).GetField("_coordinateSystem", BindingFlags.Instance | BindingFlags.NonPublic)
+				?.SetValue(gnss, coord);
+		}
     }
     void DoDiffBarPhysics()
     {
