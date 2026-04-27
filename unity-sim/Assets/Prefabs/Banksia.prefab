@@ -11534,11 +11534,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1155183653fb7e68e969d34f6001379a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wheelBase: 0.9575288
-  steeringTrack: 0.81564003
-  inputCurveFactor: 2
-  driveMaxVelocity: 5
-  positionForce: 35
   wheelForce: 10000
 --- !u!1 &8440616271722325494
 GameObject:

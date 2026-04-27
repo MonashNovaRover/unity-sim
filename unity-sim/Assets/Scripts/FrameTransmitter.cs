@@ -1,78 +1,3 @@
-// using UnityEngine;
-// using System.Net.Sockets;
-// using System.Collections;
-
-// // Declare Unity component to attach to GameObject
-// public class FrameTransmitter : MonoBehaviour
-// {
-//     public RenderTexture cam0;
-//     private TcpClient client;
-//     private NetworkStream stream;
-//     private bool connected = false;
-
-//     // Begin TCP connection: address, port, and stream
-//     void Start()
-//     {
-//         StartCoroutine(ConnectWithRetry());
-//     }
-
-//     IEnumerator ConnectWithRetry()
-//     {
-//         while (!connected)
-//         {
-//             bool failed = false;
-//             try
-//             {
-//                 client = new TcpClient("127.0.0.1", 5000);
-//                 stream = client.GetStream();
-//                 connected = true;
-//                 Debug.Log("Connected to Python through TCP");
-//             }
-//             catch (SocketException e)
-//             {
-//                 Debug.Log("Still waiting ... ... retrying in 1s (" + e.Message + ")");
-//                 failed = true;
-//             }
-
-//             if (failed)
-//             {
-//                 yield return new WaitForSeconds(1);
-//             }
-//         }
-//     }
-
-//     // Function to update/send frames
-//     void FrameUpdate()
-//     {
-//         if (!connected) return;
-//         SendFrame(cam0);
-//     }
-
-//     // Devise frame from camera and write to stream
-//     void SendFrame(RenderTexture rt)
-//     {
-//         // Read texture from camera GameObject
-//         // Create temporary 2D texture, 3 bytes per pixel (no alpha)
-//         // Read pixels from camera texture to 2D texture
-//         RenderTexture.active = rt;
-//         Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
-//         tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-//         tex.Apply();
-//         RenderTexture.active = null;
-
-//         // Encode 2D texture to JPG format
-//         // Free 2D texture memory
-//         byte[] bytes = tex.EncodeToJPG(85);
-//         Destroy(tex);
-
-//         // Declare TCP stream package length in header
-//         // Write header and frame bytes to stream
-//         byte[] header = System.BitConverter.GetBytes(bytes.Length);
-//         stream.Write(header, 0, 4);
-//         stream.Write(bytes, 0, bytes.Length);
-//     }
-// }
-
 using System.Collections;
 using System.Net.Sockets;
 using UnityEngine;
@@ -80,6 +5,9 @@ using UnityEngine;
 public class FrameTransmitter : MonoBehaviour
 {
     public RenderTexture cam0;
+    public RenderTexture cam1;
+    public int port = 5000;
+
     private TcpClient client;
     private NetworkStream stream;
     private bool connected = false;
@@ -92,20 +20,20 @@ public class FrameTransmitter : MonoBehaviour
 
     IEnumerator ConnectWithRetry()
     {
-        Debug.Log("Attempting connection to 127.0.0.1:5000...");
+        Debug.Log($"Attempting connection to 127.0.0.1:{port}...");
         while (!connected)
         {
             bool failed = false;
             try
             {
-                client = new TcpClient("127.0.0.1", 5000);
+                client = new TcpClient("127.0.0.1", port);
                 stream = client.GetStream();
                 connected = true;
-                Debug.Log("Connected to Python successfully!");
+                Debug.Log($"Connected to Python on port {port}!");
             }
             catch (SocketException e)
             {
-                Debug.Log("Connection failed: " + e.Message);
+                Debug.Log($"Port {port} connection failed: " + e.Message);
                 failed = true;
             }
 
@@ -119,10 +47,11 @@ public class FrameTransmitter : MonoBehaviour
     {
         if (!connected) return;
         // Debug.Log("Sending frame...");
-        SendFrame(cam0);
+        if (cam0 != null) SendFrame(cam0, camId: 0);
+        if (cam1 != null) SendFrame(cam1, camId: 1);
     }
 
-    void SendFrame(RenderTexture rt)
+    void SendFrame(RenderTexture rt, byte camId)
     {
         RenderTexture.active = rt;
         Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
@@ -133,6 +62,7 @@ public class FrameTransmitter : MonoBehaviour
         byte[] bytes = tex.EncodeToJPG(85);
         Destroy(tex);
 
+        stream.WriteByte(camId);
         byte[] header = System.BitConverter.GetBytes(bytes.Length);
         stream.Write(header, 0, 4);
         stream.Write(bytes, 0, bytes.Length);
