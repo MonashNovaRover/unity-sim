@@ -6,6 +6,8 @@ public class FrameTransmitter : MonoBehaviour
 {
     public RenderTexture cam0;
     public RenderTexture cam1;
+    public RenderTexture cam2;
+    public RenderTexture cam3;
     public int port = 5000;
 
     private TcpClient client;
@@ -49,6 +51,8 @@ public class FrameTransmitter : MonoBehaviour
         // Debug.Log("Sending frame...");
         if (cam0 != null) SendFrame(cam0, camId: 0);
         if (cam1 != null) SendFrame(cam1, camId: 1);
+        if (cam2 != null) SendFrame(cam2, camId: 2);
+        if (cam3 != null) SendFrame(cam3, camId: 3);
     }
 
     void SendFrame(RenderTexture rt, byte camId)

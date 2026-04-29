@@ -6,6 +6,8 @@ MonoImporter:
   defaultReferences:
   - cam0: {fileID: 8400000, guid: 67d8b6a1cdcf5864b9742b4612169808, type: 2}
   - cam1: {fileID: 8400000, guid: cc0da06aba5ce9b4e9dea4cb761055d5, type: 2}
+  - cam2: {fileID: 8400000, guid: c2e2c90600e7f024db347f71fedee06c, type: 2}
+  - cam3: {fileID: 8400000, guid: fb237d8d45f76fe48aef1d64443972b3, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

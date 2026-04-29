@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 public class Setup : MonoBehaviour
 {
     public List<NamedObject<GameObject>> robotPrefabs;
-    public Camera cam0, cam1;
-    public Vector3 cam0Pos = new Vector3(0.2f, 0.2f, 0.2f), cam1Pos = new Vector3(0.1f, 0.1f, 0.1f);
-    public Vector3 cam0Rot = new Vector3(0f, 0f, 0f), cam1Rot = new Vector3(0f, 0f, 0f);
+    public Camera cam0, cam1, cam2, cam3;
+    public Vector3 cam0Pos = new Vector3(0.2f, 0.2f, 0.2f), cam1Pos = new Vector3(0.2f, 0.2f, 0.2f), cam2Pos = new Vector3(0.2f, 0.2f, 0.2f), cam3Pos = new Vector3(0.2f, 0.2f, 0.2f);
+    public Vector3 cam0Rot = new Vector3(0f, 0f, 0f), cam1Rot = new Vector3(0f, 0f, 0f), cam2Rot = new Vector3(0f, 0f, 0f), cam3Rot = new Vector3(0f, 0f, 0f);
 
     void AddSuVISCamera(Camera cam, Transform parent, Vector3 pos, Vector3 rot)
     {
@@ -33,6 +33,8 @@ public class Setup : MonoBehaviour
         // Anchor SuVIS camera
         AddSuVISCamera(cam0, chassisTransform, cam0Pos, cam0Rot);
         AddSuVISCamera(cam1, chassisTransform, cam1Pos, cam1Rot);
+        AddSuVISCamera(cam2, chassisTransform, cam2Pos, cam2Rot);
+        AddSuVISCamera(cam3, chassisTransform, cam3Pos, cam3Rot);
     }
 
     void Update()
