@@ -25,6 +25,7 @@ public class Setup : MonoBehaviour
         
         GameObject startPositionObject = GameObject.Find("robot_start_position");
         GameObject rover = Instantiate(prefab, startPositionObject.transform);
+        rover.tag = "Rover";
         
         Transform chassisTransform = rover.transform.Find("base_link/chassis");
         CinemachineCamera cameraFollower = GetComponentInChildren<CinemachineCamera>();

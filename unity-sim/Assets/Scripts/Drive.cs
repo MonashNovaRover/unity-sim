@@ -90,7 +90,7 @@ public abstract class DriveControllerBase
 
 public class PivotDriveController : DriveControllerBase
 {
-    private float driveMaxVelocity = 8.0f;
+    private float driveMaxVelocity = 12.0f;
     public override Commands TwistToCommands(Twist twist_msg)
     {
         float linear_input = twist_msg.linear.x;
@@ -139,7 +139,7 @@ public class PivotDriveController : DriveControllerBase
 
 public class StrafeDriveController : DriveControllerBase
 {
-    private float driveMaxVelocity = 3.0f;
+    private float driveMaxVelocity = 6.0f;
     public override Commands TwistToCommands(Twist twist_msg)
     {
         float linear_input = twist_msg.linear.y;  // lateral velocity
