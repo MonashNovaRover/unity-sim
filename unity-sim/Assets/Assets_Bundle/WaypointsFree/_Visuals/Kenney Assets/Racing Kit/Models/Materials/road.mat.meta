@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: e41da9d439862ff4bb195c90c19d9ad0
+timeCreated: 1502752600
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143216
+  packageName: Waypoints Free
+  packageVersion: 1.0.2
+  assetPath: Assets/RuneFire_Studios/WaypointsFree/_Visuals/Kenney Assets/Racing
+    Kit/Models/Materials/road.mat
+  uploadId: 526763

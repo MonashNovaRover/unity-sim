@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 9f01763f4f600664a996fea5681f7de0
+timeCreated: 1504958835
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143216
+  packageName: Waypoints Free
+  packageVersion: 1.0.2
+  assetPath: Assets/RuneFire_Studios/WaypointsFree/_Visuals/Kenney Assets/Mini Car
+    Kit/Models/Materials/frontLight.mat
+  uploadId: 526763

@@ -1,0 +1,17 @@
+This asset is set up for the Built-in Render Pipeline by default. If you are using the Universal Render Pipeline (URP)—the standard in Unity 6 and newer—you will need to import the included URP materials.
+
+The URP package can be found in this folder. Open it and click Import to apply the correct materials.
+
+If you are not using URP, this package is not required and can be safely removed to reduce project size.
+
+Unity 2022+ / Unity 6+
+URP Setup Instructions:
+
+1. Ensure your project is using the Universal Render Pipeline (URP).
+2. Import the included "URP - Low Poly 3D Icons - Pack Lite.unitypackage" file.
+3. If any materials appear pink, select all materials in the Materials folder, then go to:
+	Edit > Rendering > Materials > Convert Selected Built-in Materials to URP.
+4. Open the included demo scene to verify everything is set up correctly.
+5. Your assets are now ready to use with URP.
+
+Need help? Contact HQP Studios via the Unity Asset Store support page.

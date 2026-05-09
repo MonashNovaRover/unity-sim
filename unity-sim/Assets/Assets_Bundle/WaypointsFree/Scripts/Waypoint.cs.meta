@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 524ba8ae70727da4283498854cea1ca8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143216
+  packageName: Waypoints Free
+  packageVersion: 1.0.2
+  assetPath: Assets/RuneFire_Studios/WaypointsFree/Scripts/Waypoint.cs
+  uploadId: 526763

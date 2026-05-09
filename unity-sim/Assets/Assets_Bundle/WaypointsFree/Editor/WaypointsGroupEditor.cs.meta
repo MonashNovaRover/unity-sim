@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 08bf8998ce77c2245ba5d8436ec723b2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143216
+  packageName: Waypoints Free
+  packageVersion: 1.0.2
+  assetPath: Assets/RuneFire_Studios/WaypointsFree/Editor/WaypointsGroupEditor.cs
+  uploadId: 526763

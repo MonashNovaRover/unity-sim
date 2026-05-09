@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: fcf64150b7fe134489936c5542543363
+timeCreated: 1502752601
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143216
+  packageName: Waypoints Free
+  packageVersion: 1.0.2
+  assetPath: Assets/RuneFire_Studios/WaypointsFree/_Visuals/Kenney Assets/Racing
+    Kit/Models/Materials/white.mat
+  uploadId: 526763
