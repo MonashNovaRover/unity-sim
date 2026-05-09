@@ -90,7 +90,7 @@ public abstract class DriveControllerBase
 
 public class PivotDriveController : DriveControllerBase
 {
-    private float driveMaxVelocity = 5.0f;
+    private float driveMaxVelocity = 8.0f;
     public override Commands TwistToCommands(Twist twist_msg)
     {
         float linear_input = twist_msg.linear.x;
