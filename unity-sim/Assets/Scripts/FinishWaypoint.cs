@@ -3,7 +3,7 @@ using TMPro;
 
 public class FinishWaypoint : MonoBehaviour
 {
-    public float activationDelay = 5f;
+    public float activationDelay = 10f;
     private bool activate = false;
 
     void Start()
@@ -19,24 +19,14 @@ public class FinishWaypoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Debug.Log("Triggered by: " + other.name + " with tag: " + other.tag);
+
         if (!activate) return;
 
-        if (other.CompareTag("Rover"))
+        if (other.CompareTag("robot"))
         {
+            Debug.Log("Rover detected");
             RaceTimer.Instance.StopTimer();
-            Debug.Log("Crossed finish waypoint");
         }
     }
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     Debug.Log("Triggered by: " + other.name);
-
-    //     if (!activate) return;
-
-    //     if (other.CompareTag("robot"))
-    //     {
-    //         Debug.Log("Robot detected");
-    //         RaceTimer.Instance.StopTimer();
-    //     }
-    // }
 }
