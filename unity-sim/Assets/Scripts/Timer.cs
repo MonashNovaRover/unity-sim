@@ -6,20 +6,32 @@ public class RaceTimer : MonoBehaviour
     public static RaceTimer Instance;
 
     public float elapsedTime = 0f;
-    public bool timer = true;
+    private bool timer = false;
     public TMP_Text timerText;
 
     private void Start()
     {
         Instance = this;
+        if (timerText != null)
+        {
+            timerText.text = "Press ENTER to start the timer";
+        }
     }
 
     void Update()
     {
-        if (!timer) return;
+        if (!timer)
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                timer = true;
+                FinishWaypoint.Instance.StartActivationCountdown();
+                Debug.Log("Timer Started");
+            }
+            return;
+        }
 
         elapsedTime += Time.deltaTime;
-
         DisplayTime(elapsedTime);
     }
 

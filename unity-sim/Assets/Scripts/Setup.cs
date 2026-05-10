@@ -4,12 +4,30 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class CameraPose
+{
+    public Vector3 position;
+    public Vector3 rotation;
+}
+
+[System.Serializable]
+public class CameraPreset
+{
+    public string presetName;
+
+    public CameraPose cam0;
+    public CameraPose cam1;
+    public CameraPose cam2;
+    public CameraPose cam3;
+}
+
 public class Setup : MonoBehaviour
 {
     public List<NamedObject<GameObject>> robotPrefabs;
     public Camera cam0, cam1, cam2, cam3;
-    public Vector3 cam0Pos = new Vector3(0.2f, 0.2f, 0.2f), cam1Pos = new Vector3(0.2f, 0.2f, 0.2f), cam2Pos = new Vector3(0.2f, 0.2f, 0.2f), cam3Pos = new Vector3(0.2f, 0.2f, 0.2f);
-    public Vector3 cam0Rot = new Vector3(0f, 0f, 0f), cam1Rot = new Vector3(0f, 0f, 0f), cam2Rot = new Vector3(0f, 0f, 0f), cam3Rot = new Vector3(0f, 0f, 0f);
+    public List<CameraPreset> cameraPresets;
+    public int selectedPreset = 0;
 
     void AddSuVISCamera(Camera cam, Transform parent, Vector3 pos, Vector3 rot)
     {
@@ -18,6 +36,19 @@ public class Setup : MonoBehaviour
         cam.transform.localEulerAngles = rot;
     }
 
+    // string GetPresetName(uint selectedPreset)
+    // {
+    //     string[] table =
+    //     {
+    //         "Mast",
+    //         "Panoramic",
+    //         "Stitched",
+    //         "Floating"
+    //     };
+
+    //     return (selectedPreset < table.Length) ? table[selectedPreset] : "Unknown Preset";
+    // }
+
     void Start()
     {
         string robotName = LoadScene.GetArg("robot", "default");
@@ -25,17 +56,19 @@ public class Setup : MonoBehaviour
         
         GameObject startPositionObject = GameObject.Find("robot_start_position");
         GameObject rover = Instantiate(prefab, startPositionObject.transform);
-        rover.tag = "Rover";
         
         Transform chassisTransform = rover.transform.Find("base_link/chassis");
         CinemachineCamera cameraFollower = GetComponentInChildren<CinemachineCamera>();
         cameraFollower.Follow = chassisTransform;
 
+        CameraPreset preset = cameraPresets[selectedPreset];
+        Debug.Log($"Selected Camera Preset: {preset.presetName}");
+
         // Anchor SuVIS camera
-        AddSuVISCamera(cam0, chassisTransform, cam0Pos, cam0Rot);
-        AddSuVISCamera(cam1, chassisTransform, cam1Pos, cam1Rot);
-        AddSuVISCamera(cam2, chassisTransform, cam2Pos, cam2Rot);
-        AddSuVISCamera(cam3, chassisTransform, cam3Pos, cam3Rot);
+        AddSuVISCamera(cam0, chassisTransform, preset.cam0.position, preset.cam0.rotation);
+        AddSuVISCamera(cam1, chassisTransform, preset.cam1.position, preset.cam1.rotation);
+        AddSuVISCamera(cam2, chassisTransform, preset.cam2.position, preset.cam2.rotation);
+        AddSuVISCamera(cam3, chassisTransform, preset.cam3.position, preset.cam3.rotation);
     }
 
     void Update()

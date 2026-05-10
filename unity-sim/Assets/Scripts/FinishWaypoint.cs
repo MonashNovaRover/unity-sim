@@ -3,10 +3,16 @@ using TMPro;
 
 public class FinishWaypoint : MonoBehaviour
 {
+    public static FinishWaypoint Instance;
     public float activationDelay = 10f;
     private bool activate = false;
 
     void Start()
+    {
+        Instance = this;
+    }
+
+    public void StartActivationCountdown()
     {
         Invoke(nameof(EnableFinish), activationDelay);
     }
