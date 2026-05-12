@@ -4,7 +4,6 @@ import threading
 import os
 import cv2
 import numpy as np
-import yaml
 from typing import List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass
 
@@ -415,40 +414,6 @@ def now_stamp() -> str:
     """Return a simple timestamp string for file naming."""
     return time.strftime("%Y%m%d_%H%M%S")
 
-def detect_cameras(max_devices: int = 5) -> List[Tuple[int, str]]:
-    """Detect all available cameras and return their device indices and names.
-
-    Returns list of (device_index, device_name) tuples.
-    """
-    detected_cameras = []
-    
-    print("🔍 Detecting cameras...")
-    
-    for i in range(max_devices):
-        try:
-            if platform.system() == "Windows":
-                cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-            else:
-                cap = cv2.VideoCapture(i, cv2.CAP_V4L2)
-            
-            if cap.isOpened():
-                # Try to get a frame to verify the camera is working
-                ret, frame = cap.read()
-                if ret and frame is not None:
-                    # Get camera name/info
-                    backend_name = cap.getBackendName()
-                    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-                    detected_cameras.append((i, f"Camera {i} ({w}x{h})"))
-                    print(f"  ✓ Found camera at device {i}: {backend_name} ({w}x{h})")
-
-                cap.release()
-        except Exception:
-            pass
-    
-    return detected_cameras
-
 def match_exposure(source: np.ndarray, reference: np.ndarray) -> np.ndarray:
     """Match mean/std of source to reference channel-wise."""
     result = np.zeros_like(source, dtype=np.float32)
@@ -548,64 +513,6 @@ def find_overlap_offset(
 
     return (dx, 0)
 
-def find_vertical_seam(
-    top_frame: np.ndarray,
-    bottom_frame: np.ndarray,
-    min_overlap: int = 60,
-    max_overlap: int = 240,
-    step: int = 10,
-) -> tuple[int, int]:
-    """
-    Search for the best vertical alignment between top and bottom frames by
-    sliding the bottom frame upward over the top frame and finding the offset
-    with the highest ORB feature match quality.
-
-    Returns (best_overlap_rows, best_dx):
-        best_overlap_rows: how many rows of the bottom frame overlap with the top
-        best_dx: horizontal shift to apply to the bottom frame before compositing
-    """
-    h, w = top_frame.shape[:2]
-
-    orb = cv2.ORB_create(nfeatures=400)
-    best_score = -1
-    best_overlap = min_overlap
-    best_dx = 0
-
-    for overlap in range(min_overlap, min(max_overlap, h), step):
-        top_strip = top_frame[-overlap:]
-        bot_strip = bottom_frame[:overlap]
-
-        gray_top = cv2.cvtColor(top_strip, cv2.COLOR_BGR2GRAY)
-        gray_bot = cv2.cvtColor(bot_strip, cv2.COLOR_BGR2GRAY)
-
-        kp_t, des_t = orb.detectAndCompute(gray_top, None)
-        kp_b, des_b = orb.detectAndCompute(gray_bot, None)
-
-        if des_t is None or des_b is None or len(kp_t) < 4 or len(kp_b) < 4:
-            continue
-
-        matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-        matches = matcher.match(des_t, des_b)
-        if len(matches) < 4:
-            continue
-
-        matches = sorted(matches, key=lambda m: m.distance)
-        good = matches[: max(4, len(matches) // 2)]
-
-        # Score = number of good matches, weighted by inverse distance
-        score = sum(1.0 / (m.distance + 1e-6) for m in good)
-
-        if score > best_score:
-            best_score = score
-            best_overlap = overlap
-            dx_vals = [
-                kp_b[m.trainIdx].pt[0] - kp_t[m.queryIdx].pt[0]
-                for m in good
-            ]
-            best_dx = int(np.clip(np.median(dx_vals), -30, 30))
-
-    return best_overlap, best_dx
-
 def stitch_cameras(
     frame1: np.ndarray,
     frame2: np.ndarray,
@@ -688,6 +595,7 @@ def stitch_cameras(
     return stitched
 
 
+
 def find_horizontal_offset(
     left_frame: np.ndarray,
     right_frame: np.ndarray,
@@ -739,7 +647,6 @@ def find_horizontal_offset(
     dy = int(np.clip(dy, -max_offset_y, max_offset_y))  # sanity clamp
 
     return (0, dy)
-
 
 def find_horizontal_seam(
     left_frame: np.ndarray,
@@ -799,25 +706,19 @@ def find_horizontal_seam(
 
     return best_overlap, best_dy
 
-
 def stitch_horizontal(
     frame1: np.ndarray,
     frame2: np.ndarray,
     leftCam: str,
     cam1_name: str,
     cam2_name: str,
-    overlap_width: int = 120,
+    overlap_width: int,
     cached_state: list | None = None,  # pass a mutable [dy] list to cache offset across frames
 ) -> np.ndarray:
-    """
-    Stitch two camera frames horizontally.
-    - overlap_width: minimum 1/4 of target width (120px for 480px).
-    - Feature matching in overlap region corrects vertical misalignment.
-    - Laplacian pyramid blending hides the seam.
-    """
+
     h1, w1 = frame1.shape[:2]
     h2, w2 = frame2.shape[:2]
-    target_width = w1  # assume both are same width
+    target_width = w1
     target_height = h1
 
     if leftCam == cam1_name:
@@ -827,33 +728,31 @@ def stitch_horizontal(
         left_frame, right_frame = frame2, frame1
         left_name, right_name = cam2_name, cam1_name
 
-    # Assume frames are already resized to same size
     left_resized = left_frame
     right_resized = right_frame
 
-    # --- Step 1: find or reuse the best overlap + dy ---
-    # Recompute every 30 frames; use cache in between for speed
+    dy = 0
+    overlap = overlap_width
+
     recompute = True
-    if cached_state is not None and len(cached_state) == 3:
-        cached_overlap, cached_state, cached_age = cached_state
+    if cached_state is not None and len(cached_state) == 2:
+        cached_dy, cached_age = cached_state
         if cached_age < 30:
-            overlap = cached_overlap
-            dy = cached_state
-            cached_state[2] += 1
+            dy = cached_dy
+            cached_state[1] += 1
             recompute = False
 
     if recompute:
-        overlap, dy = find_horizontal_seam(
+        _, dy = find_horizontal_seam(
             left_resized, right_resized,
             min_overlap=overlap_width,
-            max_overlap=target_width // 2,
-            step=10,
+            max_overlap=overlap_width,
+            step=1,
         )
         if cached_state is not None:
             cached_state.clear()
-            cached_state.extend([overlap, dy, 0])
+            cached_state.extend([dy, 0])
 
-    # --- Step 2: apply vertical correction to right frame ---
     if dy != 0:
         M = np.float32([[1, 0, 0], [0, 1, -dy]])
         right_resized = cv2.warpAffine(
@@ -861,29 +760,18 @@ def stitch_horizontal(
             borderMode=cv2.BORDER_REPLICATE,
         )
 
-    # --- Step 3: match exposure in overlap zone ---
     left_strip = left_resized[:, -overlap:]
     right_strip = right_resized[:, :overlap]
     right_strip = match_exposure(right_strip, left_strip)
 
-    # --- Step 4: Laplacian pyramid blend the overlap strip ---
     blended_strip = laplacian_pyramid_blend(left_strip, right_strip, levels=4)
 
-    # --- Step 5: assemble — output width = (w - overlap) + overlap + (w - overlap)
-    #             = 2*w - overlap ---
-    left_body    = left_resized[:, : target_width - overlap]
+    left_body = left_resized[:, : target_width - overlap]
     right_body = right_resized[:, overlap:]
 
     stitched = cv2.hconcat([left_body, blended_strip, right_body])
 
-    # --- Step 6: label ---
-    out_w = stitched.shape[1]
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(stitched, f"Left: {left_name}",    (10, 30),          font, 0.9, (255, 0, 255), 2)
-    cv2.putText(stitched, f"Right: {right_name}", (out_w // 2 + 10, 30), font, 0.9, (255, 0, 255), 2)
-
     return stitched
-
 
 def build_panoramic_front(
     front_frame: np.ndarray,
@@ -923,6 +811,491 @@ def build_panoramic_front(
         cv2.putText(panorama, "RIGHT", (2 * part_w + 10, 30), font, 1.0, (255, 255, 255), 2, cv2.LINE_AA)
 
     return panorama
+
+def build_dual_panoramic(
+    left_frame: np.ndarray,
+    right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1280, 480),
+    left_label: str = "LEFT",
+    right_label: str = "RIGHT",
+    label: bool = True,
+) -> np.ndarray:
+    """Stitch two frames into a seamless left-right panorama."""
+    out_w, out_h = target_size
+    part_w = out_w // 2
+
+    def resize_or_blank(frame: Optional[np.ndarray]) -> np.ndarray:
+        if frame is None:
+            return np.zeros((out_h, part_w, 3), dtype=np.uint8)
+        return cv2.resize(frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+
+    left_resized = resize_or_blank(left_frame)
+    right_resized = resize_or_blank(right_frame)
+
+    left_resized = cv2.normalize(left_resized, None, 0, 255, cv2.NORM_MINMAX)
+    right_resized = cv2.normalize(right_resized, None, 0, 255, cv2.NORM_MINMAX)
+
+    cache = []
+
+    stitched = stitch_horizontal(
+        left_resized,
+        right_resized,
+        "left",
+        "left",
+        "right",
+        overlap_width = 200,
+        cached_state=cache
+    )
+
+    # if label:
+    #     font = cv2.FONT_HERSHEY_SIMPLEX
+    #     cv2.putText(stitched, left_label, (10, 30), font, 0.9, (255, 255, 255), 2, cv2.LINE_AA)
+    #     cv2.putText(stitched, right_label, (stitched.shape[1] // 2 + 10, 30), font, 0.9, (255, 255, 255), 2, cv2.LINE_AA)
+
+    return stitched
+
+def build_front_panoramic(
+    front_left_frame: np.ndarray,
+    front_right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1280, 480),
+    label: bool = True,
+) -> np.ndarray:
+    return build_dual_panoramic(
+        front_left_frame,
+        front_right_frame,
+        target_size=target_size,
+        left_label="FRONT LEFT",
+        right_label="FRONT RIGHT",
+        label=label,
+    )
+
+def build_back_panoramic(
+    back_left_frame: np.ndarray,
+    back_right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1280, 480),
+    label: bool = True,
+) -> np.ndarray:
+    back_left_rotated = cv2.rotate(back_left_frame, cv2.ROTATE_180)
+    back_right_rotated = cv2.rotate(back_right_frame, cv2.ROTATE_180)
+    return build_dual_panoramic(
+        back_left_rotated,
+        back_right_rotated,
+        target_size=target_size,
+        left_label="BACK LEFT",
+        right_label="BACK RIGHT",
+        label=label,
+    )
+
+def build_full_panoramic(
+    front_frame: np.ndarray,
+    back_frame: np.ndarray,
+    left_frame: np.ndarray,
+    right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1920, 480),
+    label: bool = True,
+) -> np.ndarray:
+    """Compose all four frames into a single panoramic view with seamless stitching."""
+    # Rotate back 180 degrees to align direction
+    back_rotated = cv2.rotate(back_frame, cv2.ROTATE_180)
+
+    # Resize all to same height, width per part
+    out_w, out_h = target_size
+    part_w = out_w // 4
+
+    front_resized = cv2.resize(front_frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+    right_resized = cv2.resize(right_frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+    back_rotated_resized = cv2.resize(back_rotated, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+    left_resized = cv2.resize(left_frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+
+    # Stitch left and front
+    left_front = stitch_horizontal(left_resized, front_resized, "left", "left", "front", overlap_width=30)
+
+    # Stitch left_front and right
+    left_front_right = stitch_horizontal(left_front, right_resized, "left_front", "left_front", "right", overlap_width=30)
+
+    # Stitch left_front_right and back
+    panorama = stitch_horizontal(left_front_right, back_rotated_resized, "left_front_right", "left_front_right", "back", overlap_width=30)
+
+    if label:
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(panorama, "LEFT", (10, 30), font, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(panorama, "FRONT", (part_w + 10, 30), font, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(panorama, "RIGHT", (2 * part_w + 10, 30), font, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(panorama, "BACK", (3 * part_w + 10, 30), font, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+
+    return panorama
+
+def find_vertical_seam(
+    top_frame: np.ndarray,
+    bottom_frame: np.ndarray,
+    min_overlap: int = 60,
+    max_overlap: int = 240,
+    step: int = 10,
+) -> tuple[int, int]:
+    """
+    Search for the best vertical alignment between top and bottom frames by
+    sliding the bottom frame upward over the top frame and finding the offset
+    with the highest ORB feature match quality.
+
+    Returns (best_overlap_rows, best_dx):
+        best_overlap_rows: how many rows of the bottom frame overlap with the top
+        best_dx: horizontal shift to apply to the bottom frame before compositing
+    """
+    h, w = top_frame.shape[:2]
+
+    orb = cv2.ORB_create(nfeatures=400)
+    best_score = -1
+    best_overlap = min_overlap
+    best_dx = 0
+
+    for overlap in range(min_overlap, min(max_overlap, h), step):
+        top_strip = top_frame[-overlap:]
+        bot_strip = bottom_frame[:overlap]
+
+        gray_top = cv2.cvtColor(top_strip, cv2.COLOR_BGR2GRAY)
+        gray_bot = cv2.cvtColor(bot_strip, cv2.COLOR_BGR2GRAY)
+
+        kp_t, des_t = orb.detectAndCompute(gray_top, None)
+        kp_b, des_b = orb.detectAndCompute(gray_bot, None)
+
+        if des_t is None or des_b is None or len(kp_t) < 4 or len(kp_b) < 4:
+            continue
+
+        matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        matches = matcher.match(des_t, des_b)
+        if len(matches) < 4:
+            continue
+
+        matches = sorted(matches, key=lambda m: m.distance)
+        good = matches[: max(4, len(matches) // 2)]
+
+        # Score = number of good matches, weighted by inverse distance
+        score = sum(1.0 / (m.distance + 1e-6) for m in good)
+
+        if score > best_score:
+            best_score = score
+            best_overlap = overlap
+            dx_vals = [
+                kp_b[m.trainIdx].pt[0] - kp_t[m.queryIdx].pt[0]
+                for m in good
+            ]
+            best_dx = int(np.clip(np.median(dx_vals), -30, 30))
+
+    return best_overlap, best_dx
+
+def feather_blend(left_strip: np.ndarray, right_strip: np.ndarray) -> np.ndarray:
+    h, w = left_strip.shape[:2]
+    alpha = np.linspace(1.0, 0.0, w, dtype=np.float32).reshape(1, w, 1)
+    alpha = np.repeat(alpha, h, axis=0)
+    blended = (left_strip.astype(np.float32) * alpha + right_strip.astype(np.float32) * (1.0 - alpha))
+    
+    return np.clip(blended, 0, 255).astype(np.uint8)
+
+def vertical_feather_blend(top_strip: np.ndarray, bot_strip: np.ndarray) -> np.ndarray:
+    h, w = top_strip.shape[:2]
+    alpha = np.linspace(1.0, 0.0, h, dtype=np.float32).reshape(h, 1, 1)
+    alpha = np.repeat(alpha, w, axis=1)
+    blended = (top_strip.astype(np.float32) * alpha + bot_strip.astype(np.float32) * (1.0 - alpha))
+    
+    return np.clip(blended, 0, 255).astype(np.uint8)
+
+# VERTICAL FEATHER STITCHING #######################################################################
+
+def stitch_vertical_feather(
+        frame1: np.ndarray,
+        frame2: np.ndarray,
+        botCam: str,
+        cam1_name: str,
+        cam2_name: str,
+        overlap_height: int,
+        output_height: int | None = None,
+        cached_state: list | None = None
+) -> np.ndarray:
+    h1, w1 = frame1.shape[:2]
+    target_height, target_width = h1, w1
+
+    bot_resized, top_resized = frame1, frame2
+
+    dx = 0
+    recompute = True
+    if cached_state is not None and len(cached_state) == 2:
+        cached_dx, cached_age = cached_state
+        if cached_age < 30:
+            dx = cached_dx
+            cached_state[1] += 1
+            recompute = False
+
+    if recompute:
+        # _, dx = find_vertical_seam(
+        #     bot_resized,
+        #     top_resized,
+        #     min_overlap = overlap_height,
+        #     max_overlap = overlap_height,
+        #     step = 1     
+        # )
+        dx = 0  # Disable horizontal alignment for now
+        if cached_state is not None:
+            cached_state.clear()
+            cached_state.extend([dx, 0])
+    
+    if dx != 0:
+        M = np.float32([[1, 0, dx], [0, 1, 0]])
+        top_resized = cv2.warpAffine(
+            top_resized, M, (target_width, target_height),
+            borderMode=cv2.BORDER_REPLICATE,
+        )
+    
+    bot_strip = bot_resized[-overlap_height:, :]
+    top_strip = top_resized[:overlap_height, :]
+    # top_strip = match_exposure(top_strip, bot_strip)
+
+    blended_strip = laplacian_pyramid_blend(top_strip, bot_strip, levels=4)
+    bot_body = bot_resized[:target_height - overlap_height, :]
+    top_body = top_resized[overlap_height:, :]
+    stitched = cv2.vconcat([top_body, blended_strip, bot_body])
+
+    if output_height is not None and stitched.shape[0] != output_height:
+        stitched = cv2.resize(stitched, (target_width, output_height), interpolation=cv2.INTER_LINEAR)
+
+    return stitched
+
+_ver_feather_cache: list = []
+
+def build_vertical_feather(
+        top_frame: np.ndarray,
+        bot_frame: np.ndarray,
+        target_size: Tuple[int, int] = (640, 960),
+        overlap: int = 60
+) -> np.ndarray:
+    out_w, out_h = target_size
+    part_h = out_h // 2
+
+    top_resized = cv2.resize(top_frame, (out_w, part_h), interpolation=cv2.INTER_LINEAR)
+    bot_resized = cv2.resize(bot_frame, (out_w, part_h), interpolation=cv2.INTER_LINEAR)
+
+    return stitch_vertical_feather(
+        bot_resized,
+        top_resized,
+        "bottom", "bottom", "top",
+        overlap_height = overlap,
+        cached_state = _ver_feather_cache,
+        output_height = out_h
+    )
+
+
+
+# PANORAMIC FEATHER STITCHING #######################################################################
+
+def stitch_horizontal_feather(
+        frame1: np.ndarray,
+        frame2: np.ndarray,
+        leftCam: str,
+        cam1_name: str,
+        cam2_name: str,
+        overlap_width: int,
+        output_width: int | None = None,  # if set, pads/crops to this width
+        cached_state: list | None = None
+) -> np.ndarray:
+    h1, w1 = frame1.shape[:2]
+    target_width, target_height = w1, h1
+
+    left_resized, right_resized = frame1, frame2
+
+    dy = 0
+    overlap = overlap_width
+
+    recompute = True
+    if cached_state is not None and len(cached_state) == 2:
+        cached_dy, cached_age = cached_state
+        if cached_age < 30:
+            dy = cached_dy
+            cached_state[1] += 1
+            recompute = False
+
+    if recompute:
+        _, dy = find_horizontal_seam(
+            left_resized,
+            right_resized,
+            min_overlap=overlap_width,
+            max_overlap=overlap_width,
+            step=1,
+        )
+        if cached_state is not None:
+            cached_state.clear()
+            cached_state.extend([dy, 0])
+
+    if dy != 0:
+        M = np.float32([[1, 0, 0], [0, 1, -dy]])
+        right_resized = cv2.warpAffine(
+            right_resized, M, (target_width, target_height),
+            borderMode=cv2.BORDER_REPLICATE,
+        )
+
+    left_strip = left_resized[:, -overlap:]
+    right_strip = right_resized[:, :overlap]
+    right_strip = match_exposure(right_strip, left_strip)
+
+    blended_strip = feather_blend(left_strip, right_strip)
+    left_body = left_resized[:, :target_width - overlap]
+    right_body = right_resized[:, overlap:]
+
+    stitched = cv2.hconcat([left_body, blended_strip, right_body])
+
+    # Resize to desired output width if specified, preserving height
+    if output_width is not None and stitched.shape[1] != output_width:
+        stitched = cv2.resize(stitched, (output_width, target_height), interpolation=cv2.INTER_LINEAR)
+
+    return stitched
+
+_pan_feather_cache: list = []
+
+def build_panoramic_feather(
+    left_frame: np.ndarray,
+    right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1280, 480),
+    label: bool = True,
+    overlap: int = 55
+) -> np.ndarray:
+    out_w, out_h = target_size
+    part_w = out_w // 2
+
+    def resize_or_blank(frame):
+        if frame is None:
+            return np.zeros((out_h, part_w, 3), dtype=np.uint8)
+        return cv2.resize(frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+
+    return stitch_horizontal_feather(
+        resize_or_blank(left_frame),
+        resize_or_blank(right_frame),
+        "left", "left", "right",
+        overlap_width = overlap,
+        cached_state = _pan_feather_cache
+    )
+
+
+
+def poisson_blend(
+    left_resized: np.ndarray,
+    right_resized: np.ndarray,
+    overlap: int,
+) -> np.ndarray:
+    """
+    Poisson blend right frame into left frame across the overlap zone.
+    Works on the full frames rather than strips, since seamlessClone
+    needs enough context around the seam to solve the gradient field.
+    """
+    h, w = left_resized.shape[:2]
+
+    # Mask covers only the right frame's contribution region
+    # (everything to the right of the left body)
+    mask = np.zeros((h, w), dtype=np.uint8)
+    seam_col = w - overlap
+    mask[:, seam_col:] = 255
+
+    # seamlessClone needs the source to be the same size as destination
+    # Center point is the middle of the overlap zone on the destination
+    center_x = seam_col + overlap // 2
+    center_y = h // 2
+    center = (center_x, center_y)
+
+    try:
+        result = cv2.seamlessClone(
+            right_resized,   # source (right frame content)
+            left_resized,    # destination (left frame)
+            mask,
+            center,
+            cv2.MIXED_CLONE, # preserves texture better than NORMAL_CLONE
+        )
+    except cv2.error:
+        # seamlessClone can fail if mask region touches image border
+        # fall back to feather blend if it does
+        result = feather_blend(
+            left_resized[:, -overlap:],
+            right_resized[:, :overlap],
+        )
+        left_body = left_resized[:, :w - overlap]
+        right_body = right_resized[:, overlap:]
+        result = cv2.hconcat([left_body, result, right_body])
+
+    return result
+
+def stitch_horizontal_poisson(
+    frame1: np.ndarray,
+    frame2: np.ndarray,
+    leftCam: str,
+    cam1_name: str,
+    cam2_name: str,
+    overlap_width: int,
+    cached_state: list | None = None,
+) -> np.ndarray:
+    h1, w1 = frame1.shape[:2]
+    target_width, target_height = w1, h1
+
+    if leftCam == cam1_name:
+        left_resized, right_resized = frame1, frame2
+    else:
+        left_resized, right_resized = frame2, frame1
+
+    dy = 0
+
+    recompute = True
+    if cached_state is not None and len(cached_state) == 2:
+        cached_dy, cached_age = cached_state
+        if cached_age < 30:
+            dy = cached_dy
+            cached_state[1] += 1
+            recompute = False
+
+    if recompute:
+        _, dy = find_horizontal_seam(
+            left_resized, right_resized,
+            min_overlap=overlap_width,
+            max_overlap=overlap_width,
+            step=1,
+        )
+        if cached_state is not None:
+            cached_state.clear()
+            cached_state.extend([dy, 0])
+
+    if dy != 0:
+        M = np.float32([[1, 0, 0], [0, 1, -dy]])
+        right_resized = cv2.warpAffine(
+            right_resized, M, (target_width, target_height),
+            borderMode=cv2.BORDER_REPLICATE,
+        )
+
+    # Poisson works on full frames, not strips
+    right_resized[:, :overlap_width] = match_exposure(
+        right_resized[:, :overlap_width],
+        left_resized[:, -overlap_width:],
+    )
+
+    return poisson_blend(left_resized, right_resized, overlap_width)
+
+_front_poisson_cache: list = []
+
+def build_front_panoramic_poisson(
+    front_left_frame: np.ndarray,
+    front_right_frame: np.ndarray,
+    target_size: Tuple[int, int] = (1280, 480),
+    label: bool = True,
+) -> np.ndarray:
+    out_w, out_h = target_size
+    part_w = out_w // 2
+
+    def resize_or_blank(frame):
+        if frame is None:
+            return np.zeros((out_h, part_w, 3), dtype=np.uint8)
+        return cv2.resize(frame, (part_w, out_h), interpolation=cv2.INTER_LINEAR)
+
+    return stitch_horizontal_poisson(
+        resize_or_blank(front_left_frame),
+        resize_or_blank(front_right_frame),
+        "left", "left", "right",
+        overlap_width=120,
+        cached_state=_front_poisson_cache,
+    )
+
 
 
 def bev_warp(
@@ -965,74 +1338,3 @@ def bev_warp(
         borderValue=(0, 0, 0),
     )
     return warped
-
-
-def expand(p: str) -> str:
-    return os.path.abspath(os.path.expanduser(p))
-
-def load_yaml(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-
-def as_np_mat(x) -> np.ndarray:
-    a = np.array(x, dtype=np.float64)
-    return a
-
-def load_intrinsics(path: str) -> Tuple[np.ndarray, np.ndarray, Optional[Tuple[int, int]]]:
-    """
-    Supports common YAML layouts, e.g.:
-      K: [[...],[...],[...]]
-      D: [k1,k2,k3,k4]           (fisheye)
-      image_size: [w,h]
-
-    Or:
-      camera_matrix: {data:[...], rows:3, cols:3}
-      dist_coeffs: {data:[...]}
-      width: 640
-      height: 480
-
-    Or:
-      camera_matrix: [[...],[...],[...]]
-      distortion_coefficients: [...]
-    """
-    raw = load_yaml(path) or {}
-
-    # Try multiple keys for K
-    K = None
-    for key in ("K", "camera_matrix", "cameraMatrix", "intrinsic_matrix", "camera_intrinsics"):
-        if key in raw:
-            K = raw[key]
-            break
-
-    if isinstance(K, dict) and "data" in K:
-        K = np.array(K["data"], dtype=np.float64).reshape(3, 3)
-    else:
-        K = as_np_mat(K) if K is not None else None
-
-    # Try multiple keys for D
-    D = None
-    for key in ("D", "dist_coeffs", "distCoeffs", "distortion_coefficients", "distortion", "distortion_coeffs"):
-        if key in raw:
-            D = raw[key]
-            break
-
-    if isinstance(D, dict) and "data" in D:
-        D = np.array(D["data"], dtype=np.float64).reshape(-1)
-    else:
-        D = np.array(D, dtype=np.float64).reshape(-1) if D is not None else None
-
-    if K is None or D is None:
-        raise ValueError(f"Intrinsics YAML missing K/D: {path}")
-
-    # Image size (optional but recommended)
-    size = None
-    if "image_size" in raw and isinstance(raw["image_size"], (list, tuple)) and len(raw["image_size"]) == 2:
-        w, h = int(raw["image_size"][0]), int(raw["image_size"][1])
-        size = (w, h)
-    else:
-        w = raw.get("width", raw.get("image_width", raw.get("w")))
-        h = raw.get("height", raw.get("image_height", raw.get("h")))
-        if w is not None and h is not None:
-            size = (int(w), int(h))
-
-    return K, D, size

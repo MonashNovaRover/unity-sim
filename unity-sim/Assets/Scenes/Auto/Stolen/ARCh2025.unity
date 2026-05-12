@@ -7606,7 +7606,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557475699}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62eb23fdb12ee6a4489490329418eeb6, type: 3}
   m_Name: 
@@ -8238,7 +8238,7 @@ PrefabInstance:
       objectReference: {fileID: 1154239358}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: selectedPreset
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.size
@@ -8246,7 +8246,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.data[3].obj
@@ -8270,15 +8270,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[0].presetName
-      value: Mast
+      value: Mast0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[1].presetName
-      value: Panoramic
+      value: Panoramic1
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].presetName
-      value: Stitched
+      value: PanoramicDiagonal2
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].presetName
+      value: VerticalStack3
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[1].cam0.position.y
@@ -8337,12 +8341,24 @@ PrefabInstance:
       value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[2].cam0.position.x
+      value: -0.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam0.position.y
       value: 0.16
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam0.position.z
-      value: 0.105
+      value: 0.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[2].cam0.rotation.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[2].cam1.position.x
+      value: 0.23
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam1.position.y
@@ -8350,19 +8366,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam1.position.z
-      value: 0.105
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam1.rotation.x
-      value: 45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam1.rotation.y
-      value: 0
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam2.position.x
-      value: 0
+      value: 0.23
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam2.position.y
@@ -8374,11 +8390,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam2.rotation.y
-      value: 180
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam3.position.x
-      value: 0
+      value: -0.23
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam3.position.y
@@ -8390,10 +8406,86 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam3.rotation.x
-      value: 45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: cameraPresets.Array.data[2].cam3.rotation.y
+      value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam0.position.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam0.position.y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam0.position.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam0.rotation.x
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam0.rotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam1.position.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam1.position.y
+      value: 0.203
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam1.position.z
+      value: 0.075
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam1.rotation.x
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam1.rotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam2.position.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam2.position.y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam2.position.z
+      value: -0.425
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam2.rotation.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam3.position.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam3.position.y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam3.position.z
+      value: -0.425
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam3.rotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: cameraPresets.Array.data[3].cam3.rotation.y
       value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 3929488554831423306, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}

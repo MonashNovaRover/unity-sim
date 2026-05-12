@@ -5,7 +5,7 @@
 import socket, struct, cv2
 import numpy as np
 import argparse
-from Cameras import bev_warp, build_panoramic_front
+from Cameras import build_panoramic_feather, bev_warp, build_vertical_feather
 
 # Receive camera frames from Unity
 def receive_frame(conn):
@@ -35,13 +35,7 @@ def main():
     parser.add_argument(
         "--mode", 
         type=int,
-        default=0,
-        help="" \
-        "0: (Default) Single camera feed. " \
-        "1: 2 cameras feed. " \
-        "2: 4 cameras feed. " \
-        "3: 4 cameras feed with bird's-eye homography warp. " \
-        "4: 4 cameras feed with front panorama + back original. " \
+        default=0
     )
 
     args = parser.parse_args()
@@ -68,28 +62,7 @@ def main():
         cv2.destroyAllWindows()
         conn.close()
     
-    # 2 camera feed
-    elif args.mode == 1:        # 2 cameras feed
-        server = socket.socket()
-        server.bind(("127.0.0.1", 5000))
-        server.listen(1)
-        print("Waiting on Unity TCP connection...")
-        conn, _ = server.accept()
-        print("TCP established")
-
-        frames = {0: None, 1: None}
-
-        while True:
-            cam_id, frame = receive_frame(conn)
-            frames[cam_id] = frame
-            for cam_id, frame in frames.items():
-                if frame is not None:
-                    cv2.imshow(f"Cam{cam_id}", frame)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    
-    elif args.mode == 2:        # 4 cameras feed
+    elif args.mode == 1:        # 4 cameras feed
         server = socket.socket()
         server.bind(("127.0.0.1", 5000))
         server.listen(1)
@@ -108,7 +81,167 @@ def main():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-    elif args.mode == 3:    # 4 cameras feed with BEV warp
+    elif args.mode == 2:    # 4-camera-panoramic with diagonal camera placement
+        # [cam0, cam1, cam2, cam3] = [front-left, front-right, back-right, back-left]
+
+        def print_frame_coordinates(event, x, y, flags, param):
+            if event == cv2.EVENT_LBUTTONDOWN:
+                window_name = param if isinstance(param, str) else "Cam0"
+                print(f"[{window_name}] clicked at frame coords: ({x}, {y})")
+
+        server = socket.socket()
+        server.bind(("127.0.0.1", 5000))
+        server.listen(1)
+        print("Waiting on Unity TCP connection...")
+        conn, _ = server.accept()
+        print("TCP established")
+
+        frames = {0: None, 1: None, 2: None, 3: None}
+        bevs = {0: None, 1: None, 2: None, 3: None}
+
+        # # Points for front two at Y-rot = 45 deg angle cam offset
+        # # Need overlap of 55
+        # src_points0 = np.array(
+        #     [
+        #         [230, 180],  # top-left
+        #         [640, 0],  # top-right
+        #         [640, 480],  # bottom-right
+        #         [230, 300],   # bottom-left
+        #     ],
+        #     dtype=np.float32,
+        # )
+        # src_points1 = np.array(
+        #     [
+        #         [0, 0],  # top-left
+        #         [410, 180],  # top-right
+        #         [410, 300],  # bottom-right
+        #         [0, 480],   # bottom-left
+        #     ],
+        #     dtype=np.float32,
+        # )
+
+        # Points for front two at Y-rot = 30 deg angle cam offset
+        # Need overlap of 160
+        src_points0 = np.array(
+            [
+                [130, 170],  # top-left
+                [640, 0],  # top-right
+                [640, 480],  # bottom-right
+                [130, 310],   # bottom-left
+            ],
+            dtype=np.float32,
+        )
+        src_points1 = np.array(
+            [
+                [0, 0],  # top-left
+                [510, 170],  # top-right
+                [510, 310],  # bottom-right
+                [0, 480],   # bottom-left
+            ],
+            dtype=np.float32,
+        )
+
+        dst_size = (640, 480)
+
+        # cv2.namedWindow("Cam0", cv2.WINDOW_NORMAL)
+        # cv2.setMouseCallback("Cam0", print_frame_coordinates, "Cam0")
+        # cv2.namedWindow("Cam1", cv2.WINDOW_NORMAL)
+        # cv2.setMouseCallback("Cam1", print_frame_coordinates, "Cam1")
+        # cv2.namedWindow("Front", cv2.WINDOW_NORMAL)
+
+        outsize = (1280, 480)
+        seam_overlap = 160
+
+        while True:
+            cam_id, frame = receive_frame(conn)
+            frames[cam_id] = frame
+            if all(f is not None for f in frames.values()):
+                for cam_id, frame in frames.items():
+                    cv2.imshow(f"Cam{cam_id}", frame)
+                    if cam_id in [0, 2]:
+                        cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                        # for point in src_points0:
+                        #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+
+                        bevs[cam_id] = bev_warp(frame, src_points0, dst_size=dst_size)
+
+                    elif cam_id in [1, 3]:
+                        cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                        # for point in src_points1:
+                        #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+
+                        bevs[cam_id] = bev_warp(frame, src_points1, dst_size=dst_size)
+                    
+                    # cv2.imshow(f"Cam{cam_id} BEV", bevs[cam_id])
+    
+                front = build_panoramic_feather(
+                    left_frame = bevs[0],
+                    right_frame = bevs[1],
+                    target_size = outsize,
+                    overlap = seam_overlap
+                )
+
+                back = build_panoramic_feather(
+                    left_frame = bevs[2],
+                    right_frame = bevs[3],
+                    target_size = outsize,
+                    overlap = seam_overlap
+                )
+
+                cv2.imshow("Front", front)
+                cv2.imshow("Back", back)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cv2.destroyAllWindows()
+        conn.close()
+
+    elif args.mode == 3:    # 4-camera vertical stitch
+        # [cam0, cam1, cam2, cam3] = [front-bottom, front-top, back-top, back-bottom]
+
+        def print_frame_coordinates(event, x, y, flags, param):
+            if event == cv2.EVENT_LBUTTONDOWN:
+                window_name = param if isinstance(param, str) else "Cam0"
+                print(f"[{window_name}] clicked at frame coords: ({x}, {y})")
+
+        server = socket.socket()
+        server.bind(("127.0.0.1", 5000))
+        server.listen(1)
+        print("Waiting on Unity TCP connection...")
+        conn, _ = server.accept()
+        print("TCP established")
+
+        frames = {0: None, 1: None, 2: None, 3: None}
+
+        while True:
+            cam_id, frame = receive_frame(conn)
+            frames[cam_id] = frame
+            if all(f is not None for f in frames.values()):
+                frame_bot = frames[0]
+                frame_top = frames[1]
+
+                cv2.imshow("Cam0", frame_bot)
+                cv2.imshow("Cam1", frame_top)
+            
+                front = build_vertical_feather(
+                    top_frame = frame_top,
+                    bot_frame = frame_bot,
+                    target_size = (640, 960),
+                    overlap = 200
+                )
+
+                cv2.imshow("Front", front)
+        
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cv2.destroyAllWindows()
+        conn.close()
+
+
+
+    elif args.mode == 4:    # Testing BEV warp
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
                 window_name = param if isinstance(param, str) else "Cam0"
@@ -157,50 +290,6 @@ def main():
 
             cv2.imshow("Cam0", frame)
             cv2.imshow("Cam0_BEV", bev)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-        cv2.destroyAllWindows()
-        conn.close()
-
-    elif args.mode == 4:    # 4 cameras front/back panoramic composition
-        server = socket.socket()
-        server.bind(("127.0.0.1", 5000))
-        server.listen(1)
-        print("Waiting on Unity TCP connection...")
-        conn, _ = server.accept()
-        print("TCP established")
-
-        frames = {0: None, 1: None, 2: None, 3: None}
-        front_window = "Front_Panoramic"
-        back_window = "Back_Original"
-
-        cv2.namedWindow(front_window, cv2.WINDOW_NORMAL)
-        cv2.namedWindow(back_window, cv2.WINDOW_NORMAL)
-        cv2.resizeWindow(front_window, 1280, 480)
-        cv2.resizeWindow(back_window, 640, 480)
-
-        while True:
-            cam_id, frame = receive_frame(conn)
-            if frame is None or cam_id not in frames:
-                continue
-
-            frames[cam_id] = frame
-
-            if any(frames[k] is None for k in frames):
-                continue
-
-            front_panorama = build_panoramic_front(
-                front_frame=frames[0],
-                left_frame=frames[2],
-                right_frame=frames[3],
-                target_size=(1280, 480),
-            )
-            back_original = cv2.resize(frames[1], (640, 480), interpolation=cv2.INTER_LINEAR)
-
-            cv2.imshow(front_window, front_panorama)
-            cv2.imshow(back_window, back_original)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
