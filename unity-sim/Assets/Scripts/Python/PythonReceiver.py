@@ -2,7 +2,7 @@
 # | 1 byte camId | 4 bytes frame length | N bytes JPG data |
 # python .\Assets\Scripts\Python\PythonReceiver.py --mode 2
 
-import socket, struct, cv2
+import socket, struct, cv2, time
 import numpy as np
 import argparse
 from Cameras import build_panoramic_feather, bev_warp, build_vertical_feather
@@ -29,6 +29,30 @@ def receive_frame(conn):
     arr = np.frombuffer(data, dtype=np.uint8)
     return cam_id, cv2.imdecode(arr, cv2.IMREAD_COLOR)
 
+_fps_last_time = {}
+_fps_values = {}
+
+def stamp_fps(frame, window_name):
+    """Compute per-window FPS and draw it onto the frame in-place."""
+    now = time.perf_counter()
+    if window_name in _fps_last_time:
+        delta = now - _fps_last_time[window_name]
+        # Smooth with exponential moving average (alpha=0.1)
+        prev = _fps_values.get(window_name, 0.0)
+        fps = 0.9 * prev + 0.1 * (1.0 / delta if delta > 0 else prev)
+    else:
+        fps = 0.0
+    _fps_last_time[window_name] = now
+    _fps_values[window_name] = fps
+
+    label = f"FPS: {fps:.1f}"
+    org = (10, 25)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale, thickness = 0.7, 2
+    # Dark outline for readability on any background
+    cv2.putText(frame, label, org, font, scale, (0, 0, 0), thickness + 2, cv2.LINE_AA)
+    cv2.putText(frame, label, org, font, scale, (0, 255, 0), thickness,   cv2.LINE_AA)
+    return frame
 
 def main():
     parser = argparse.ArgumentParser(description="Running Python TCP server to play frames from Unity.")
@@ -40,7 +64,7 @@ def main():
 
     args = parser.parse_args()
 
-    # Single camera feed
+    # ------------------------------------------------------------------ mode 0
     if args.mode == 0:      # Single camera feed
         # Set up TCP server socket same as Unity's FrameTransmitter
         server = socket.socket()
@@ -61,7 +85,8 @@ def main():
 
         cv2.destroyAllWindows()
         conn.close()
-    
+
+    # ------------------------------------------------------------------ mode 1    
     elif args.mode == 1:        # 4 cameras feed
         server = socket.socket()
         server.bind(("127.0.0.1", 5000))
@@ -76,13 +101,16 @@ def main():
             frames[cam_id] = frame
             for cam_id, frame in frames.items():
                 if frame is not None:
+                    win = f"Cam{cam_id}"
+                    stamp_fps(frame, win)                    
                     cv2.imshow(f"Cam{cam_id}", frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
+    # ------------------------------------------------------------------ mode 2
     elif args.mode == 2:    # 4-camera-panoramic with diagonal camera placement
-        # [cam0, cam1, cam2, cam3] = [front-left, front-right, back-right, back-left]
+    # [cam0, cam1, cam2, cam3] = [front-left, front-right, back-right, back-left]
 
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
@@ -143,12 +171,6 @@ def main():
 
         dst_size = (640, 480)
 
-        # cv2.namedWindow("Cam0", cv2.WINDOW_NORMAL)
-        # cv2.setMouseCallback("Cam0", print_frame_coordinates, "Cam0")
-        # cv2.namedWindow("Cam1", cv2.WINDOW_NORMAL)
-        # cv2.setMouseCallback("Cam1", print_frame_coordinates, "Cam1")
-        # cv2.namedWindow("Front", cv2.WINDOW_NORMAL)
-
         outsize = (1280, 480)
         seam_overlap = 160
 
@@ -188,6 +210,8 @@ def main():
                     overlap = seam_overlap
                 )
 
+                stamp_fps(front, "Front")
+                stamp_fps(back,  "Back")
                 cv2.imshow("Front", front)
                 cv2.imshow("Back", back)
 
@@ -197,8 +221,9 @@ def main():
         cv2.destroyAllWindows()
         conn.close()
 
+    # ------------------------------------------------------------------ mode 3
     elif args.mode == 3:    # 4-camera vertical stitch
-        # [cam0, cam1, cam2, cam3] = [front-bottom, front-top, back-top, back-bottom]
+    # [cam0, cam1, cam2, cam3] = [front-bottom, front-top, back-top, back-bottom]
 
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
@@ -232,6 +257,8 @@ def main():
                     overlap = 200
                 )
 
+                stamp_fps(front, "Front")
+                stamp_fps(back,  "Back")
                 cv2.imshow("Front", front)
                 cv2.imshow("Back", back)
         
@@ -241,6 +268,7 @@ def main():
         cv2.destroyAllWindows()
         conn.close()
 
+    # ------------------------------------------------------------------ mode 4
     elif args.mode == 4:    # Single floating camera
         server = socket.socket()
         server.bind(("127.0.0.1", 5000))
@@ -254,9 +282,8 @@ def main():
         while True:
             cam_id, frame = receive_frame(conn)
             if frame is not None and cam_id == 0:
+                stamp_fps(frame, "Floating Camera")
                 cv2.imshow(f"Floating Camera", frame)
-
-            
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -264,6 +291,7 @@ def main():
         cv2.destroyAllWindows()
         conn.close()                
 
+    # ------------------------------------------------------------------ mode 5
     elif args.mode == 5:    # Testing BEV warp
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:

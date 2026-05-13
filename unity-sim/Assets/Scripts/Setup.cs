@@ -33,7 +33,7 @@ public class Setup : MonoBehaviour
     {
         Mast,
         Panoramic,
-        Stitched,
+        Vertical,
         Floating
     }
 
