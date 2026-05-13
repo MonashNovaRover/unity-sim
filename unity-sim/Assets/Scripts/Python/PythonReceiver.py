@@ -218,20 +218,22 @@ def main():
             cam_id, frame = receive_frame(conn)
             frames[cam_id] = frame
             if all(f is not None for f in frames.values()):
-                frame_bot = frames[0]
-                frame_top = frames[1]
-
-                cv2.imshow("Cam0", frame_bot)
-                cv2.imshow("Cam1", frame_top)
-            
                 front = build_vertical_feather(
-                    top_frame = frame_top,
-                    bot_frame = frame_bot,
+                    top_frame = frames[1],
+                    bot_frame = frames[0],
+                    target_size = (640, 960),
+                    overlap = 200
+                )
+
+                back = build_vertical_feather(
+                    top_frame = frames[3],
+                    bot_frame = frames[2],
                     target_size = (640, 960),
                     overlap = 200
                 )
 
                 cv2.imshow("Front", front)
+                cv2.imshow("Back", back)
         
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -239,9 +241,30 @@ def main():
         cv2.destroyAllWindows()
         conn.close()
 
+    elif args.mode == 4:    # Single floating camera
+        server = socket.socket()
+        server.bind(("127.0.0.1", 5000))
+        server.listen(1)
+        print("Waiting on Unity TCP connection...")
+        conn, _ = server.accept()
+        print("TCP established")     
 
+        # frames = {0: None, 1: None, 2: None, 3: None, 4: None}  
 
-    elif args.mode == 4:    # Testing BEV warp
+        while True:
+            cam_id, frame = receive_frame(conn)
+            if frame is not None and cam_id == 0:
+                cv2.imshow(f"Floating Camera", frame)
+
+            
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cv2.destroyAllWindows()
+        conn.close()                
+
+    elif args.mode == 5:    # Testing BEV warp
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
                 window_name = param if isinstance(param, str) else "Cam0"

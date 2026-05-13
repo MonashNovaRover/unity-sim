@@ -26,8 +26,19 @@ public class Setup : MonoBehaviour
 {
     public List<NamedObject<GameObject>> robotPrefabs;
     public Camera cam0, cam1, cam2, cam3;
+
     public List<CameraPreset> cameraPresets;
-    public int selectedPreset = 0;
+
+    public enum CameraPresetSelection
+    {
+        Mast,
+        Panoramic,
+        Stitched,
+        Floating
+    }
+
+    [Header("Camera Preset")]
+    public CameraPresetSelection selectedPreset;
 
     void AddSuVISCamera(Camera cam, Transform parent, Vector3 pos, Vector3 rot)
     {
@@ -35,19 +46,6 @@ public class Setup : MonoBehaviour
         cam.transform.localPosition = pos;
         cam.transform.localEulerAngles = rot;
     }
-
-    // string GetPresetName(uint selectedPreset)
-    // {
-    //     string[] table =
-    //     {
-    //         "Mast",
-    //         "Panoramic",
-    //         "Stitched",
-    //         "Floating"
-    //     };
-
-    //     return (selectedPreset < table.Length) ? table[selectedPreset] : "Unknown Preset";
-    // }
 
     void Start()
     {
@@ -61,7 +59,7 @@ public class Setup : MonoBehaviour
         CinemachineCamera cameraFollower = GetComponentInChildren<CinemachineCamera>();
         cameraFollower.Follow = chassisTransform;
 
-        CameraPreset preset = cameraPresets[selectedPreset];
+        CameraPreset preset = cameraPresets[(int)selectedPreset];
         Debug.Log($"Selected Camera Preset: {preset.presetName}");
 
         // Anchor SuVIS camera

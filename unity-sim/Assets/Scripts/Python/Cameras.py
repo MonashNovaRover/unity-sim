@@ -1045,13 +1045,13 @@ def stitch_vertical_feather(
             borderMode=cv2.BORDER_REPLICATE,
         )
     
-    bot_strip = bot_resized[-overlap_height:, :]
-    top_strip = top_resized[:overlap_height, :]
+    bot_strip = bot_resized[:overlap_height, :]
+    top_strip = top_resized[-overlap_height:, :]
     # top_strip = match_exposure(top_strip, bot_strip)
 
     blended_strip = laplacian_pyramid_blend(top_strip, bot_strip, levels=4)
-    bot_body = bot_resized[:target_height - overlap_height, :]
-    top_body = top_resized[overlap_height:, :]
+    top_body = top_resized[:target_height - overlap_height, :]
+    bot_body = bot_resized[overlap_height:, :]
     stitched = cv2.vconcat([top_body, blended_strip, bot_body])
 
     if output_height is not None and stitched.shape[0] != output_height:
