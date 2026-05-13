@@ -33,11 +33,10 @@ _fps_last_time = {}
 _fps_values = {}
 
 def stamp_fps(frame, window_name):
-    """Compute per-window FPS and draw it onto the frame in-place."""
     now = time.perf_counter()
     if window_name in _fps_last_time:
         delta = now - _fps_last_time[window_name]
-        # Smooth with exponential moving average (alpha=0.1)
+
         prev = _fps_values.get(window_name, 0.0)
         fps = 0.9 * prev + 0.1 * (1.0 / delta if delta > 0 else prev)
     else:
@@ -49,9 +48,9 @@ def stamp_fps(frame, window_name):
     org = (10, 25)
     font = cv2.FONT_HERSHEY_SIMPLEX
     scale, thickness = 0.7, 2
-    # Dark outline for readability on any background
+
     cv2.putText(frame, label, org, font, scale, (0, 0, 0), thickness + 2, cv2.LINE_AA)
-    cv2.putText(frame, label, org, font, scale, (0, 255, 0), thickness,   cv2.LINE_AA)
+    cv2.putText(frame, label, org, font, scale, (255, 0, 0), thickness,   cv2.LINE_AA)
     return frame
 
 def main():
@@ -101,9 +100,13 @@ def main():
             frames[cam_id] = frame
             for cam_id, frame in frames.items():
                 if frame is not None:
-                    win = f"Cam{cam_id}"
-                    stamp_fps(frame, win)                    
-                    cv2.imshow(f"Cam{cam_id}", frame)
+                    stamp_fps(frame, f"Cam{cam_id}")
+                    # cv2.imshow(f"Cam{cam_id}", frame)
+            if all(f is not None for f in frames.values()):
+                left = np.vstack((frames[0], frames[1]))
+                right = np.vstack((frames[2], frames[3]))
+                combined = np.hstack((left, right))
+                cv2.imshow("Mast", combined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -181,14 +184,14 @@ def main():
                 for cam_id, frame in frames.items():
                     cv2.imshow(f"Cam{cam_id}", frame)
                     if cam_id in [0, 2]:
-                        cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                        # cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
                         # for point in src_points0:
                         #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
 
                         bevs[cam_id] = bev_warp(frame, src_points0, dst_size=dst_size)
 
                     elif cam_id in [1, 3]:
-                        cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                        # cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
                         # for point in src_points1:
                         #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
 
@@ -212,8 +215,13 @@ def main():
 
                 stamp_fps(front, "Front")
                 stamp_fps(back,  "Back")
-                cv2.imshow("Front", front)
-                cv2.imshow("Back", back)
+
+                front = cv2.resize(front, (0, 0), fx=0.75, fy=1.0)
+                back = cv2.resize(back, (0, 0), fx=0.75, fy=1.0)
+                # cv2.imshow("Front", front)
+                # cv2.imshow("Back", back)
+                combined = np.vstack((front, back))
+                cv2.imshow("Panoramic", combined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -259,8 +267,14 @@ def main():
 
                 stamp_fps(front, "Front")
                 stamp_fps(back,  "Back")
-                cv2.imshow("Front", front)
-                cv2.imshow("Back", back)
+
+                front = cv2.resize(front, (0, 0), fx=1.0, fy=0.75)
+                back = cv2.resize(back, (0, 0), fx=1.0, fy=0.75)
+
+                # cv2.imshow("Front", front)
+                # cv2.imshow("Back", back)
+                combined = np.hstack((back, front))
+                cv2.imshow("Vertical", combined)
         
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
