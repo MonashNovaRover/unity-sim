@@ -30,6 +30,7 @@ public class FrameTransmitter : MonoBehaviour
     private TcpClient client;
     private NetworkStream stream;
     private bool connected = false;
+    private uint frameIdx = 0;
 
     void Awake()
     {
@@ -89,18 +90,20 @@ public class FrameTransmitter : MonoBehaviour
         // Debug.Log("Sending frame...");
         if (mode == CameraMode.All)
         {
-            if (cam0RT != null) SendFrame(cam0RT, camId: 0);
-            if (cam1RT != null) SendFrame(cam1RT, camId: 1);
-            if (cam2RT != null) SendFrame(cam2RT, camId: 2);
-            if (cam3RT != null) SendFrame(cam3RT, camId: 3);
+            if (cam0RT != null) SendFrame(cam0RT, camId: 0, frameIdx);
+            if (cam1RT != null) SendFrame(cam1RT, camId: 1, frameIdx);
+            if (cam2RT != null) SendFrame(cam2RT, camId: 2, frameIdx);
+            if (cam3RT != null) SendFrame(cam3RT, camId: 3, frameIdx);
+            frameIdx++;
         }
         else
         {
-            if (camFloatRT != null) SendFrame(camFloatRT, camId: 0);
+            if (camFloatRT != null) SendFrame(camFloatRT, camId: 0, frameIdx);
+            frameIdx++;
         }
     }
 
-    void SendFrame(RenderTexture rt, byte camId)
+    void SendFrame(RenderTexture rt, byte camId, uint fIdx)
     {
         RenderTexture.active = rt;
         Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
@@ -112,6 +115,7 @@ public class FrameTransmitter : MonoBehaviour
         Destroy(tex);
 
         stream.WriteByte(camId);
+        stream.Write(System.BitConverter.GetBytes(fIdx), 0, 4);
         byte[] header = System.BitConverter.GetBytes(bytes.Length);
         stream.Write(header, 0, 4);
         stream.Write(bytes, 0, bytes.Length);

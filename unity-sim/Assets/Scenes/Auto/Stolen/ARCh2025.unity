@@ -1626,7 +1626,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 90
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -4680,7 +4680,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 90
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -5961,7 +5961,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 90
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: -2
@@ -7611,7 +7611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62eb23fdb12ee6a4489490329418eeb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 0
+  mode: 1
   cam0: {fileID: 1154239358}
   cam1: {fileID: 83718648}
   cam2: {fileID: 2034234556}
@@ -8250,7 +8250,7 @@ PrefabInstance:
       objectReference: {fileID: 1154239358}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: selectedPreset
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.size
@@ -8607,7 +8607,7 @@ PrefabInstance:
     - target: {fileID: 4731007832486657964, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 8400000, guid: 46099494568a78b45b1214758687640c, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 5791158448662248076, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_Name
       value: MainCamera
@@ -9923,7 +9923,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 90
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -10240,7 +10240,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 98276813
+  m_text: 98192553
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dbf8ebca793cb404c937ae8926476525, type: 2}
   m_sharedMaterial: {fileID: 2154050367994989757, guid: dbf8ebca793cb404c937ae8926476525, type: 2}

@@ -1,11 +1,29 @@
 # netstat -ano | findstr :5000
-# | 1 byte camId | 4 bytes frame length | N bytes JPG data |
+# | 1 byte camId | 4 bytes frame index | 4 bytes frame length | N bytes JPG data |
 # python .\Assets\Scripts\Python\PythonReceiver.py --mode 2
 
 import socket, struct, cv2, time
+import threading
 import numpy as np
 import argparse
+from collections import defaultdict
 from Cameras import build_panoramic_feather, bev_warp, build_vertical_feather
+
+def tcp_latency_probe_listener(server_sock):
+    """Accepts a second TCP connection purely for latency probing."""
+    print("Latency probe listener ready")
+    while True:
+        conn, addr = server_sock.accept()
+        print(f"Probe connection from {addr}")
+        while True:
+            try:
+                data = conn.recv(64)
+                if not data:
+                    break
+                conn.sendall(data)      # echo straight back
+            except:
+                break
+        conn.close()
 
 # Receive camera frames from Unity
 def receive_frame(conn):
@@ -13,6 +31,11 @@ def receive_frame(conn):
     # Convert byte to int
     cam_id = conn.recv(1)
     cam_id = cam_id[0]
+
+    # Read 4 bytes for frame index (time stamping)
+    # Interpret as little-endian unsigned integer to match C#'s BitConverter
+    raw_idx = conn.recv(4)
+    frame_idx = struct.unpack('<I', raw_idx)[0]
 
     # Read 4 bytes for frame package as specified in transmitter
     # Interpret 4 bytes as little-endian unsigned integer to match C#'s BitConverter
@@ -27,7 +50,7 @@ def receive_frame(conn):
     # Wrap raw bytes into NP array
     # Decode array as BGR image
     arr = np.frombuffer(data, dtype=np.uint8)
-    return cam_id, cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    return cam_id, frame_idx, cv2.imdecode(arr, cv2.IMREAD_COLOR)
 
 _fps_last_time = {}
 _fps_values = {}
@@ -62,6 +85,9 @@ def main():
     )
 
     args = parser.parse_args()
+    frame_buffer = defaultdict(dict)
+    MAX_BUFFER_AGE = 5
+    last_idx = -1
 
     # ------------------------------------------------------------------ mode 0
     if args.mode == 0:      # Single camera feed
@@ -73,17 +99,17 @@ def main():
         conn, _ = server.accept()
         print("TCP established")
 
-        while True:
-            # print("Starting to receive frame...")
-            frame = receive_frame(conn)
+        # while True:
+        #     # print("Starting to receive frame...")
+        #     frame = receive_frame(conn)
 
-            cv2.imshow("Cam0", frame)
+        #     cv2.imshow("Cam0", frame)
             
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        #     if cv2.waitKey(1) & 0xFF == ord('q'):
+        #         break
 
-        cv2.destroyAllWindows()
-        conn.close()
+        # cv2.destroyAllWindows()
+        # conn.close()
 
     # ------------------------------------------------------------------ mode 1    
     elif args.mode == 1:        # 4 cameras feed
@@ -96,17 +122,25 @@ def main():
 
         frames = {0: None, 1: None, 2: None, 3: None}
         while True:
-            cam_id, frame = receive_frame(conn)
-            frames[cam_id] = frame
-            for cam_id, frame in frames.items():
-                if frame is not None:
-                    stamp_fps(frame, f"Cam{cam_id}")
-                    # cv2.imshow(f"Cam{cam_id}", frame)
-            if all(f is not None for f in frames.values()):
-                left = np.vstack((frames[0], frames[1]))
-                right = np.vstack((frames[2], frames[3]))
-                combined = np.hstack((left, right))
-                cv2.imshow("Mast", combined)
+            cam_id, frame_idx, frame = receive_frame(conn)
+            frame_buffer[frame_idx][cam_id] = frame
+
+            if set(frame_buffer[frame_idx].keys()) == {0, 1, 2, 3}:
+                if frame_idx > last_idx:
+                    last_idx = frame_idx
+                    frames = frame_buffer[frame_idx]
+
+                    for cam_id, frame in frames.items():
+                        if frame is not None:
+                            stamp_fps(frame, f"Cam{cam_id}")
+
+                    if all(f is not None for f in frames.values()):
+                        left = np.vstack((frames[0], frames[1]))
+                        right = np.vstack((frames[2], frames[3]))
+                        combined = np.hstack((left, right))
+                        cv2.imshow("Mast", combined)
+
+                del frame_buffer[frame_idx]
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -122,8 +156,10 @@ def main():
 
         server = socket.socket()
         server.bind(("127.0.0.1", 5000))
-        server.listen(1)
+        server.listen(2)
         print("Waiting on Unity TCP connection...")
+
+        threading.Thread(target=tcp_latency_probe_listener, args=(server,), daemon=True).start()
         conn, _ = server.accept()
         print("TCP established")
 
@@ -178,50 +214,98 @@ def main():
         seam_overlap = 160
 
         while True:
-            cam_id, frame = receive_frame(conn)
-            frames[cam_id] = frame
-            if all(f is not None for f in frames.values()):
-                for cam_id, frame in frames.items():
-                    cv2.imshow(f"Cam{cam_id}", frame)
-                    if cam_id in [0, 2]:
-                        # cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
-                        # for point in src_points0:
-                        #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+            cam_id, frame_idx, frame = receive_frame(conn)
+            # frames[cam_id] = frame
+            frame_buffer[frame_idx][cam_id] = frame
 
-                        bevs[cam_id] = bev_warp(frame, src_points0, dst_size=dst_size)
+            if set(frame_buffer[frame_idx].keys()) == {0, 1, 2, 3}:
+                if frame_idx > last_idx:
+                    last_idx = frame_idx
+                    frames = frame_buffer[frame_idx]
 
-                    elif cam_id in [1, 3]:
-                        # cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
-                        # for point in src_points1:
-                        #     cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+                    if all(f is not None for f in frames.values()):
+                        for cam_id, frame in frames.items():
+                            cv2.imshow(f"Cam{cam_id}", frame)
+                            if cam_id in [0, 2]:
+                                cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                                for point in src_points0:
+                                    cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
 
-                        bevs[cam_id] = bev_warp(frame, src_points1, dst_size=dst_size)
+                                bevs[cam_id] = bev_warp(frame, src_points0, dst_size=dst_size)
+
+                            elif cam_id in [1, 3]:
+                                cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+                                for point in src_points1:
+                                    cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+
+                                bevs[cam_id] = bev_warp(frame, src_points1, dst_size=dst_size)     
+
+                    front = build_panoramic_feather(
+                        left_frame = bevs[0],
+                        right_frame = bevs[1],
+                        target_size = outsize,
+                        overlap = seam_overlap
+                    )
+
+                    back = build_panoramic_feather(
+                        left_frame = bevs[2],
+                        right_frame = bevs[3],
+                        target_size = outsize,
+                        overlap = seam_overlap
+                    )
+
+                    stamp_fps(front, "Front")
+                    stamp_fps(back,  "Back")
+
+                    front = cv2.resize(front, (0, 0), fx=0.75, fy=1.0)
+                    back = cv2.resize(back, (0, 0), fx=0.75, fy=1.0)
+                    combined = np.vstack((front, back))
+                    cv2.imshow("Panoramic", combined)
+
+                del frame_buffer[frame_idx]
+
+            # if all(f is not None for f in frames.values()):
+            #     for cam_id, frame in frames.items():
+            #         cv2.imshow(f"Cam{cam_id}", frame)
+            #         if cam_id in [0, 2]:
+            #             cv2.polylines(frame, [src_points0.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+            #             for point in src_points0:
+            #                 cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+
+            #             bevs[cam_id] = bev_warp(frame, src_points0, dst_size=dst_size)
+
+            #         elif cam_id in [1, 3]:
+            #             cv2.polylines(frame, [src_points1.astype(int)], isClosed=True, color=(0, 255, 255), thickness=1)
+            #             for point in src_points1:
+            #                 cv2.circle(frame, tuple(point.astype(int)), 5, (0, 0, 255), -1)
+
+            #             bevs[cam_id] = bev_warp(frame, src_points1, dst_size=dst_size)
                     
                     # cv2.imshow(f"Cam{cam_id} BEV", bevs[cam_id])
     
-                front = build_panoramic_feather(
-                    left_frame = bevs[0],
-                    right_frame = bevs[1],
-                    target_size = outsize,
-                    overlap = seam_overlap
-                )
+                # front = build_panoramic_feather(
+                #     left_frame = bevs[0],
+                #     right_frame = bevs[1],
+                #     target_size = outsize,
+                #     overlap = seam_overlap
+                # )
 
-                back = build_panoramic_feather(
-                    left_frame = bevs[2],
-                    right_frame = bevs[3],
-                    target_size = outsize,
-                    overlap = seam_overlap
-                )
+                # back = build_panoramic_feather(
+                #     left_frame = bevs[2],
+                #     right_frame = bevs[3],
+                #     target_size = outsize,
+                #     overlap = seam_overlap
+                # )
 
-                stamp_fps(front, "Front")
-                stamp_fps(back,  "Back")
+                # stamp_fps(front, "Front")
+                # stamp_fps(back,  "Back")
 
-                front = cv2.resize(front, (0, 0), fx=0.75, fy=1.0)
-                back = cv2.resize(back, (0, 0), fx=0.75, fy=1.0)
-                # cv2.imshow("Front", front)
-                # cv2.imshow("Back", back)
-                combined = np.vstack((front, back))
-                cv2.imshow("Panoramic", combined)
+                # front = cv2.resize(front, (0, 0), fx=0.75, fy=1.0)
+                # back = cv2.resize(back, (0, 0), fx=0.75, fy=1.0)
+                # # cv2.imshow("Front", front)
+                # # cv2.imshow("Back", back)
+                # combined = np.vstack((front, back))
+                # cv2.imshow("Panoramic", combined)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -248,33 +332,64 @@ def main():
         frames = {0: None, 1: None, 2: None, 3: None}
 
         while True:
-            cam_id, frame = receive_frame(conn)
-            frames[cam_id] = frame
-            if all(f is not None for f in frames.values()):
-                front = build_vertical_feather(
-                    top_frame = frames[1],
-                    bot_frame = frames[0],
-                    target_size = (640, 960),
-                    overlap = 200
-                )
+            cam_id, frame_idx, frame = receive_frame(conn)
+            frame_buffer[frame_idx][cam_id] = frame
 
-                back = build_vertical_feather(
-                    top_frame = frames[3],
-                    bot_frame = frames[2],
-                    target_size = (640, 960),
-                    overlap = 200
-                )
+            if set(frame_buffer[frame_idx].keys()) == {0, 1, 2, 3}:
+                if frame_idx > last_idx:
+                    last_idx = frame_idx
+                    frames = frame_buffer[frame_idx]            
 
-                stamp_fps(front, "Front")
-                stamp_fps(back,  "Back")
+                    if all(f is not None for f in frames.values()):
+                        front = build_vertical_feather(
+                            top_frame = frames[1],
+                            bot_frame = frames[0],
+                            target_size = (640, 960),
+                            overlap = 200
+                        )
 
-                front = cv2.resize(front, (0, 0), fx=1.0, fy=0.75)
-                back = cv2.resize(back, (0, 0), fx=1.0, fy=0.75)
+                        back = build_vertical_feather(
+                            top_frame = frames[3],
+                            bot_frame = frames[2],
+                            target_size = (640, 960),
+                            overlap = 200
+                        )
+
+                        stamp_fps(front, "Front")
+                        stamp_fps(back,  "Back")
+
+                        front = cv2.resize(front, (0, 0), fx=1.0, fy=0.75)
+                        back = cv2.resize(back, (0, 0), fx=1.0, fy=0.75)
+
+                        combined = np.hstack((back, front))
+                        cv2.imshow("Vertical", combined)
+
+            # frames[cam_id] = frame
+            # if all(f is not None for f in frames.values()):
+            #     front = build_vertical_feather(
+            #         top_frame = frames[1],
+            #         bot_frame = frames[0],
+            #         target_size = (640, 960),
+            #         overlap = 200
+            #     )
+
+            #     back = build_vertical_feather(
+            #         top_frame = frames[3],
+            #         bot_frame = frames[2],
+            #         target_size = (640, 960),
+            #         overlap = 200
+            #     )
+
+            #     stamp_fps(front, "Front")
+            #     stamp_fps(back,  "Back")
+
+            #     front = cv2.resize(front, (0, 0), fx=1.0, fy=0.75)
+            #     back = cv2.resize(back, (0, 0), fx=1.0, fy=0.75)
 
                 # cv2.imshow("Front", front)
                 # cv2.imshow("Back", back)
-                combined = np.hstack((back, front))
-                cv2.imshow("Vertical", combined)
+                # combined = np.hstack((back, front))
+                # cv2.imshow("Vertical", combined)
         
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -294,7 +409,7 @@ def main():
         # frames = {0: None, 1: None, 2: None, 3: None, 4: None}  
 
         while True:
-            cam_id, frame = receive_frame(conn)
+            cam_id, _, frame = receive_frame(conn)
             if frame is not None and cam_id == 0:
                 stamp_fps(frame, "Floating Camera")
                 cv2.imshow(f"Floating Camera", frame)
@@ -306,6 +421,7 @@ def main():
         conn.close()                
 
     # ------------------------------------------------------------------ mode 5
+    ### NOT WORKING RN ###
     elif args.mode == 5:    # Testing BEV warp
         def print_frame_coordinates(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
