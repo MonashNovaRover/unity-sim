@@ -27,7 +27,19 @@ public class RaceTimer : MonoBehaviour
                 timer = true;
                 FinishWaypoint.Instance.StartActivationCountdown();
                 Debug.Log("Timer Started");
+
+                // path recorder
+                var recorder = FindFirstObjectByType<PathRecorder>();
+                if (recorder != null) recorder.StartRecording();
             }
+            return;
+        }
+
+        // e-stop
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Debug.Log("E-STOP triggered");
+            StopTimer();
             return;
         }
 
@@ -51,5 +63,13 @@ public class RaceTimer : MonoBehaviour
     {
         timer = false;
         Debug.Log("Final Time: " + elapsedTime.ToString("F2") + "seconds");
+
+        // path recorder
+        var recorder = FindFirstObjectByType<PathRecorder>();
+        if (recorder != null)
+        {
+            recorder.StopRecording();
+            recorder.SaveToCSV();
+        }
     }
 }
