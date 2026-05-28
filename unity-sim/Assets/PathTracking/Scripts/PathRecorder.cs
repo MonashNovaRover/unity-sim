@@ -200,7 +200,7 @@ public class PathRecorder : MonoBehaviour
         if (trailLine != null) trailLine.enabled = visible;
     }
 
-    public void SaveToCSV(string filename = "3_Mast.csv")
+    public void SaveToCSV(string filename = "test.csv")
     {
         string folder = Path.Combine(Application.dataPath, "PathTracking");
         if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);

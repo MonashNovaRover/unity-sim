@@ -131,7 +131,7 @@ def compute_sparc(times, positions, fc=5.0, amp_thresh=0.05):
 
 def main():
     parser = argparse.ArgumentParser(description="Plot a recorded rover path top-down.")
-    parser.add_argument("--actual", default="4_Vertical.csv",
+    parser.add_argument("--actual", default="test.csv",
                         help="CSV file with the recorded path (filename or full path)")
     parser.add_argument("--color-by", default="time",
                         choices=["time", "speed", "none"],
