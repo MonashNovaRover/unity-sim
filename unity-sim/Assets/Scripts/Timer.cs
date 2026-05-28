@@ -31,6 +31,10 @@ public class RaceTimer : MonoBehaviour
                 // path recorder
                 var recorder = FindFirstObjectByType<PathRecorder>();
                 if (recorder != null) recorder.StartRecording();
+
+                // controller recorder
+                var ctrlRecorder = FindFirstObjectByType<ControllerRecorder>();
+                if (ctrlRecorder != null) ctrlRecorder.StartRecording();
             }
             return;
         }
@@ -70,6 +74,14 @@ public class RaceTimer : MonoBehaviour
         {
             recorder.StopRecording();
             recorder.SaveToCSV();
+        }
+
+        // controller recorder
+        var ctrlRecorder = FindFirstObjectByType<ControllerRecorder>();
+        if (ctrlRecorder != null)
+        {
+            ctrlRecorder.StopRecording();
+            ctrlRecorder.SaveToCSV();
         }
     }
 }

@@ -134,8 +134,8 @@ def main():
         if len(resampled_runs) >= 2:
             xs = np.stack([r[0] for r in resampled_runs])
             zs = np.stack([r[1] for r in resampled_runs])
-            mean_x = xs.mean(axis=0)
-            mean_z = zs.mean(axis=0)
+            mean_x = np.median(xs, axis=0)
+            mean_z = np.median(zs, axis=0)
 
             ax.plot(mean_x, mean_z,
                     color=color, linewidth=MEAN_LINE_WIDTH,
