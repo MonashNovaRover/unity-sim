@@ -1509,6 +1509,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
+      propertyPath: defaultPrefab
+      value: default
+      objectReference: {fileID: 0}
+    - target: {fileID: 956404179842824571, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: robotPrefabs.Array.data[1].obj
       value: 
       objectReference: {fileID: 8376997336501032911, guid: 36a050453610049689af1ba179b9c82b, type: 3}
