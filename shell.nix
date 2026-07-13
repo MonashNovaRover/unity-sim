@@ -27,9 +27,8 @@ let
     fi
 
     # Your custom setup here
-    alias hub='tmux new -A -d -s hub "unityhub --no-sandbox"'
-    alias unity='tmux new -A -d -s unity "~/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -projectpath ./unity-sim"'
-    alias ridermux='tmux new -A -d -s rider "rider"'
+    alias hub='unityhub --no-sandbox'
+    alias unity='~/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -projectpath ./unity-sim'
 
     export DOTNET_ROOT=${dotnetPkg}
 
@@ -37,9 +36,9 @@ let
     echo "Entered Unity FHS environment."
     echo ""
     echo "Type:"
-    echo " - 'unity' to open the editor in tmux"
-    echo " - 'hub' to open unity hub in tmux"
-    echo " - 'ridermux' to open Jetbrains rider in tmux"
+    echo " - 'unity' to open the editor"
+    echo " - 'hub' to open unity hub"
+    echo " - 'rider' to open Jetbrains rider"
     echo ""
   '';
   fhsBashrc = fhsBashrcDefinition + "/bin/fhs-bashrc";
