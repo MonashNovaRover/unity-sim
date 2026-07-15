@@ -409,11 +409,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ead71f42af847e434b7b4cd7755e7c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourceCamera: {fileID: 251066445}
-  renderTexture: {fileID: 0}
-  width: 640
-  height: 360
-  framerate: 2
 --- !u!114 &251066442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,9 +421,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65263fd5e740c42f783c6d0c04da1084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topic: /unity/unity1
-  frameId: unity
-  cameraCapture: {fileID: 251066441}
 --- !u!114 &251066443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1351,6 +1343,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1726391491 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4359420746669494078, guid: e215e07d7c0cb50499853fcd54594376, type: 3}
+  m_PrefabInstance: {fileID: 1849099463}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1369de72a29f4499a923fd357889a816, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1849099463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1634,59 +1637,75 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.06
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -5.74
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9967033
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.05853076
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.055810228
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.006469489
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 6.742
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -6.388
-      objectReference: {fileID: 0}
-    - target: {fileID: 2155304170265754226, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0.367
-      objectReference: {fileID: 0}
-    - target: {fileID: 2258835738073333356, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
-      propertyPath: m_Name
-      value: WebRTC Camera
-      objectReference: {fileID: 0}
     - target: {fileID: 7161554415592588242, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
       propertyPath: useCustomRenderTextureFormat
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.74
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9967033
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.05853076
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.055810228
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.006469489
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 6.742
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -6.388
+      objectReference: {fileID: 0}
+    - target: {fileID: 2155304170265754226, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0.367
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258835738073333356, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_Name
+      value: WebRTCCamera (Mast down)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7161554415592588242, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: serial
+      value: Mast down
+      objectReference: {fileID: 0}
+    - target: {fileID: 7161554415592588242, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: webRtcCameraManager
+      value: 
+      objectReference: {fileID: 1726391491}
+    - target: {fileID: 7161554415592588242, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: useCustomRenderTextureFormat
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8202926490341919308, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: dcd57b89c026e3179bf2f99d0bb935f1, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8202926490341919308}
   - component: {fileID: 7201458101168103427}
   m_Layer: 0
-  m_Name: WebRTCCamera ()
+  m_Name: WebRTCCamera (front)
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,18 +43,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 2258835738073333356}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8fe1cfaef3d926d79eea81ec4ed5b6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e7a76aa57b745a558ea9b154e266207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 8202926490341919308}
   webRtcCameraManager: {fileID: 0}
-  serial: 
+  serial: front
+  fieldOfView: 60
   depth: 24
   useCustomRenderTextureFormat: 0
   renderTextureFormat: 2
-  width: 640
-  height: 360
-  framerate: 10
+  width: 1280
+  height: 720
+  framerate: 30
 --- !u!20 &8202926490341919308
 Camera:
   m_ObjectHideFlags: 0
