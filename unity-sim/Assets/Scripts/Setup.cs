@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnitySensors.Sensor.GNSS;
 
 public class Setup : MonoBehaviour
 {
@@ -34,6 +36,16 @@ public class Setup : MonoBehaviour
         Transform chassisTransform = rover.transform.Find("base_link/chassis");
         CinemachineCamera cameraFollower = GetComponentInChildren<CinemachineCamera>();
         cameraFollower.Follow = chassisTransform;
+
+        // Init GPS    
+        Transform gnssSensorTransform = rover.transform.Find("base_link/chassis/GNSS_ros");
+        GNSSSensor gnssSensorScript = gnssSensorTransform.GetComponent<GNSSSensor>();
+        GameObject coordinateSystemPrefab = GameObject.Find("GeoCoordinateSystem");
+        GeoCoordinateSystem coordinateSystemScript = coordinateSystemPrefab.GetComponent<GeoCoordinateSystem>();
+        FieldInfo field = typeof(GNSSSensor).GetField(
+            "_coordinateSystem", BindingFlags.NonPublic | BindingFlags.Instance
+        );
+        field.SetValue(gnssSensorScript, coordinateSystemScript);
     }
 
     void Update()

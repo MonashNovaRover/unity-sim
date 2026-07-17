@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 678db2b89ef6676fcb524daafb605bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultPrefab: 
   robotPrefabs:
   - name: arm
     obj: {fileID: 7421496756122824962, guid: b924cd698d0590a50a71b9e4bcd7d535, type: 3}

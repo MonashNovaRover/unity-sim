@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using RosSharp.RosBridgeClient.MessageGeneration;
 using UnityEngine;
 using SocketCANSharp;
@@ -59,9 +60,19 @@ public class CanTest : MonoBehaviour
         }
     }
     
-    void CANThread()
+    async void CANThread()
     {
-        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
+        CanNetworkInterface can0;
+        int can0_poll = 500; // 500 ms
+        do 
+        {
+            can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
+            Debug.Log($"Connection to can0 refused. Retrying in {can0_poll} ms...");
+            await Task.Delay(can0_poll);
+        } 
+        while (can0 is null);
+        Debug.Log($"Connection to can0 established");
+
         if (can0 is not null)
         {
             RawCanSocket can0Socket = new();
