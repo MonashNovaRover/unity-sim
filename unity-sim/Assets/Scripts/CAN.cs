@@ -18,6 +18,7 @@ public class CanTest : MonoBehaviour
     
     private ConcurrentQueue<CanFrame> receivedFrames = new();
     private Thread canThread;
+    private volatile bool canPoll = false; 
 
     public GameObject led;
     private Light ledLight;
@@ -60,29 +61,29 @@ public class CanTest : MonoBehaviour
         }
     }
     
-    async void CANThread()
+    void CANThread()
     {
-        CanNetworkInterface can0;
-        int can0_poll = 500; // 500 ms
-        do 
+        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
+        int canPollDelay = 500; // 500 ms
+        do
         {
+            Debug.Log($"Connection to can0 refused. Retrying in {canPollDelay} ms...");
+            
+            if (!canPoll) return;
+            Thread.Sleep(canPollDelay);
             can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
-            Debug.Log($"Connection to can0 refused. Retrying in {can0_poll} ms...");
-            await Task.Delay(can0_poll);
         } 
         while (can0 is null);
+
         Debug.Log($"Connection to can0 established");
 
-        if (can0 is not null)
-        {
-            RawCanSocket can0Socket = new();
-            can0Socket.Bind(can0);
+        RawCanSocket can0Socket = new();
+        can0Socket.Bind(can0);
 
-            while (true)
-            {
-                can0Socket.Read(out CanFrame frame);
-                receivedFrames.Enqueue(frame);
-            }
+        while (canPoll)
+        {
+            can0Socket.Read(out CanFrame frame);
+            receivedFrames.Enqueue(frame);
         }
     }
 
@@ -110,6 +111,7 @@ public class CanTest : MonoBehaviour
 
     void Start()
     {
+        canPoll = true;
         canThread = new Thread(CANThread);
         canThread.Start();
         
@@ -240,6 +242,15 @@ public class CanTest : MonoBehaviour
             {
                 HandleLEDCommand(frame);
             }
+        }
+    }
+
+    void OnDestroy()
+    {
+        canPoll = false; 
+        if (canThread != null && canThread.IsAlive)
+        {
+            canThread.Join(1000); 
         }
     }
 }
