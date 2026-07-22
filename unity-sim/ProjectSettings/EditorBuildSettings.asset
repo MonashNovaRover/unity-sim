@@ -12,11 +12,8 @@ EditorBuildSettings:
     path: Assets/Scenes/MainSceneLoader.unity
     guid: c2d540770cc95e999a33a47753b7c247
   - enabled: 1
-    path: Assets/Scenes/Auto/Stolen/ARCh2025.unity
-    guid: 50cb0be244651257fa5ae971d6d66c97
-  - enabled: 1
-    path: Assets/Scenes/Auto/Stolen/ARCh2024.unity
-    guid: 04ef68bf64aa44740ac054f55953d47b
+    path: Assets/Scenes/ARCh2026/ARCh2026.unity
+    guid: ee5c29bf5a08af0bfb6f3095584eb55c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: d49f47fa6fd5f21cab87ba0d939f2dd6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

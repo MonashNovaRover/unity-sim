@@ -149,13 +149,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scenes:
-  - name: ARC2025
-    obj: ARCh2025
-  - name: ARC2024
-    obj: ARCh2024
-  - name: default
-    obj: ARCh2025
-  defaultScene: ARC2025
+  - name: ARCh2026
+    obj: ARCh2026
+  defaultScene: ARCh2026
 --- !u!4 &258167866
 Transform:
   m_ObjectHideFlags: 0
