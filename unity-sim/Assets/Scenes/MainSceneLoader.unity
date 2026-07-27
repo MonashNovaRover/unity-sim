@@ -151,6 +151,8 @@ MonoBehaviour:
   scenes:
   - name: ARCh2026
     obj: ARCh2026
+  - name: ARChGeneric
+    obj: ARChGeneric
   defaultScene: ARCh2026
 --- !u!4 &258167866
 Transform:
