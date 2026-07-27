@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnitySensors.Sensor.GNSS;
 
 public class Setup : MonoBehaviour
@@ -50,6 +49,5 @@ public class Setup : MonoBehaviour
 
     void Update()
     {
-
     }
 }

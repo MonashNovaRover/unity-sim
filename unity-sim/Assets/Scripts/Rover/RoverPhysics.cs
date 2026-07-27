@@ -15,13 +15,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Unity.Robotics.UrdfImporter;
-using RosMessageTypes.Sensor;
-using RosMessageTypes.Std;
-using Unity.Robotics.ROSTCPConnector;
-using UnityEngine.Rendering.PostProcessing;
 using UnitySensors.Sensor.GNSS;
 
-public class Rover : MonoBehaviour
+public class RoverPhysics : MonoBehaviour
 {
 	public float pivotForce = 10000f;
 	public float wheelForce = 10000f;
@@ -43,14 +39,42 @@ public class Rover : MonoBehaviour
 		    }
 	    }
     }
+    //Hardcode, this function makes it easier to test physics with changes consistent across rover prefabs
+    void SetJointMasses()
+    {
+        foreach (var joint in articulationBodies)
+        {
+            float mass = 1e-7f;
+            if (joint.Key == "flw" || joint.Key == "frw" || joint.Key == "blw" || joint.Key == "brw")
+            {
+                mass = 5.0f;
+            }
+
+            joint.Value.mass = mass;
+        }
+    }
+        void ZeroAllJoints()
+    {
+        foreach (var joint in articulationBodies)
+        {
+            ArticulationDrive jointState = joint.Value.xDrive;
+            jointState.forceLimit = 35f;
+            jointState.target = 0.0f;
+            jointState.driveType = ArticulationDriveType.Target;
+            joint.Value.xDrive = jointState;
+        }
+    }
     void Start()
     {
 		GetArticulationBodies(wheelNames);
 		GetArticulationBodies(pivotNames);
 		GetArticulationBodies(legNames);
-		
-		//Find GNSS coordinate origin in the scene
-		GNSSSensor gnss = transform.Find("base_link/chassis/GNSS_ros")?.GetComponent<GNSSSensor>();
+
+        ZeroAllJoints();
+        SetJointMasses();
+
+        //Find GNSS coordinate origin in the scene
+        GNSSSensor gnss = transform.Find("base_link/chassis/GNSS_ros")?.GetComponent<GNSSSensor>();
 		GeoCoordinateSystem coord = transform.Find("/GeoCoordinateSystem")?.GetComponent<GeoCoordinateSystem>();
 
 		if (gnss is not null && coord is not null)

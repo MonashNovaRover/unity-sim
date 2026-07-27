@@ -60,13 +60,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 678db2b89ef6676fcb524daafb605bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPrefab: 
+  defaultPrefab: default
   robotPrefabs:
   - name: arm
     obj: {fileID: 7421496756122824962, guid: b924cd698d0590a50a71b9e4bcd7d535, type: 3}
-  - name: default
+  - name: auto
     obj: {fileID: 8376997336501032911, guid: 36a050453610049689af1ba179b9c82b, type: 3}
-  - name: default_
+  - name: default
     obj: {fileID: 8376997336501032911, guid: 27d20e4002953e0a591b54496b2ae9ca, type: 3}
 --- !u!1 &5791158448662248076
 GameObject:

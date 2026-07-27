@@ -12,10 +12,13 @@ EditorBuildSettings:
     path: Assets/Scenes/MainSceneLoader.unity
     guid: c2d540770cc95e999a33a47753b7c247
   - enabled: 1
-    path: Assets/Scenes/ARCh2026/ARCh2026.unity
+    path: Assets/Scenes/Competition/ARCh2026.unity
     guid: ee5c29bf5a08af0bfb6f3095584eb55c
+  - enabled: 1
+    path: Assets/Scenes/Competition/ARChGeneric.unity
+    guid: 95ae64ca2ae85d457a3d249234221384
   m_configObjects:
-    com.unity.input.settings: {fileID: 11400000, guid: d49f47fa6fd5f21cab87ba0d939f2dd6, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: c2dc99aa277e6e4ebb75d60bbede0ec6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.renderstreaming.settings: {fileID: 11400000, guid: eaaad242393318e4f85c45e69c8837f0, type: 2}
   m_UseUCBPForAssetBundles: 0

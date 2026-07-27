@@ -3,15 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using RosSharp.RosBridgeClient.MessageGeneration;
 using UnityEngine;
 using SocketCANSharp;
 using SocketCANSharp.Network;
 using Unity.Robotics.UrdfImporter;
-using Unity.VisualScripting;
 
-public class CanTest : MonoBehaviour
+public class RoverCANBus : MonoBehaviour
 {
     public float positionForce = 35f;
     public float velocityForce = 10000f;
@@ -33,50 +30,22 @@ public class CanTest : MonoBehaviour
             articulationBodies.Add(urdfJoint.jointName, urdfJoint.GetComponent<ArticulationBody>());
         }
     }
-    
-    //Hardcode, this function makes it easier to test physics with changes consistent across rover prefabs
-    void SetJointMasses()
-    {
-        foreach (var joint in articulationBodies)
-        {
-            float mass = 1e-7f;
-            if (joint.Key == "flw" || joint.Key == "frw" || joint.Key == "blw" || joint.Key == "brw")
-            {
-                mass = 5.0f;
-            }
-
-            joint.Value.mass = mass;
-        }
-    }
-
-    void ZeroAllJoints()
-    {
-        foreach(var joint in articulationBodies)
-        {
-            ArticulationDrive jointState = joint.Value.xDrive;
-            jointState.forceLimit = positionForce;
-            jointState.target = 0.0f;
-            jointState.driveType = ArticulationDriveType.Target;
-            joint.Value.xDrive = jointState;
-        }
-    }
-    
     void CANThread()
     {
-        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
         int canPollDelay = 500; // 500 ms
-        do
+        CanNetworkInterface can0 = CanNetworkInterface.GetAllInterfaces(true)
+            .FirstOrDefault(iface => iface.Name.Equals("can0"));
+
+        while (can0 is null)
         {
-            Debug.Log($"Connection to can0 refused. Retrying in {canPollDelay} ms...");
-            
             if (!canPoll) return;
+            Debug.Log($"Connection to can0 refused. Retrying in {canPollDelay} ms...");
             Thread.Sleep(canPollDelay);
-            can0 = CanNetworkInterface.GetAllInterfaces(true).FirstOrDefault(iface => iface.Name.Equals("can0"));
-        } 
-        while (can0 is null);
+            can0 = CanNetworkInterface.GetAllInterfaces(true)
+                .FirstOrDefault(iface => iface.Name.Equals("can0"));
+        }
 
-        Debug.Log($"Connection to can0 established");
-
+        Debug.Log("Connection to can0 established");
         RawCanSocket can0Socket = new();
         can0Socket.Bind(can0);
 
@@ -108,7 +77,6 @@ public class CanTest : MonoBehaviour
 
         return (command < table.Length) ? table[command] : "Unknown Command";
     }
-
     void Start()
     {
         canPoll = true;
@@ -117,8 +85,6 @@ public class CanTest : MonoBehaviour
         
         ledLight = led.GetComponent<Light>();
         GetArticulationBodiesOfChildren();
-        ZeroAllJoints();
-        SetJointMasses();
     }
 
     void HandleBLCMDCommand(CanFrame frame)

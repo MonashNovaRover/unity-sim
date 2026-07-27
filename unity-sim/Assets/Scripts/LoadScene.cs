@@ -42,7 +42,7 @@ public class LoadScene : MonoBehaviour
     }
     void Start()
     {
-        string sceneName = GetArg("scene", defaultScene);
+        string sceneName = GetArg("world", defaultScene);
         string scene = scenes.First(scene => scene.name == sceneName).obj;
 
         SceneManager.LoadScene(scene);
