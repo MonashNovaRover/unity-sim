@@ -20,6 +20,9 @@ let
 
   fhsEnvName = "nova-unityhub-fhs-env";
 
+  # See https://github.com/NixOS/nixpkgs/blob/1559d3daa3ecc813a650b79375ea61b6741b8746/pkgs/top-level/impure.nix#L8C3-L8C36
+  homeDir = builtins.getEnv "HOME";
+
   fhsBashrcDefinition = pkgs.writeShellScriptBin "fhs-bashrc" ''
     # Source parent .bashrc if it exists (optional)
     if [ -f ~/.bashrc ]; then
@@ -29,6 +32,10 @@ let
     # Your custom setup here
     alias hub='unityhub --no-sandbox'
     alias unity='~/Unity/Hub/Editor/6000.1.14f1/Editor/Unity -projectpath ./unity-sim'
+
+    # Stop Unity from using Rider by default
+    # TODO: Unity seems to be writing to prefs on startup, not sure where it's writing from.
+    sed -i '/<\/unity_prefs>/i \\t<pref name="UnityEditor.ExternalTools.ExternalScriptEditor" type="string">Open<\/pref>' ${homeDir}/.local/share/unity3d/prefs
 
     export DOTNET_ROOT=${dotnetPkg}
 

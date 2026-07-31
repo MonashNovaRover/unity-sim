@@ -298,7 +298,7 @@ Transform:
   m_GameObject: {fileID: 432763212}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.02, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -456,15 +456,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6658069106543365612, guid: bfbdcabf0c3de544d92e2b824ec5a3a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.87624
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6658069106543365612, guid: bfbdcabf0c3de544d92e2b824ec5a3a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1537
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6658069106543365612, guid: bfbdcabf0c3de544d92e2b824ec5a3a6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.70129
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6658069106543365612, guid: bfbdcabf0c3de544d92e2b824ec5a3a6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -509,15 +509,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 876646131378122265, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.38
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 876646131378122265, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.39841
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 876646131378122265, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 15.21
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 876646131378122265, guid: 56262dad4a0bf2b3897b2bbfe6da8dcb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -626,6 +626,6 @@ SceneRoots:
   - {fileID: 317728680}
   - {fileID: 432763216}
   - {fileID: 1844770514}
-  - {fileID: 2079984698}
-  - {fileID: 1423429775}
   - {fileID: 781373609}
+  - {fileID: 1423429775}
+  - {fileID: 2079984698}

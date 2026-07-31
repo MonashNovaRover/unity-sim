@@ -13752,11 +13752,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2258835738073333356, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
       propertyPath: m_Name
-      value: WebRTCCamera (Mast down)
+      value: WebRTCCamera (mast_belly)
       objectReference: {fileID: 0}
     - target: {fileID: 7161554415592588242, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
       propertyPath: serial
-      value: Mast down
+      value: mast_belly
       objectReference: {fileID: 0}
     - target: {fileID: 7161554415592588242, guid: 8734fabe306118646a346c660adfcbb3, type: 3}
       propertyPath: m_Enabled
