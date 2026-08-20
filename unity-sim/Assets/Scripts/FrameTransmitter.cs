@@ -56,7 +56,11 @@ public class FrameTransmitter : MonoBehaviour
     {
         Debug.Log($"Camera mode: {mode}");
         Debug.Log("FrameTransmitter starting...");
-        StartCoroutine(ConnectWithRetry());
+        
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            StartCoroutine(ConnectWithRetry());
+        }
     }
 
     IEnumerator ConnectWithRetry()
