@@ -1,6 +1,14 @@
+/*
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Monash Nova Rover Team
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   CREATED BY:  Joel Kruger
+   DESCRIPTION: Reimplementation of teleop but native to Unity (so you can drive the rover without the ROS2 stack running)
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
 using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.Robotics.UrdfImporter;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -285,7 +293,7 @@ public class Teleop
     }
 }
 
-public class Drive : MonoBehaviour
+public class RoverDrive : MonoBehaviour
 {
     public float wheelForce = 10000.0f;
     private Teleop teleop = new();
@@ -358,7 +366,6 @@ public class Drive : MonoBehaviour
         var gamepad = Gamepad.current;
         if (gamepad is not null)
         {
-            // Do button presses
             if (gamepad.startButton.isPressed && gamepad.selectButton.isPressed)
             {
                 SceneManager.LoadScene("MainSceneLoader");
