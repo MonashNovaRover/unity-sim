@@ -27,42 +27,66 @@ public class GroundTruthPublisher : MonoBehaviour
     private Quaternion baseInChassisRotation;
     private float timeSinceLastPublish;
 
+    private void OnEnable()
+    {
+        Setup.RobotSpawned += Initialise;
+
+        // The robot was spawned before this component was enabled. Physics may already have moved the chassis,
+        // in which case the base_link -> chassis offset recorded now will be wrong.
+        if (!initialised && Setup.Robot != null)
+        {
+            Debug.LogWarning($"{nameof(GroundTruthPublisher)}: robot was spawned before this was enabled; " +
+                             "ground truth may be offset if the rover had already moved.");
+            Initialise(Setup.Robot);
+        }
+    }
+
+    private void OnDisable()
+    {
+        Setup.RobotSpawned -= Initialise;
+    }
+
+    // Called by Setup as soon as the robot spawns, before physics has run, so the chassis is still in its
+    // URDF pose relative to base_link.
+    private void Initialise(GameObject robot)
+    {
+        mapOrigin = GameObject.Find("robot_start_position")?.transform;
+
+        if (mapOrigin == null)
+        {
+            Debug.LogError($"{nameof(GroundTruthPublisher)}: could not find robot_start_position. Disabling.");
+            enabled = false;
+            return;
+        }
+
+        // base_link is a plain Transform that never moves; the ArticulationBody root is its child "chassis".
+        // Track the chassis and apply the fixed base_link -> chassis offset to get where base_link really is.
+        Transform baseLink = FindChildRecursive(robot.transform, baseFrameId);
+        chassis = baseLink != null ? FindChildRecursive(baseLink, "chassis") : null;
+
+        if (chassis == null)
+        {
+            Debug.LogError($"{nameof(GroundTruthPublisher)}: could not find '{baseFrameId}/chassis' in {robot.name}. Disabling.");
+            enabled = false;
+            return;
+        }
+
+        Quaternion inverseChassisRotation = Quaternion.Inverse(chassis.rotation);
+        baseInChassisPosition = inverseChassisRotation * (baseLink.position - chassis.position);
+        baseInChassisRotation = inverseChassisRotation * baseLink.rotation;
+
+        ros = ROSConnection.GetOrCreateInstance();
+        ros.RegisterPublisher<TFMessageMsg>(tfTopic);
+
+        Debug.Log($"Ground truth {mapFrameId} -> {odomFrameId} -> {baseFrameId} publishing on {tfTopic}. " +
+                  $"base_link in chassis: position {baseInChassisPosition:F4}, rotation {baseInChassisRotation.eulerAngles:F2}");
+        initialised = true;
+    }
+
     private void Update()
     {
-        // Initialise here so that rover must have already be loaded
         if (!initialised)
-        {
-            mapOrigin = GameObject.Find("robot_start_position")?.transform;
-
-            if (mapOrigin == null)
-            {
-                Debug.LogError($"{nameof(GroundTruthPublisher)}: could not find robot_start_position. Disabling.");
-                enabled = false;
-                return;
-            }
-
-            // base_link is a plain Transform that never moves; the ArticulationBody root is its child "chassis".
-            // Track the chassis and apply the fixed base_link -> chassis offset to get where base_link really is.
-            Transform baseLink = FindChildRecursive(mapOrigin, baseFrameId);
-            chassis = baseLink != null ? FindChildRecursive(baseLink, "chassis") : null;
-
-            if (chassis == null)
-            {
-                Debug.LogError($"{nameof(GroundTruthPublisher)}: could not find '{baseFrameId}/chassis' under robot_start_position. Disabling.");
-                enabled = false;
-                return;
-            }
-
-            Quaternion inverseChassisRotation = Quaternion.Inverse(chassis.rotation);
-            baseInChassisPosition = inverseChassisRotation * (baseLink.position - chassis.position);
-            baseInChassisRotation = inverseChassisRotation * baseLink.rotation;
-
-            ros = ROSConnection.GetOrCreateInstance();
-            ros.RegisterPublisher<TFMessageMsg>(tfTopic);
-
-            Debug.Log($"Ground truth {mapFrameId} -> {odomFrameId} -> {baseFrameId} publishing on {tfTopic}");
-            initialised = true;
-        }
+            return;
 
         timeSinceLastPublish += Time.deltaTime;
         if (publishRateHz > 0f && timeSinceLastPublish < 1f / publishRateHz)

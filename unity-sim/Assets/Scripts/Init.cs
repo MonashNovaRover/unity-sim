@@ -54,12 +54,12 @@ public class Init : MonoBehaviour
             if (arg.StartsWith(argString))
             {
                 string result = arg.Substring(argString.Length);
-                if (result == 'False' || result == 'false')
+                if (result == "False" || result == "false")
                 {
                    Console.WriteLine("Value for '" + name + "' is 'false'");
                    return false;
                 }
-                if (result == 'True' || result == 'true')
+                if (result == "True" || result == "true")
                 {
                     Console.WriteLine("Value for '" + name + "' is 'true'");
                     return true;
