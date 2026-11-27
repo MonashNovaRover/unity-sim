@@ -20,7 +20,7 @@ public class Setup : MonoBehaviour
         }
         
         // Check if Robot Prefab argument is valid
-        string robotName = LoadScene.GetArg("robot", defaultPrefab);
+        string robotName = Init.GetArg("robot", defaultPrefab);
         if (!robotPrefabStrings.Contains(robotName)) {
             Debug.LogError("Robot argument does not exist in Robot Prefabs");
             return;

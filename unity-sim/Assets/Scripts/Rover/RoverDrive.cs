@@ -312,6 +312,13 @@ public class RoverDrive : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        bool enableGamepad = Init.GetArg("enable_gamepad", false);
+        if (!enableGamepad)
+        {
+            enabled = false;
+            return;
+        }
+
         GetArticulationBodiesOfChildren();
     }
 

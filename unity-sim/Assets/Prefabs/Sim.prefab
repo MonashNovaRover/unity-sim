@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 876646131378122265}
   - component: {fileID: 8230152109468367942}
   - component: {fileID: 956404179842824571}
+  - component: {fileID: 412741352753323542}
   m_Layer: 0
   m_Name: Sim
   m_TagString: Untagged
@@ -68,6 +69,23 @@ MonoBehaviour:
     obj: {fileID: 8376997336501032911, guid: 36a050453610049689af1ba179b9c82b, type: 3}
   - name: default
     obj: {fileID: 8376997336501032911, guid: 27d20e4002953e0a591b54496b2ae9ca, type: 3}
+--- !u!114 &412741352753323542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3929488554831423306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14adadf99c2bf598a5311be332b73db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapFrameId: map
+  odomFrameId: odom
+  baseFrameId: base_link
+  publishRateHz: 30
+  tfTopic: /tf
 --- !u!1 &5791158448662248076
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,8 +114,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5791158448662248076}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.04961633, y: 0.9502835, z: -0.22433133, w: -0.21017829}
-  m_LocalPosition: {x: -3.7754831, y: 1.355853, z: -1.0037365}
+  m_LocalRotation: {x: -0.049616344, y: 0.9502835, z: -0.22433138, w: -0.21017832}
+  m_LocalPosition: {x: -28.056232, y: 1.476543, z: -2.1844263}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
